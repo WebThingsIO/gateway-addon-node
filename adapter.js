@@ -104,6 +104,7 @@ class Adapter {
   removeThing(device) {
     console.log('Adapter:', this.name, 'id', this.id,
                 'removeThing(', device.id, ') started');
+    this.handleDeviceRemoved(device);
   }
 
   cancelRemoveThing(device) {
