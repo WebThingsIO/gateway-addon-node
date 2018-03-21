@@ -12,8 +12,17 @@
 
 const assert = require('assert');
 
-const DESCR_FIELDS = ['type', 'unit', 'description', 'min', 'max'];
+const DESCR_FIELDS = ['type', 'unit', 'description', 'minimum', 'maximum'];
 function copyDescrFieldsInto(target, source) {
+  // Check 'min' and 'max' for backwards compatibility.
+  if (source.hasOwnProperty('min')) {
+    target.minimum = source.min;
+  }
+
+  if (source.hasOwnProperty('max')) {
+    target.maximum = source.max;
+  }
+
   for (let field of DESCR_FIELDS) {
     if (source.hasOwnProperty(field)) {
       target[field] = source[field];
