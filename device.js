@@ -30,11 +30,12 @@ class Device {
       properties[propertyName] = property.asDict();
     });
     return {
-        'id': this.id,
-        'name': this.name,
-        'type': this.type,
-        'properties': properties,
-        'actions': this.actions,
+        id: this.id,
+        name: this.name,
+        type: this.type,
+        description: this.description,
+        properties: properties,
+        actions: this.actions,
     };
   }
 
