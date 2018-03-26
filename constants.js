@@ -8,34 +8,8 @@
 
 'use strict';
 
-const path = require('path');
-
 exports.DONT_RESTART_EXIT_CODE = 100;
 exports.UNLOAD_PLUGIN_KILL_DELAY = 3000;
-
-exports.USERS_PATH = '/users';
-exports.THINGS_PATH = '/things';
-exports.PROPERTIES_PATH = '/properties';
-exports.NEW_THINGS_PATH = '/new_things';
-exports.ADAPTERS_PATH = '/adapters';
-exports.ADDONS_PATH = '/addons';
-exports.ACTIONS_PATH = '/actions';
-exports.LOGIN_PATH = '/login';
-exports.LOG_OUT_PATH = '/log-out';
-exports.SETTINGS_PATH = '/settings';
-exports.COMMANDS_PATH = '/commands';
-exports.UPDATES_PATH = '/updates';
-exports.UPLOADS_PATH = '/uploads';
-exports.DEBUG_PATH = '/debug';
-exports.RULES_PATH = '/rules';
-exports.OAUTH_PATH = '/oauth';
-exports.OAUTHCLIENTS_PATH = '/authorizations';
-// Remember we end up in the build/* directory so these paths looks slightly
-// different than you might expect.
-exports.STATIC_PATH = path.join(__dirname, '../static');
-exports.VIEWS_PATH = path.join(__dirname, '../src/views');
-
-exports.ADAPTERS_CONFIG = 'adapters';
 
 exports.ACTION_STATUS = 'actionStatus';
 exports.ADAPTER_ADDED = 'adapterAdded';
