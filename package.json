@@ -1,6 +1,6 @@
 {
   "name": "gateway-addon",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Bindings for Mozilla IoT Gateway add-ons",
   "main": "index.js",
   "keywords": [
@@ -23,12 +23,14 @@
   },
   "files": [
     "LICENSE",
-    "adapter.js",
-    "constants.js",
-    "deferred.js",
-    "device.js",
     "index.js",
-    "property.js",
-    "utils.js"
+    "lib/action.js",
+    "lib/adapter.js",
+    "lib/constants.js",
+    "lib/deferred.js",
+    "lib/device.js",
+    "lib/event.js",
+    "lib/property.js",
+    "lib/utils.js"
   ]
 }

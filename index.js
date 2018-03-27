@@ -6,18 +6,22 @@
 
 'use strict';
 
-const Adapter = require('./adapter');
-const Constants = require('./constants');
-const Deferred = require('./deferred');
-const Device = require('./device');
-const Property = require('./property');
-const Utils = require('./utils');
+const Action = require('./lib/action');
+const Adapter = require('./lib/adapter');
+const Constants = require('./lib/constants');
+const Deferred = require('./lib/deferred');
+const Device = require('./lib/device');
+const Event = require('./lib/event');
+const Property = require('./lib/property');
+const Utils = require('./lib/utils');
 
 module.exports = {
+  Action,
   Adapter,
   Constants,
   Deferred,
   Device,
+  Event,
   Property,
   Utils,
 }
