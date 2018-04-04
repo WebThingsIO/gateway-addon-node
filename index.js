@@ -9,6 +9,7 @@
 const Action = require('./lib/action');
 const Adapter = require('./lib/adapter');
 const Constants = require('./lib/constants');
+const Database = require('./lib/database');
 const Deferred = require('./lib/deferred');
 const Device = require('./lib/device');
 const Event = require('./lib/event');
@@ -19,6 +20,7 @@ module.exports = {
   Action,
   Adapter,
   Constants,
+  Database,
   Deferred,
   Device,
   Event,

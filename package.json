@@ -18,9 +18,9 @@
     "url": "https://github.com/mozilla-iot/gateway-addon-node/issues"
   },
   "dependencies": {
+    "sqlite3": "^4.0.0"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "files": [
     "LICENSE",
     "index.js",
