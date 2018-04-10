@@ -27,6 +27,7 @@
     "lib/action.js",
     "lib/adapter.js",
     "lib/constants.js",
+    "lib/database.js",
     "lib/deferred.js",
     "lib/device.js",
     "lib/event.js",
