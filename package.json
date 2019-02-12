@@ -1,14 +1,17 @@
 {
   "name": "gateway-addon",
-  "version": "0.4.0",
+  "version": "0.8.0",
   "description": "Bindings for Mozilla IoT Gateway add-ons",
+  "scripts": {
+    "lint": "eslint ."
+  },
   "main": "index.js",
   "keywords": [
     "mozilla",
     "iot"
   ],
   "homepage": "https://github.com/mozilla-iot/gateway-addon-node",
-  "author": "Mozilla IoT Team",
+  "author": "Mozilla IoT",
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
@@ -18,10 +21,12 @@
     "url": "https://github.com/mozilla-iot/gateway-addon-node/issues"
   },
   "dependencies": {
-    "ajv": "^6.4.0",
-    "sqlite3": "^4.0.0"
+    "ajv": "^6.9.1",
+    "sqlite3": "^4.0.6"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^5.13.0"
+  },
   "files": [
     "LICENSE",
     "index.js",
