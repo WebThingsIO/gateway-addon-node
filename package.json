@@ -1,14 +1,14 @@
 {
   "name": "gateway-addon",
   "version": "0.8.0",
-  "description": "Bindings for Mozilla IoT Gateway add-ons",
+  "description": "Bindings for Mozilla WebThings Gateway add-ons",
   "scripts": {
     "lint": "eslint ."
   },
   "main": "index.js",
   "keywords": [
     "mozilla",
-    "iot"
+    "webthings"
   ],
   "homepage": "https://github.com/mozilla-iot/gateway-addon-node",
   "author": "Mozilla IoT",
