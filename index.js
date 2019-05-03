@@ -13,6 +13,8 @@ const Database = require('./lib/database');
 const Deferred = require('./lib/deferred');
 const Device = require('./lib/device');
 const Event = require('./lib/event');
+const Notifier = require('./lib/notifier');
+const Outlet = require('./lib/outlet');
 const Property = require('./lib/property');
 const Utils = require('./lib/utils');
 
@@ -24,6 +26,8 @@ module.exports = {
   Deferred,
   Device,
   Event,
+  Notifier,
+  Outlet,
   Property,
   Utils,
 };
