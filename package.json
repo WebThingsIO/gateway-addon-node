@@ -1,6 +1,6 @@
 {
   "name": "gateway-addon",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Bindings for Mozilla WebThings Gateway add-ons",
   "scripts": {
     "lint": "eslint ."
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "eslint": "^5.15.1"
+    "eslint": "^5.16.0"
   },
   "files": [
     "LICENSE",
@@ -38,6 +38,8 @@
     "lib/deferred.js",
     "lib/device.js",
     "lib/event.js",
+    "lib/notifier.js",
+    "lib/outlet.js",
     "lib/property.js",
     "lib/utils.js"
   ]
