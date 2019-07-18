@@ -30,4 +30,5 @@ module.exports = {
   Outlet,
   Property,
   Utils,
+  getVersion: () => require('./package.json').version,
 };
