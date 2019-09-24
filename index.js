@@ -8,6 +8,7 @@
 
 const Action = require('./lib/action');
 const Adapter = require('./lib/adapter');
+const {APIHandler, APIRequest, APIResponse} = require('./lib/api-handler');
 const Constants = require('./lib/constants');
 const Database = require('./lib/database');
 const Deferred = require('./lib/deferred');
@@ -21,6 +22,9 @@ const Utils = require('./lib/utils');
 module.exports = {
   Action,
   Adapter,
+  APIHandler,
+  APIRequest,
+  APIResponse,
   Constants,
   Database,
   Deferred,
