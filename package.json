@@ -33,6 +33,7 @@
     "index.js",
     "lib/action.js",
     "lib/adapter.js",
+    "lib/api-handler.js",
     "lib/constants.js",
     "lib/database.js",
     "lib/deferred.js",
