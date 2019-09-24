@@ -33,14 +33,17 @@
     "index.js",
     "lib/action.js",
     "lib/adapter.js",
+    "lib/addon-manager-proxy.js",
     "lib/api-handler.js",
     "lib/constants.js",
     "lib/database.js",
     "lib/deferred.js",
     "lib/device.js",
     "lib/event.js",
+    "lib/ipc.js",
     "lib/notifier.js",
     "lib/outlet.js",
+    "lib/plugin-client.js",
     "lib/property.js",
     "lib/utils.js"
   ]
