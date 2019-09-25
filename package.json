@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "ajv": "^6.10.2",
+    "nanomsg": "^4.1.0",
     "sqlite3": "^4.1.0"
   },
   "devDependencies": {
