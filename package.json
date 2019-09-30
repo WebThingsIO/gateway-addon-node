@@ -3,6 +3,7 @@
   "version": "0.10.0",
   "description": "Bindings for Mozilla WebThings Gateway add-ons",
   "scripts": {
+    "prepare": "git submodule init && git submodule update",
     "lint": "eslint ."
   },
   "main": "index.js",
@@ -46,6 +47,7 @@
     "lib/outlet.js",
     "lib/plugin-client.js",
     "lib/property.js",
-    "lib/utils.js"
+    "lib/utils.js",
+    "schema"
   ]
 }
