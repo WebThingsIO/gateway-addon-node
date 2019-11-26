@@ -1,6 +1,6 @@
 {
   "name": "gateway-addon",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Bindings for Mozilla WebThings Gateway add-ons",
   "scripts": {
     "prepare": "git submodule init && git submodule update",
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
-    "eslint": "^6.6.0"
+    "eslint": "^6.7.1"
   },
   "files": [
     "LICENSE",
