@@ -23,8 +23,8 @@
   },
   "dependencies": {
     "ajv": "^6.11.0",
-    "nanomsg": "^4.1.0",
-    "sqlite3": "^4.1.1"
+    "sqlite3": "^4.1.1",
+    "ws": "^7.2.1"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
