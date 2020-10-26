@@ -11,15 +11,29 @@
 
 'use strict';
 
+import { AddonManagerProxy } from "./addon-manager-proxy";
+import { Outlet } from "./outlet";
+
+export interface NotifierDescription {
+  id: string,
+  name: string
+  ready: boolean,
+}
+
 /**
  * Base class for notifiers, which handle sending alerts to a user.
  * @class Notifier
  */
-class Notifier {
-  constructor(addonManager, id, packageName, {verbose} = {}) {
-    this.manager = addonManager;
-    this.id = id;
-    this.packageName = packageName;
+export class Notifier {
+  private verbose: boolean;
+  private name = this.constructor.name;
+  private outlets: { [key: string]: Outlet } = {};
+  private ready: boolean;
+  private gatewayVersion: string;
+  private userProfile: any;
+  private preferences: any;
+
+  constructor(private manager: AddonManagerProxy, private id: string, private packageName: string, { verbose }: any = {}) {
     this.verbose = !!verbose;
     this.name = this.constructor.name;
     this.outlets = {};
@@ -29,9 +43,9 @@ class Notifier {
     // in its constructor.
     this.ready = true;
 
-    this.gatewayVersion = addonManager.gatewayVersion;
-    this.userProfile = addonManager.userProfile;
-    this.preferences = addonManager.preferences;
+    this.gatewayVersion = manager.gatewayVersion;
+    this.userProfile = manager.userProfile;
+    this.preferences = manager.preferences;
   }
 
   dump() {
@@ -52,7 +66,7 @@ class Notifier {
     return this.packageName;
   }
 
-  getOutlet(id) {
+  getOutlet(id: string) {
     return this.outlets[id];
   }
 
@@ -68,7 +82,23 @@ class Notifier {
     return this.ready;
   }
 
-  asDict() {
+  isVerbose() {
+    return this.verbose;
+  }
+
+  getGatewayVersion() {
+    return this.gatewayVersion;
+  }
+
+  getUserProfile() {
+    return this.userProfile;
+  }
+
+  getPreferences() {
+    return this.preferences;
+  }
+
+  asDict(): NotifierDescription {
     return {
       id: this.getId(),
       name: this.getName(),
@@ -81,8 +111,8 @@ class Notifier {
    *
    * Called to indicate that an outlet is now being managed by this notifier.
    */
-  handleOutletAdded(outlet) {
-    this.outlets[outlet.id] = outlet;
+  handleOutletAdded(outlet: Outlet) {
+    this.outlets[outlet.getId()] = outlet;
     this.manager.handleOutletAdded(outlet);
   }
 
@@ -91,8 +121,8 @@ class Notifier {
    *
    * Called to indicate that an outlet is no longer managed by this notifier.
    */
-  handleOutletRemoved(outlet) {
-    delete this.outlets[outlet.id];
+  handleOutletRemoved(outlet: Outlet) {
+    delete this.outlets[outlet.getId()];
     this.manager.handleOutletRemoved(outlet);
   }
 
@@ -109,5 +139,3 @@ class Notifier {
     return Promise.resolve();
   }
 }
-
-module.exports = Notifier;

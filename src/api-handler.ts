@@ -12,10 +12,24 @@
 
 'use strict';
 
+import { AddonManagerProxy } from "./addon-manager-proxy";
+
+export interface APIRequestOptions {
+  method: string
+  path: string
+  query: any
+  body: any
+}
+
 /**
  * Class which holds an API request.
  */
-class APIRequest {
+export class APIRequest {
+  private method: string;
+  private path: string;
+  private query: any;
+  private body: any;
+
   /**
    * Build the request.
    *
@@ -30,18 +44,45 @@ class APIRequest {
    *                     application/x-www-form-urlencoded data in order for it
    *                     to be parsed properly.
    */
-  constructor(params) {
-    this.method = params.method;
-    this.path = params.path;
-    this.query = params.query || {};
-    this.body = params.body || {};
+  constructor({ method, path, query, body }: APIRequestOptions) {
+    this.method = method;
+    this.path = path;
+    this.query = query || {};
+    this.body = body || {};
+  }
+
+  getMethod() {
+    return this.method;
+  }
+
+  getPath() {
+    return this.path;
+  }
+
+  getQuery() {
+    return this.query;
+  }
+
+  getBody() {
+    return this.body;
   }
 }
+
+export interface APIResponseOptions {
+  status: number
+  contentType?: string
+  content?: string
+}
+
 
 /**
  * Convenience class to build an API response.
  */
-class APIResponse {
+export class APIResponse {
+  private status: number
+  private contentType?: string
+  private content?: string
+
   /**
    * Build the response.
    *
@@ -50,32 +91,28 @@ class APIResponse {
    *                   .contentType {string} Content-Type of response content
    *                   .content {string} Response content
    */
-  constructor(params) {
-    if (!params || !params.hasOwnProperty('status')) {
-      this.status = 500;
-      this.contentType = null;
-      this.content = null;
-      return;
+  constructor({ status, contentType, content }: APIResponseOptions = { status: 500 }) {
+    this.status = Number(status);
+
+    if (contentType) {
+      this.contentType = `${contentType}`;
     }
 
-    this.status = Number(params.status);
-
-    if (typeof params.contentType === 'undefined') {
-      this.contentType = null;
-    } else if (params.contentType !== null &&
-               typeof params.contentType !== 'string') {
-      this.contentType = `${params.contentType}`;
-    } else {
-      this.contentType = params.contentType;
+    if (content) {
+      this.content = `${content}`;
     }
+  }
 
-    if (typeof params.content === 'undefined') {
-      this.content = null;
-    } else if (params.content !== null && typeof params.content !== 'string') {
-      this.content = `${params.content}`;
-    } else {
-      this.content = params.content;
-    }
+  getStatus() {
+    return this.status;
+  }
+
+  getContentType() {
+    return this.contentType;
+  }
+
+  getContent() {
+    return this.content;
   }
 }
 
@@ -83,19 +120,39 @@ class APIResponse {
  * Base class for API handlers, which handle sending alerts to a user.
  * @class Notifier
  */
-class APIHandler {
-  constructor(addonManager, packageName, {verbose} = {}) {
-    this.manager = addonManager;
-    this.packageName = packageName;
+export class APIHandler {
+  private verbose: boolean;
+  private gatewayVersion: string;
+  private userProfile: any;
+  private preferences: any;
+
+  constructor(manager: AddonManagerProxy, private packageName: string, { verbose }: any = {}) {
     this.verbose = !!verbose;
-    this.gatewayVersion = addonManager.gatewayVersion;
-    this.userProfile = addonManager.userProfile;
-    this.preferences = addonManager.preferences;
+    this.gatewayVersion = manager.gatewayVersion;
+    this.userProfile = manager.userProfile;
+    this.preferences = manager.preferences;
+  }
+
+  isVerbose() {
+    return this.verbose;
   }
 
   getPackageName() {
     return this.packageName;
   }
+
+  getGatewayVersion() {
+    return this.gatewayVersion;
+  }
+
+  getUserProfile() {
+    return this.userProfile;
+  }
+
+  getPreferences() {
+    return this.preferences;
+  }
+
 
   /**
    * @method handleRequest
@@ -106,12 +163,12 @@ class APIHandler {
    *
    * @returns {APIResponse} API response object.
    */
-  async handleRequest(request) {
+  async handleRequest(request: APIRequest) {
     if (this.verbose) {
       console.log(`New API request for ${this.packageName}:`, request);
     }
 
-    return new APIResponse({status: 404});
+    return new APIResponse({ status: 404 });
   }
 
   /**
@@ -127,5 +184,3 @@ class APIHandler {
     return Promise.resolve();
   }
 }
-
-module.exports = {APIHandler, APIRequest, APIResponse};

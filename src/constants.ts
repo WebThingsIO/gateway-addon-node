@@ -8,18 +8,19 @@
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
-exports.MessageType = {};
+export const MessageType = {};
 
 // Build up message types dynamically from schemas
 const dname = path.resolve(path.join(__dirname, '..', 'schema', 'messages'));
+
 for (const fname of fs.readdirSync(dname)) {
-  const schema = JSON.parse(fs.readFileSync(path.join(dname, fname)));
+  const schema = JSON.parse(fs.readFileSync(path.join(dname, fname)).toString());
 
   if (!schema.hasOwnProperty('properties') ||
-      !schema.properties.hasOwnProperty('messageType')) {
+    !schema.properties.hasOwnProperty('messageType')) {
     continue;
   }
 
@@ -29,10 +30,10 @@ for (const fname of fs.readdirSync(dname)) {
   exports.MessageType[name] = value;
 }
 
-exports.NotificationLevel = {
+export const NotificationLevel = {
   LOW: 0,
   NORMAL: 1,
   HIGH: 2,
 };
 
-exports.DONT_RESTART_EXIT_CODE = 100;
+export const DONT_RESTART_EXIT_CODE = 100;

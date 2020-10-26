@@ -11,29 +11,36 @@
 
 'use strict';
 
+import { Action } from "./action";
+import { AddonManagerProxy } from "./addon-manager-proxy";
+import { Device } from "./device";
+
 /**
  * Base class for adapters, which manage devices.
  * @class Adapter
  *
  */
-class Adapter {
-  constructor(addonManager, id, packageName, {verbose} = {}) {
-    this.manager = addonManager;
-    this.id = id;
-    this.packageName = packageName;
+export class Adapter {
+  private verbose: boolean;
+  private name = this.constructor.name;
+  private devices: { [key: string]: Device } = {};
+  private actions: { [key: string]: Action } = {};
+  private ready: boolean;
+  private gatewayVersion: any;
+  private userProfile: any;
+  private preferences: any;
+
+  constructor(private manager: AddonManagerProxy, private id: string, private packageName: string, { verbose }: any = {}) {
     this.verbose = !!verbose;
-    this.name = this.constructor.name;
-    this.devices = {};
-    this.actions = {};
 
     // We assume that the adapter is ready right away. If, for some reason
     // a particular adapter (like ZWave) needs some time, then it should
     // set ready to false in its constructor.
     this.ready = true;
 
-    this.gatewayVersion = addonManager.gatewayVersion;
-    this.userProfile = addonManager.userProfile;
-    this.preferences = addonManager.preferences;
+    this.gatewayVersion = manager.gatewayVersion;
+    this.userProfile = manager.userProfile;
+    this.preferences = manager.preferences;
   }
 
   dump() {
@@ -54,12 +61,17 @@ class Adapter {
     return this.packageName;
   }
 
-  getDevice(id) {
+  getDevice(id: string) {
     return this.devices[id];
   }
 
   getDevices() {
     return this.devices;
+  }
+
+
+  getActions() {
+    return this.actions;
   }
 
   getName() {
@@ -68,6 +80,26 @@ class Adapter {
 
   isReady() {
     return this.ready;
+  }
+
+  getManager() {
+    return this.manager;
+  }
+
+  isVerbose() {
+    return this.verbose;
+  }
+
+  getGatewayVersion() {
+    return this.gatewayVersion;
+  }
+
+  getUserProfile() {
+    return this.userProfile;
+  }
+
+  getPreferences() {
+    return this.preferences;
   }
 
   asDict() {
@@ -83,8 +115,8 @@ class Adapter {
    *
    * Called to indicate that a device is now being managed by this adapter.
    */
-  handleDeviceAdded(device) {
-    this.devices[device.id] = device;
+  handleDeviceAdded(device: Device) {
+    this.devices[device.getId()] = device;
     this.manager.handleDeviceAdded(device);
   }
 
@@ -93,8 +125,8 @@ class Adapter {
    *
    * Called to indicate that a device is no longer managed by this adapter.
    */
-  handleDeviceRemoved(device) {
-    delete this.devices[device.id];
+  handleDeviceRemoved(device: Device) {
+    delete this.devices[device.getId()];
     this.manager.handleDeviceRemoved(device);
   }
 
@@ -112,11 +144,11 @@ class Adapter {
    * @param {string} deviceId - ID of the device
    * @param {object} device - the saved device description
    */
-  handleDeviceSaved(_deviceId, _device) {
+  handleDeviceSaved(_deviceId: string, _device: Device) {
   }
 
   // eslint-disable-next-line
-  startPairing(timeoutSeconds) {
+  startPairing(_timeoutSeconds: number) {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id, 'pairing started');
     }
@@ -130,7 +162,7 @@ class Adapter {
    *                 troubleshooting info
    * @param {Object?} device - Device the prompt is associated with
    */
-  sendPairingPrompt(prompt, url = null, device = null) {
+  sendPairingPrompt(prompt: string, url?: string, device?: Device) {
     this.manager.sendPairingPrompt(this, prompt, url, device);
   }
 
@@ -142,7 +174,7 @@ class Adapter {
    *                 troubleshooting info
    * @param {Object?} device - Device the prompt is associated with
    */
-  sendUnpairingPrompt(prompt, url = null, device = null) {
+  sendUnpairingPrompt(prompt: string, url?: string, device?: Device) {
     this.manager.sendUnpairingPrompt(this, prompt, url, device);
   }
 
@@ -152,19 +184,19 @@ class Adapter {
     }
   }
 
-  removeThing(device) {
+  removeThing(device: Device) {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id,
-                  'removeThing(', device.id, ') started');
+        'removeThing(', device.getId(), ') started');
     }
 
     this.handleDeviceRemoved(device);
   }
 
-  cancelRemoveThing(device) {
+  cancelRemoveThing(device: Device) {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id,
-                  'cancelRemoveThing(', device.id, ')');
+        'cancelRemoveThing(', device.getId(), ')');
     }
   }
 
@@ -189,12 +221,12 @@ class Adapter {
    *
    * @returns a promise which resolves when the PIN has been set.
    */
-  setPin(deviceId, pin) {
+  setPin(deviceId: string, pin: string) {
     const device = this.getDevice(deviceId);
     if (device) {
       if (this.verbose) {
         console.log('Adapter:', this.name, 'id', this.id,
-                    'setPin(', deviceId, ',', pin, ')');
+          'setPin(', deviceId, ',', pin, ')');
       }
 
       return Promise.resolve();
@@ -212,13 +244,13 @@ class Adapter {
    *
    * @returns a promise which resolves when the credentials have been set.
    */
-  setCredentials(deviceId, username, password) {
+  setCredentials(deviceId: string, username: string, password: string) {
     const device = this.getDevice(deviceId);
     if (device) {
       if (this.verbose) {
         console.log('Adapter:', this.name, 'id', this.id,
-                    'setCredentials(', deviceId, ',', username, ',', password,
-                    ')');
+          'setCredentials(', deviceId, ',', username, ',', password,
+          ')');
       }
 
       return Promise.resolve();
@@ -227,5 +259,3 @@ class Adapter {
     return Promise.reject('Device not found');
   }
 }
-
-module.exports = Adapter;

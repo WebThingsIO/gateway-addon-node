@@ -10,18 +10,23 @@
 
 'use strict';
 
-class Outlet {
-  constructor(notifier, id) {
-    if (typeof id !== 'string') {
-      id = id.toString();
-    }
+import { Notifier } from "./notifier";
 
-    this.notifier = notifier;
-    this.id = id;
-    this.name = '';
+export interface OutletDescription {
+  id: string,
+  name: string
+}
+
+export class Outlet {
+  private name = '';
+
+  constructor(private notifier: Notifier, private id: string) {
+    if (typeof id !== 'string') {
+      id = (<any>id).toString();
+    }
   }
 
-  asDict() {
+  asDict(): OutletDescription {
     return {
       id: this.id,
       name: this.name,
@@ -36,6 +41,10 @@ class Outlet {
     return this.name;
   }
 
+  getNotifier() {
+    return this.notifier;
+  }
+
   /**
    * Notify the user.
    *
@@ -44,8 +53,8 @@ class Outlet {
    * @param {number} level Alert level.
    * @returns {Promise} Promise which resolves when the user has been notified.
    */
-  notify(title, message, level) {
-    if (this.notifier.verbose) {
+  notify(title: string, message: string, level: number) {
+    if (this.notifier.isVerbose()) {
       console.log(
         `Outlet: ${this.name} notify("${title}", "${message}", ${level})`
       );
@@ -54,5 +63,3 @@ class Outlet {
     return Promise.resolve();
   }
 }
-
-module.exports = Outlet;

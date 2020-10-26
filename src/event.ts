@@ -8,12 +8,22 @@
 
 'use strict';
 
+import { Device } from "./device";
+
 const utils = require('./utils');
+
+export interface EventDescription {
+  name: string,
+  data: any,
+  timestamp: string
+}
 
 /**
  * An Event represents an individual event from a device.
  */
-class Event {
+export class Event {
+  private timestamp = utils.timestamp();
+
   /**
    * Initialize the object.
    *
@@ -21,11 +31,11 @@ class Event {
    * @param {String} name Name of the event
    * @param {*} data (Optional) Data associated with the event
    */
-  constructor(device, name, data) {
-    this.device = device;
-    this.name = name;
-    this.data = typeof data === 'undefined' ? null : data;
-    this.timestamp = utils.timestamp();
+  constructor(private device: Device, private name: string, private data?: any) {
+  }
+
+  getDevice() {
+    return this.device;
   }
 
   /**
@@ -33,8 +43,8 @@ class Event {
    *
    * @returns {Object} Description of the event as an object.
    */
-  asEventDescription() {
-    const description = {
+  asEventDescription(): EventDescription {
+    const description: any = {
       name: this.name,
       timestamp: this.timestamp,
     };
@@ -51,7 +61,7 @@ class Event {
    *
    * @returns {Object} Description of the event as an object.
    */
-  asDict() {
+  asDict(): EventDescription {
     return {
       name: this.name,
       data: this.data,
@@ -59,5 +69,3 @@ class Event {
     };
   }
 }
-
-module.exports = Event;

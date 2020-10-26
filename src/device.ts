@@ -10,61 +10,83 @@
 
 'use strict';
 
-const Action = require('./action');
-const Ajv = require('ajv');
+import { Action, ActionDescription } from './action';
+import Ajv from 'ajv';
+import { Adapter } from './adapter';
+import { Property, PropertyDescription } from './property';
+import { Event, EventDescription } from './event';
 const ajv = new Ajv();
 
-class Device {
-  constructor(adapter, id) {
-    if (typeof id !== 'string') {
-      id = id.toString();
-    }
+export interface DeviceDescription {
+  id: string,
+  title: string,
+  '@context': string,
+  '@type': string[],
+  description: string,
+  properties: { [key: string]: PropertyDescription },
+  actions: { [key: string]: ActionDescription },
+  events: { [key: string]: EventDescription },
+  links: Link[],
+  baseHref?: string,
+  pin: {
+    required: boolean,
+    pattern?: string,
+  },
+  credentialsRequired: boolean,
+}
 
-    this.adapter = adapter;
-    this.id = id;
-    this['@context'] = 'https://webthings.io/schemas';
-    this['@type'] = [];
-    this.title = '';
-    this.description = '';
-    this.properties = new Map();
-    this.actions = new Map();
-    this.events = new Map();
-    this.links = [];
-    this.baseHref = null;
-    this.pinRequired = false;
-    this.pinPattern = null;
-    this.credentialsRequired = false;
+export interface Link {
+  rel: string,
+  href: string
+}
+
+export class Device {
+  private '@context' = 'https://webthings.io/schemas';
+  private '@type': string[] = [];
+  private name: string = '';
+  private title = '';
+  private description = '';
+  private properties = new Map<string, Property>();
+  private actions = new Map<string, ActionDescription>();
+  private events = new Map<string, EventDescription>();
+  private links: Link[] = [];
+  private baseHref?: string;
+  private pinRequired = false;
+  private pinPattern?: string;
+  private credentialsRequired = false;
+
+  constructor(private adapter: Adapter, private id: string) {
+    if (typeof id !== 'string') {
+      id = (<any>id).toString();
+    }
   }
 
-  asDict() {
-    const properties = {};
-    this.properties.forEach((property, propertyName) => {
-      properties[propertyName] = property.asDict();
+  mapToDict<V>(map: Map<string, V>) {
+    const dict: { [key: string]: V } = {};
+    map.forEach((property, propertyName) => {
+      dict[propertyName] = property;
     });
+    return dict;
+  }
 
-    const actions = {};
-    this.actions.forEach((metadata, actionName) => {
-      actions[actionName] = Object.assign({}, metadata);
+  mapToDictF<V>(map: Map<string, { asDict: () => V }>) {
+    const dict: { [key: string]: V } = {};
+    map.forEach((property, propertyName) => {
+      dict[propertyName] = property.asDict();
     });
+    return dict;
+  }
 
-    const events = {};
-    this.events.forEach((metadata, eventName) => {
-      events[eventName] = Object.assign({}, metadata);
-    });
-
-    if (this.name && !this.title) {
-      this.title = this.name;
-    }
-
+  asDict(): DeviceDescription {
     return {
       id: this.id,
-      title: this.title,
+      title: this.title || this.name,
       '@context': this['@context'],
       '@type': this['@type'],
       description: this.description,
-      properties: properties,
-      actions: actions,
-      events: events,
+      properties: this.mapToDictF(this.properties),
+      actions: this.mapToDict(this.actions),
+      events: this.mapToDict(this.events),
       links: this.links,
       baseHref: this.baseHref,
       pin: {
@@ -78,17 +100,16 @@ class Device {
   /**
    * @returns this object as a thing
    */
-  asThing() {
-    if (this.name && !this.title) {
-      this.title = this.name;
-    }
-
-    const thing = {
+  asThing(): DeviceDescription {
+    return {
       id: this.id,
-      title: this.title,
+      title: this.title || this.name,
       '@context': this['@context'],
       '@type': this['@type'],
-      properties: this.getPropertyDescriptions(),
+      description: this.description,
+      properties: this.mapToDictF(this.properties),
+      actions: this.mapToDict(this.actions),
+      events: this.mapToDict(this.events),
       links: this.links,
       baseHref: this.baseHref,
       pin: {
@@ -97,29 +118,9 @@ class Device {
       },
       credentialsRequired: this.credentialsRequired,
     };
-
-    if (this.description) {
-      thing.description = this.description;
-    }
-
-    if (this.actions) {
-      thing.actions = {};
-      this.actions.forEach((metadata, actionName) => {
-        thing.actions[actionName] = Object.assign({}, metadata);
-      });
-    }
-
-    if (this.events) {
-      thing.events = {};
-      this.events.forEach((metadata, eventName) => {
-        thing.events[eventName] = Object.assign({}, metadata);
-      });
-    }
-
-    return thing;
   }
 
-  debugCmd(cmd, params) {
+  debugCmd(cmd: string, params: any) {
     console.log('Device:', this.name, 'got debugCmd:', cmd, 'params:', params);
   }
 
@@ -141,7 +142,7 @@ class Device {
   }
 
   getPropertyDescriptions() {
-    const propDescs = {};
+    const propDescs: { [key: string]: PropertyDescription } = {};
     this.properties.forEach((property, propertyName) => {
       if (property.isVisible()) {
         propDescs[propertyName] = property.asPropertyDescription();
@@ -150,7 +151,7 @@ class Device {
     return propDescs;
   }
 
-  findProperty(propertyName) {
+  findProperty(propertyName: string) {
     return this.properties.get(propertyName);
   }
 
@@ -158,7 +159,7 @@ class Device {
    * @method getProperty
    * @returns a promise which resolves to the retrieved value.
    */
-  getProperty(propertyName) {
+  getProperty(propertyName: string) {
     return new Promise((resolve, reject) => {
       const property = this.findProperty(propertyName);
       if (property) {
@@ -171,36 +172,36 @@ class Device {
     });
   }
 
-  hasProperty(propertyName) {
+  hasProperty(propertyName: string) {
     return this.properties.has(propertyName);
   }
 
-  notifyPropertyChanged(property) {
-    this.adapter.manager.sendPropertyChangedNotification(property);
+  notifyPropertyChanged(property: Property) {
+    this.adapter.getManager().sendPropertyChangedNotification(property);
   }
 
-  actionNotify(action) {
-    this.adapter.manager.sendActionStatusNotification(action);
+  actionNotify(action: Action) {
+    this.adapter.getManager().sendActionStatusNotification(action);
   }
 
-  eventNotify(event) {
-    this.adapter.manager.sendEventNotification(event);
+  eventNotify(event: Event) {
+    this.adapter.getManager().sendEventNotification(event);
   }
 
-  connectedNotify(connected) {
-    this.adapter.manager.sendConnectedNotification(this, connected);
+  connectedNotify(connected: boolean) {
+    this.adapter.getManager().sendConnectedNotification(this, connected);
   }
 
-  setDescription(description) {
+  setDescription(description: string) {
     this.description = description;
   }
 
-  setName(name) {
+  setName(name: string) {
     console.log('setName() is deprecated. Please use setTitle().');
     this.setTitle(name);
   }
 
-  setTitle(title) {
+  setTitle(title: string) {
     this.title = title;
   }
 
@@ -211,7 +212,7 @@ class Device {
    * @note it is possible that the updated value doesn't match
    * the value passed in.
    */
-  setProperty(propertyName, value) {
+  setProperty(propertyName: string, value: any) {
     const property = this.findProperty(propertyName);
     if (property) {
       return property.setValue(value);
@@ -220,11 +221,15 @@ class Device {
     return Promise.reject(`Property "${propertyName}" not found`);
   }
 
+  getAdapter() {
+    return this.adapter;
+  }
+
   /**
    * @method requestAction
    * @returns a promise which resolves when the action has been requested.
    */
-  requestAction(actionId, actionName, input) {
+  requestAction(actionId: string, actionName: string, input: any) {
     return new Promise((resolve, reject) => {
       if (!this.actions.has(actionName)) {
         reject(`Action "${actionName}" not found`);
@@ -254,7 +259,7 @@ class Device {
    * @method removeAction
    * @returns a promise which resolves when the action has been removed.
    */
-  removeAction(actionId, actionName) {
+  removeAction(actionId: string, actionName: string) {
     return new Promise((resolve, reject) => {
       if (!this.actions.has(actionName)) {
         reject(`Action "${actionName}" not found`);
@@ -269,14 +274,14 @@ class Device {
   /**
    * @method performAction
    */
-  performAction(_action) {
+  performAction(_action: any) {
     return Promise.resolve();
   }
 
   /**
    * @method cancelAction
    */
-  cancelAction(_actionId, _actionName) {
+  cancelAction(_actionId: string, _actionName: string) {
     return Promise.resolve();
   }
 
@@ -287,7 +292,7 @@ class Device {
    * @param {Object} metadata Action metadata, i.e. type, description, etc., as
    *                          an object
    */
-  addAction(name, metadata) {
+  addAction(name: string, metadata: any) {
     metadata = metadata || {};
     if (metadata.hasOwnProperty('href')) {
       delete metadata.href;
@@ -303,7 +308,7 @@ class Device {
    * @param {Object} metadata Event metadata, i.e. type, description, etc., as
    *                          an object
    */
-  addEvent(name, metadata) {
+  addEvent(name: string, metadata: any) {
     metadata = metadata || {};
     if (metadata.hasOwnProperty('href')) {
       delete metadata.href;
@@ -312,5 +317,3 @@ class Device {
     this.events.set(name, metadata);
   }
 }
-
-module.exports = Device;

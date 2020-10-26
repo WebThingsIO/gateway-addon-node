@@ -1,6 +1,6 @@
 /**
  *
- * utils - Some utility functions
+ * utils - Some utility export functions
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,36 +9,30 @@
 
 'use strict';
 
-const utils = module.exports = {};
-
-function repeatChar(char, len) {
+export function repeatChar(char: string, len: number) {
   if (len <= 0) {
     return '';
   }
   return new Array(len + 1).join(char);
 }
-utils.repeatChar = repeatChar;
 
-function padLeft(str, len) {
+export function padLeft(str: string, len: number) {
   return (repeatChar(' ', len) + str).slice(-len);
 }
-utils.padLeft = padLeft;
 
-function padRight(str, len) {
+export function padRight(str: string, len: number) {
   return (str + repeatChar(' ', len)).slice(0, len);
 }
-utils.padRight = padRight;
 
-function hexStr(num, len) {
+export function hexStr(num: number, len: number) {
   return (repeatChar('0', len) + num.toString(16)).slice(-len);
 }
-utils.hexStr = hexStr;
 
-function alignCenter(str, len) {
+export function alignCenter(str: string, len: number) {
   if (str.length >= len) {
     return str.slice(0, len);
   }
-  const leftSpace = parseInt((len - str.length) / 2);
+  const leftSpace = (len - str.length) / 2;
   return padRight(padLeft(str, str.length + leftSpace), len);
 }
 
@@ -51,8 +45,8 @@ function alignCenter(str, len) {
  * column. '<' = left, '>' = right, '=' = center). If no alignment
  * character is found, then left alignment is assumed.
  */
-function printTable(alignment, lines) {
-  const width = [];
+export function printTable(alignment: string, lines: string[][]): void {
+  const width: number[] = [];
   let colWidth;
   let idx;
 
@@ -71,8 +65,8 @@ function printTable(alignment, lines) {
   // Now that we know how wide each column is, go and print them.
   for (const line of lines) {
     let lineStr = '';
-    for (idx in width) {
-      if (idx > 0) {
+    for (const idx in width) {
+      if (<number>(<unknown>idx) > 0) {
         lineStr += ' ';
       }
       colWidth = width[idx];
@@ -96,15 +90,13 @@ function printTable(alignment, lines) {
     console.log(lineStr);
   }
 }
-utils.printTable = printTable;
 
 /**
  * Get the current time.
  *
  * @returns {String} The current time in the form YYYY-mm-ddTHH:MM:SS+00:00
  */
-function timestamp() {
+export function timestamp(): string {
   const date = new Date().toISOString();
   return date.replace(/\.\d{3}Z/, '+00:00');
 }
-utils.timestamp = timestamp;

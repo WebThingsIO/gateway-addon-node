@@ -8,28 +8,35 @@
 
 'use strict';
 
-const utils = require('./utils');
+import { Device } from './device';
+import { timestamp } from './utils';
+
+export interface ActionDescription {
+  id: string
+  name: string
+  input: any,
+  status?: string
+  timeRequested?: string
+  timeCompleted?: string
+}
 
 /**
  * An Action represents an individual action on a device.
  */
-class Action {
-  constructor(id, device, name, input) {
-    /**
-     * Initialize the object.
-     *
-     * @param {String} id ID of this action
-     * @param {Object} device Device this action belongs to
-     * @param {String} name Name of the action
-     * @param {Object} input Any action inputs
-     */
-    this.id = id;
-    this.device = device;
-    this.name = name;
-    this.input = input;
-    this.status = 'created';
-    this.timeRequested = utils.timestamp();
-    this.timeCompleted = null;
+export class Action {
+  private status = 'created';
+  private timeRequested = timestamp();
+  private timeCompleted?: string;
+
+  /**
+  * Initialize the object.
+  *
+  * @param {String} id ID of this action
+  * @param {Object} device Device this action belongs to
+  * @param {String} name Name of the action
+  * @param {Object} input Any action inputs
+  */
+  constructor(private id: string, public device: Device, private name: string, private input: any) {
   }
 
   /**
@@ -37,8 +44,8 @@ class Action {
    *
    * @returns {Object} Description of the action as an object.
    */
-  asActionDescription() {
-    const description = {
+  asActionDescription(): ActionDescription {
+    const description: any = {
       name: this.name,
       timeRequested: this.timeRequested,
       status: this.status,
@@ -60,7 +67,7 @@ class Action {
    *
    * @returns {Object} Description of the action as an object.
    */
-  asDict() {
+  asDict(): ActionDescription {
     return {
       id: this.id,
       name: this.name,
@@ -84,9 +91,7 @@ class Action {
    */
   finish() {
     this.status = 'completed';
-    this.timeCompleted = utils.timestamp();
+    this.timeCompleted = timestamp();
     this.device.actionNotify(this);
   }
 }
-
-module.exports = Action;

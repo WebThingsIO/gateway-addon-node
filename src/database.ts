@@ -8,40 +8,38 @@
 
 'use strict';
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { verbose, Database as SQLiteDatabase } from 'sqlite3';
+
+const sqlite3 = verbose();
 
 const DB_PATHS = [
   path.join(os.homedir(), '.webthings', 'config', 'db.sqlite3'),
 ];
 
-if (process.env.hasOwnProperty('WEBTHINGS_HOME')) {
-  DB_PATHS.unshift(
-    path.join(process.env.WEBTHINGS_HOME, 'config', 'db.sqlite3')
-  );
+if (process.env['WEBTHINGS_HOME']) {
+  DB_PATHS.unshift(path.join(process.env['WEBTHINGS_HOME'], 'config', 'db.sqlite3'));
 }
 
-if (process.env.hasOwnProperty('WEBTHINGS_DATABASE')) {
-  DB_PATHS.unshift(process.env.WEBTHINGS_DATABASE);
+if (process.env['WEBTHINGS_DATABASE']) {
+  DB_PATHS.unshift(process.env['WEBTHINGS_DATABASE']);
 }
 
 /**
  * An Action represents an individual action on a device.
  */
-class Database {
+export class Database {
+  private conn?: SQLiteDatabase;
+
   /**
    * Initialize the object.
    *
    * @param {String} packageName The adapter's package name
    * @param {String?} path Optional database path
    */
-  constructor(packageName, path = null) {
-    this.packageName = packageName;
-    this.path = path;
-    this.conn = null;
-
+  constructor(private packageName: string, private path: string) {
     if (!this.path) {
       for (const p of DB_PATHS) {
         if (fs.existsSync(p)) {
@@ -73,7 +71,7 @@ class Database {
           if (err) {
             reject(err);
           } else {
-            this.conn.configure('busyTimeout', 10000);
+            this?.conn?.configure('busyTimeout', 10000);
             resolve();
           }
         });
@@ -86,7 +84,7 @@ class Database {
   close() {
     if (this.conn) {
       this.conn.close();
-      this.conn = null;
+      this.conn = undefined;
     }
   }
 
@@ -103,7 +101,7 @@ class Database {
     const key = `addons.config.${this.packageName}`;
 
     return new Promise((resolve, reject) => {
-      this.conn.get(
+      this?.conn?.get(
         'SELECT value FROM settings WHERE key = ?',
         [key],
         (error, row) => {
@@ -121,7 +119,7 @@ class Database {
   /**
    * Save the package's config to the database.
    */
-  saveConfig(config) {
+  saveConfig(config: any) {
     if (!this.conn) {
       return;
     }
@@ -129,7 +127,7 @@ class Database {
     const key = `addons.config.${this.packageName}`;
 
     return new Promise((resolve, reject) => {
-      this.conn.run(
+      this?.conn?.run(
         'INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)',
         [key, JSON.stringify(config)],
         (error) => {
@@ -142,5 +140,3 @@ class Database {
     });
   }
 }
-
-module.exports = Database;
