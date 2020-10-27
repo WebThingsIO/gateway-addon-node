@@ -26,9 +26,9 @@ import {EventEmitter} from 'events';
 interface MockAdapter {
   clearState(): Promise<void>;
   // eslint-disable-next-line no-unused-vars
-  addDevice(deviceId: string, deviceDescr: unknown): Promise<unknown>;
+  addDevice(deviceId: string, deviceDescr: unknown): Promise<{id: string}>;
   // eslint-disable-next-line no-unused-vars
-  removeDevice(deviceId: string): Promise<unknown>;
+  removeDevice(deviceId: string): Promise<{id: string}>;
   // eslint-disable-next-line no-unused-vars
   pairDevice(deviceId: string, deviceDescr: unknown): Promise<void>;
   // eslint-disable-next-line no-unused-vars
@@ -706,7 +706,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method sendPropertyChangedNotification
    * Sends a propertyChanged notification to the gateway.
    */
-  sendPropertyChangedNotification(property: Property): void {
+  sendPropertyChangedNotification(property: Property<unknown>): void {
     this.pluginClient.sendNotification(
       (<any>MessageType).DEVICE_PROPERTY_CHANGED_NOTIFICATION,
       {
