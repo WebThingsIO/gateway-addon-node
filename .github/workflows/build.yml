@@ -29,6 +29,6 @@ jobs:
       - name: Lint with eslint
         run: |
           npm run lint
-     - name: Transpile ts files
+      - name: Transpile ts files
         run: |
           npm run build
