@@ -26,11 +26,11 @@ import {EventEmitter} from 'events';
 interface MockAdapter {
   clearState(): Promise<void>;
   // eslint-disable-next-line no-unused-vars
-  addDevice(deviceId: string, deviceDescr: any): Promise<any>;
+  addDevice(deviceId: string, deviceDescr: unknown): Promise<unknown>;
   // eslint-disable-next-line no-unused-vars
-  removeDevice(deviceId: string): Promise<any>;
+  removeDevice(deviceId: string): Promise<unknown>;
   // eslint-disable-next-line no-unused-vars
-  pairDevice(deviceId: string, deviceDescr: any): Promise<void>;
+  pairDevice(deviceId: string, deviceDescr: unknown): Promise<void>;
   // eslint-disable-next-line no-unused-vars
   unpairDevice(deviceId: string): Promise<void>;
 }
@@ -53,7 +53,8 @@ export class AddonManagerProxy extends EventEmitter {
   private onUnload?: () => void;
 
 
-  constructor(private pluginClient: PluginClient, {verbose}: any = {}) {
+  constructor(private pluginClient: PluginClient,
+              {verbose}: Record<string, unknown> = {}) {
     super();
 
     this.gatewayVersion = pluginClient.getGatewayVersion();
@@ -62,7 +63,7 @@ export class AddonManagerProxy extends EventEmitter {
     this.verbose = !!verbose;
   }
 
-  getGatewayVersion() {
+  getGatewayVersion(): string | undefined {
     return this.gatewayVersion;
   }
 
@@ -79,7 +80,7 @@ export class AddonManagerProxy extends EventEmitter {
    *
    * Adds an adapter to the collection of adapters managed by AddonManager.
    */
-  addAdapter(adapter: Adapter) {
+  addAdapter(adapter: Adapter): void {
     const adapterId = adapter.getId();
     this.verbose && console.log('AddonManagerProxy: addAdapter:', adapterId);
 
@@ -99,7 +100,7 @@ export class AddonManagerProxy extends EventEmitter {
    *
    * Adds a notifier to the collection of notifiers managed by AddonManager.
    */
-  addNotifier(notifier: Notifier) {
+  addNotifier(notifier: Notifier): void {
     const notifierId = notifier.getId();
     this.verbose && console.log('AddonManagerProxy: addNotifier:', notifierId);
 
@@ -119,7 +120,7 @@ export class AddonManagerProxy extends EventEmitter {
    *
    * Adds a new API handler.
    */
-  addAPIHandler(handler: APIHandler) {
+  addAPIHandler(handler: APIHandler): void {
     const packageName = handler.getPackageName();
     this.verbose &&
       console.log('AddonManagerProxy: addAPIHandler:', packageName);
@@ -138,7 +139,7 @@ export class AddonManagerProxy extends EventEmitter {
    *
    * Called when the indicated device has been added to an adapter.
    */
-  handleDeviceAdded(device: Device) {
+  handleDeviceAdded(device: Device): void {
     this.verbose &&
       console.log('AddonManagerProxy: handleDeviceAdded:', device.getId());
     const data = {
@@ -155,7 +156,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method handleDeviceRemoved
    * Called when the indicated device has been removed from an adapter.
    */
-  handleDeviceRemoved(device: Device) {
+  handleDeviceRemoved(device: Device): void {
     this.verbose &&
       console.log('AddonManagerProxy: handleDeviceRemoved:', device.getId());
     this.pluginClient.sendNotification(
@@ -172,7 +173,7 @@ export class AddonManagerProxy extends EventEmitter {
    *
    * Called when the indicated outlet has been added to a notifier.
    */
-  handleOutletAdded(outlet: Outlet) {
+  handleOutletAdded(outlet: Outlet): void {
     this.verbose &&
       console.log('AddonManagerProxy: handleOutletAdded:', outlet.getId());
     const data = {
@@ -189,7 +190,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method handleOutletRemoved
    * Called when the indicated outlet has been removed from a notifier.
    */
-  handleOutletRemoved(outlet: Outlet) {
+  handleOutletRemoved(outlet: Outlet): void {
     this.verbose &&
       console.log('AddonManagerProxy: handleOutletRemoved:', outlet.getId());
     this.pluginClient.sendNotification(
@@ -205,7 +206,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method onMsg
    * Called whenever a message is received from the gateway.
    */
-  onMsg(msg: any) {
+  onMsg(msg: any): void {
     this.verbose && console.log('AddonManagerProxy: Rcvd:', msg);
 
     switch (msg.messageType) {
@@ -656,7 +657,7 @@ export class AddonManagerProxy extends EventEmitter {
    * Send a prompt to the UI notifying the user to take some action.
    */
   sendPairingPrompt(adapter: Adapter, prompt: string, url?: string,
-                    device?: Device) {
+                    device?: Device): void {
     const data: any = {
       adapterId: adapter.getId(),
       prompt: prompt,
@@ -681,7 +682,7 @@ export class AddonManagerProxy extends EventEmitter {
    * Send a prompt to the UI notifying the user to take some action.
    */
   sendUnpairingPrompt(adapter: Adapter, prompt: string, url?: string,
-                      device?: Device) {
+                      device?: Device): void {
     const data: any = {
       adapterId: adapter.getId(),
       prompt: prompt,
@@ -705,7 +706,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method sendPropertyChangedNotification
    * Sends a propertyChanged notification to the gateway.
    */
-  sendPropertyChangedNotification(property: Property) {
+  sendPropertyChangedNotification(property: Property): void {
     this.pluginClient.sendNotification(
       (<any>MessageType).DEVICE_PROPERTY_CHANGED_NOTIFICATION,
       {
@@ -720,7 +721,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method sendActionStatusNotification
    * Sends an actionStatus notification to the gateway.
    */
-  sendActionStatusNotification(action: Action) {
+  sendActionStatusNotification(action: Action): void {
     this.pluginClient.sendNotification(
       (<any>MessageType).DEVICE_ACTION_STATUS_NOTIFICATION,
       {
@@ -735,7 +736,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method sendEventNotification
    * Sends an event notification to the gateway.
    */
-  sendEventNotification(event: Event) {
+  sendEventNotification(event: Event): void {
     this.pluginClient.sendNotification(
       (<any>MessageType).DEVICE_EVENT_NOTIFICATION,
       {
@@ -750,7 +751,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method sendConnectedNotification
    * Sends a connected notification to the gateway.
    */
-  sendConnectedNotification(device: Device, connected: boolean) {
+  sendConnectedNotification(device: Device, connected: boolean): void {
     this.pluginClient.sendNotification(
       (<any>MessageType).DEVICE_CONNECTED_STATE_NOTIFICATION,
       {
@@ -766,7 +767,7 @@ export class AddonManagerProxy extends EventEmitter {
    *
    * Unloads the plugin, and tells the server about it.
    */
-  unloadPlugin() {
+  unloadPlugin(): void {
     if ((<any> this.pluginClient).ipcProtocol === 'inproc') {
       if (this.onUnload) {
         this.onUnload();
@@ -782,7 +783,7 @@ export class AddonManagerProxy extends EventEmitter {
       (<any>MessageType).PLUGIN_UNLOAD_RESPONSE, {});
   }
 
-  sendError(message: string) {
+  sendError(message: string): void {
     this.pluginClient.sendNotification(
       (<any>MessageType).PLUGIN_ERROR_NOTIFICATION,
       {

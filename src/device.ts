@@ -49,13 +49,13 @@ export class Device {
 
   private '@type': string[] = [];
 
-  private name: string = '';
+  private name = '';
 
   private title = '';
 
   private description = '';
 
-  private properties = new Map<string, Property>();
+  private properties = new Map<string, Property<unknown>>();
 
   private actions = new Map<string, ActionDescription>();
 
@@ -73,14 +73,10 @@ export class Device {
 
   constructor(adapter: Adapter, id: string) {
     this.adapter = adapter;
-    this.id = id;
-
-    if (typeof id !== 'string') {
-      id = (<any>id).toString();
-    }
+    this.id = `${id}`;
   }
 
-  mapToDict<V>(map: Map<string, V>) {
+  mapToDict<V>(map: Map<string, V>): Record<string, V> {
     const dict: Record<string, V> = {};
     map.forEach((property, propertyName) => {
       dict[propertyName] = property;
@@ -88,7 +84,7 @@ export class Device {
     return dict;
   }
 
-  mapToDictF<V>(map: Map<string, { asDict: () => V }>) {
+  mapToDictF<V>(map: Map<string, { asDict: () => V }>): Record<string, V> {
     const dict: Record<string, V> = {};
     map.forEach((property, propertyName) => {
       dict[propertyName] = property.asDict();
@@ -139,20 +135,20 @@ export class Device {
     };
   }
 
-  debugCmd(cmd: string, params: any) {
+  debugCmd(cmd: string, params: Record<string, unknown>): void {
     console.log('Device:', this.name, 'got debugCmd:', cmd, 'params:', params);
   }
 
-  getId() {
+  getId(): string {
     return this.id;
   }
 
-  getName() {
+  getName(): string {
     console.log('getName() is deprecated. Please use getTitle().');
     return this.getTitle();
   }
 
-  getTitle() {
+  getTitle(): string {
     if (this.name && !this.title) {
       this.title = this.name;
     }
@@ -160,7 +156,7 @@ export class Device {
     return this.title;
   }
 
-  getPropertyDescriptions() {
+  getPropertyDescriptions(): Record<string, unknown> {
     const propDescs: Record<string, PropertyDescription> = {};
     this.properties.forEach((property, propertyName) => {
       if (property.isVisible()) {
@@ -170,7 +166,7 @@ export class Device {
     return propDescs;
   }
 
-  findProperty(propertyName: string) {
+  findProperty(propertyName: string): Property<unknown> | undefined {
     return this.properties.get(propertyName);
   }
 
@@ -178,7 +174,7 @@ export class Device {
    * @method getProperty
    * @returns a promise which resolves to the retrieved value.
    */
-  getProperty(propertyName: string) {
+  getProperty(propertyName: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const property = this.findProperty(propertyName);
       if (property) {
@@ -191,36 +187,36 @@ export class Device {
     });
   }
 
-  hasProperty(propertyName: string) {
+  hasProperty(propertyName: string): boolean {
     return this.properties.has(propertyName);
   }
 
-  notifyPropertyChanged(property: Property) {
+  notifyPropertyChanged(property: Property<unknown>): void {
     this.adapter.getManager().sendPropertyChangedNotification(property);
   }
 
-  actionNotify(action: Action) {
+  actionNotify(action: Action): void {
     this.adapter.getManager().sendActionStatusNotification(action);
   }
 
-  eventNotify(event: Event) {
+  eventNotify(event: Event): void {
     this.adapter.getManager().sendEventNotification(event);
   }
 
-  connectedNotify(connected: boolean) {
+  connectedNotify(connected: boolean): void {
     this.adapter.getManager().sendConnectedNotification(this, connected);
   }
 
-  setDescription(description: string) {
+  setDescription(description: string): void {
     this.description = description;
   }
 
-  setName(name: string) {
+  setName(name: string): void {
     console.log('setName() is deprecated. Please use setTitle().');
     this.setTitle(name);
   }
 
-  setTitle(title: string) {
+  setTitle(title: string): void {
     this.title = title;
   }
 
@@ -231,7 +227,7 @@ export class Device {
    * @note it is possible that the updated value doesn't match
    * the value passed in.
    */
-  setProperty(propertyName: string, value: any) {
+  setProperty(propertyName: string, value: unknown): Promise<unknown> {
     const property = this.findProperty(propertyName);
     if (property) {
       return property.setValue(value);
@@ -240,7 +236,7 @@ export class Device {
     return Promise.reject(`Property "${propertyName}" not found`);
   }
 
-  getAdapter() {
+  getAdapter(): Adapter {
     return this.adapter;
   }
 
@@ -248,7 +244,8 @@ export class Device {
    * @method requestAction
    * @returns a promise which resolves when the action has been requested.
    */
-  requestAction(actionId: string, actionName: string, input: any) {
+  requestAction(actionId: string, actionName: string, input: unknown)
+  : Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.actions.has(actionName)) {
         reject(`Action "${actionName}" not found`);
@@ -259,7 +256,8 @@ export class Device {
       const metadata = this.actions.get(actionName);
       if (metadata) {
         if (metadata.hasOwnProperty('input')) {
-          const valid = ajv.validate(metadata.input, input);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const valid = ajv.validate(<any>metadata.input, input);
           if (!valid) {
             reject(`Action "${actionName}": input "${input}" is invalid`);
           }
@@ -278,7 +276,7 @@ export class Device {
    * @method removeAction
    * @returns a promise which resolves when the action has been removed.
    */
-  removeAction(actionId: string, actionName: string) {
+  removeAction(actionId: string, actionName: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.actions.has(actionName)) {
         reject(`Action "${actionName}" not found`);
@@ -293,14 +291,16 @@ export class Device {
   /**
    * @method performAction
    */
-  performAction(_action: any) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  performAction(_action: Action): Promise<void> {
     return Promise.resolve();
   }
 
   /**
    * @method cancelAction
    */
-  cancelAction(_actionId: string, _actionName: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  cancelAction(_actionId: string, _actionName: string): Promise<void> {
     return Promise.resolve();
   }
 
@@ -311,10 +311,10 @@ export class Device {
    * @param {Object} metadata Action metadata, i.e. type, description, etc., as
    *                          an object
    */
-  addAction(name: string, metadata: any) {
+  addAction(name: string, metadata: ActionDescription): void {
     metadata = metadata || {};
     if (metadata.hasOwnProperty('href')) {
-      delete metadata.href;
+      delete (<any>metadata).href;
     }
 
     this.actions.set(name, metadata);
@@ -327,10 +327,10 @@ export class Device {
    * @param {Object} metadata Event metadata, i.e. type, description, etc., as
    *                          an object
    */
-  addEvent(name: string, metadata: any) {
+  addEvent(name: string, metadata: EventDescription): void {
     metadata = metadata || {};
     if (metadata.hasOwnProperty('href')) {
-      delete metadata.href;
+      delete (<any>metadata).href;
     }
 
     this.events.set(name, metadata);

@@ -12,9 +12,8 @@ import {Device} from './device';
 import {timestamp} from './utils';
 
 export interface ActionDescription {
-  id: string
   name: string
-  input: any,
+  input?: unknown,
   status?: string
   timeRequested?: string
   timeCompleted?: string
@@ -36,7 +35,7 @@ export class Action {
 
   private name: string;
 
-  private input: any;
+  private input: unknown;
 
   /**
   * Initialize the object.
@@ -44,9 +43,9 @@ export class Action {
   * @param {String} id ID of this action
   * @param {Object} device Device this action belongs to
   * @param {String} name Name of the action
-  * @param {Object} input Any action inputs
+  * @param {unknown} input Any action inputs
   */
-  constructor(id: string, device: Device, name: string, input: any) {
+  constructor(id: string, device: Device, name: string, input: unknown) {
     this.id = id;
     this.device = device;
     this.name = name;
@@ -59,7 +58,7 @@ export class Action {
    * @returns {Object} Description of the action as an object.
    */
   asActionDescription(): ActionDescription {
-    const description: any = {
+    const description: ActionDescription = {
       name: this.name,
       timeRequested: this.timeRequested,
       status: this.status,
@@ -81,7 +80,7 @@ export class Action {
    *
    * @returns {Object} Description of the action as an object.
    */
-  asDict(): ActionDescription {
+  asDict(): ActionDescription & {id: string} {
     return {
       id: this.id,
       name: this.name,
@@ -95,7 +94,7 @@ export class Action {
   /**
    * Start performing the action.
    */
-  start() {
+  start(): void {
     this.status = 'pending';
     this.device.actionNotify(this);
   }
@@ -103,7 +102,7 @@ export class Action {
   /**
    * Finish performing the action.
    */
-  finish() {
+  finish(): void {
     this.status = 'completed';
     this.timeCompleted = timestamp();
     this.device.actionNotify(this);

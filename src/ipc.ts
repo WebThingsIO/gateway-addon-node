@@ -1,6 +1,6 @@
 'use strict';
 
-import Ajv from 'ajv';
+import Ajv, {ValidateFunction} from 'ajv';
 import fs from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
@@ -11,13 +11,13 @@ export class IpcSocket {
 
   private port: number;
 
-  private onMsg: (_data: any, _ws: WebSocket) => void;
+  private onMsg: (_data: unknown, _ws: WebSocket) => void;
 
   private logPrefix: string;
 
   private verbose: boolean;
 
-  private validate: any;
+  private validate?: ValidateFunction;
 
   private wss?: WebSocket.Server;
 
@@ -26,8 +26,8 @@ export class IpcSocket {
   private connectPromise?: Promise<WebSocket>;
 
   constructor(isServer: boolean, port: number,
-              onMsg: (_data: any, _ws: WebSocket) => void,
-              logPrefix: string, {verbose}: any = {}) {
+              onMsg: (_data: unknown, _ws: WebSocket) => void,
+              logPrefix: string, {verbose}: Record<string, unknown> = {}) {
     this.isServer = isServer;
     this.port = port;
     this.onMsg = onMsg;
@@ -68,21 +68,21 @@ export class IpcSocket {
     }
   }
 
-  getConnectPromise() {
+  getConnectPromise(): Promise<WebSocket> | undefined {
     return this.connectPromise;
   }
 
-  error(...args: any[]) {
+  error(...args: unknown[]): void {
     Array.prototype.unshift.call(args, this.logPrefix);
     console.error.apply(null, args);
   }
 
-  log(...args: any[]) {
+  log(...args: unknown[]): void {
     Array.prototype.unshift.call(args, this.logPrefix);
     console.log.apply(null, args);
   }
 
-  close() {
+  close(): void {
     if (this.isServer) {
       this?.wss?.close();
     } else {
@@ -96,7 +96,7 @@ export class IpcSocket {
    *
    * Called anytime a new message has been received.
    */
-  onData(buf: WebSocket.Data, ws: WebSocket) {
+  onData(buf: WebSocket.Data, ws: WebSocket): void {
     const bufStr = buf.toString();
     let data;
     try {
@@ -110,7 +110,7 @@ export class IpcSocket {
     this.verbose && this.log('Rcvd:', data);
 
     // validate the message before forwarding to handler
-    if (!this.validate({message: data})) {
+    if (this.validate && !this.validate({message: data})) {
       console.error('Invalid message received:', data);
     }
 

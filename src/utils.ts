@@ -9,26 +9,26 @@
 
 'use strict';
 
-export function repeatChar(char: string, len: number) {
+export function repeatChar(char: string, len: number): string {
   if (len <= 0) {
     return '';
   }
   return new Array(len + 1).join(char);
 }
 
-export function padLeft(str: string, len: number) {
+export function padLeft(str: string, len: number): string {
   return (repeatChar(' ', len) + str).slice(-len);
 }
 
-export function padRight(str: string, len: number) {
+export function padRight(str: string, len: number): string {
   return (str + repeatChar(' ', len)).slice(0, len);
 }
 
-export function hexStr(num: number, len: number) {
+export function hexStr(num: number, len: number): string {
   return (repeatChar('0', len) + num.toString(16)).slice(-len);
 }
 
-export function alignCenter(str: string, len: number) {
+export function alignCenter(str: string, len: number): string {
   if (str.length >= len) {
     return str.slice(0, len);
   }

@@ -176,7 +176,7 @@ export class APIHandler {
    *
    * @returns {APIResponse} API response object.
    */
-  async handleRequest(request: APIRequest) {
+  async handleRequest(request: APIRequest): Promise<APIResponse> {
     if (this.verbose) {
       console.log(`New API request for ${this.packageName}:`, request);
     }
@@ -189,7 +189,7 @@ export class APIHandler {
    *
    * @returns a promise which resolves when the handler has finished unloading.
    */
-  unload() {
+  unload(): Promise<void> {
     if (this.verbose) {
       console.log('API Handler', this.packageName, 'unloaded');
     }

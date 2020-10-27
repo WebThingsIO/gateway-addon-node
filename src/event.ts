@@ -14,7 +14,7 @@ import {timestamp} from './utils';
 
 export interface EventDescription {
   name: string,
-  data: any,
+  data?: unknown,
   timestamp: string
 }
 
@@ -26,7 +26,7 @@ export class Event {
 
   private name: string;
 
-  private data?: any;
+  private data?: unknown;
 
   private timestamp = timestamp();
 
@@ -37,13 +37,13 @@ export class Event {
    * @param {String} name Name of the event
    * @param {*} data (Optional) Data associated with the event
    */
-  constructor(device: Device, name: string, data?: any) {
+  constructor(device: Device, name: string, data?: unknown) {
     this.device = device;
     this.name = name;
     this.data = data;
   }
 
-  getDevice() {
+  getDevice(): Device {
     return this.device;
   }
 
@@ -53,7 +53,7 @@ export class Event {
    * @returns {Object} Description of the event as an object.
    */
   asEventDescription(): EventDescription {
-    const description: any = {
+    const description: EventDescription = {
       name: this.name,
       timestamp: this.timestamp,
     };

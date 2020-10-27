@@ -63,7 +63,7 @@ export class Database {
    *
    * @returns Promise which resolves when the database has been opened.
    */
-  open() {
+  open(): Promise<void> {
     if (this.conn) {
       return Promise.resolve();
     }
@@ -89,7 +89,7 @@ export class Database {
   /**
    * Close the database.
    */
-  close() {
+  close(): void {
     if (this.conn) {
       this.conn.close();
       this.conn = null;
@@ -101,7 +101,7 @@ export class Database {
    *
    * @returns Promise which resolves to the config object.
    */
-  loadConfig() {
+  loadConfig(): Promise<Record<string, unknown>> {
     if (!this.conn) {
       return Promise.reject('Database not open');
     }
@@ -127,9 +127,9 @@ export class Database {
   /**
    * Save the package's config to the database.
    */
-  saveConfig(config: any) {
+  saveConfig(config: Record<string, unknown>): Promise<void> {
     if (!this.conn) {
-      return;
+      return Promise.resolve();
     }
 
     const key = `addons.config.${this.packageName}`;

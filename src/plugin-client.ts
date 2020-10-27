@@ -39,14 +39,14 @@ export class PluginClient extends EventEmitter {
 
   private ws?: WebSocket;
 
-  constructor(pluginId: string, {verbose}: any = {}) {
+  constructor(pluginId: string, {verbose}: Record<string, unknown> = {}) {
     super();
     this.pluginId = pluginId;
     this.verbose = !!verbose;
     this.logPrefix = `PluginClient(${this.pluginId}):`;
   }
 
-  getGatewayVersion() {
+  getGatewayVersion(): string | undefined {
     return this.gatewayVersion;
   }
 
@@ -58,7 +58,7 @@ export class PluginClient extends EventEmitter {
     return this.preferences;
   }
 
-  onMsg(msg: any) {
+  onMsg(msg: any): void {
     this.verbose &&
       console.log(this.logPrefix, 'rcvd ManagerMsg:', msg);
 
@@ -81,10 +81,10 @@ export class PluginClient extends EventEmitter {
     }
   }
 
-  register(port: number) {
+  register(port: number): Promise<AddonManagerProxy | void> {
     if (this.deferredReply) {
       console.error(this.logPrefix, 'Already waiting for registration reply');
-      return;
+      return Promise.resolve();
     }
     this.deferredReply = new Deferred();
 
@@ -108,7 +108,7 @@ export class PluginClient extends EventEmitter {
     return this.deferredReply.getPromise();
   }
 
-  sendNotification(messageType: number, data: any = {}) {
+  sendNotification(messageType: number, data: any = {}): void {
     data.pluginId = this.pluginId;
 
     const jsonObj = JSON.stringify({messageType, data});
@@ -116,7 +116,7 @@ export class PluginClient extends EventEmitter {
     this.ws?.send(jsonObj);
   }
 
-  unload() {
+  unload(): void {
     this.ipcSocket?.close();
     this.emit('unloaded', {});
   }

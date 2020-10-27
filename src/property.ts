@@ -35,7 +35,7 @@ export interface PropertyDescription {
   links: string[]
 }
 
-export class Property {
+export class Property<T> {
   public device: Device;
 
   private name: string;
@@ -66,9 +66,9 @@ export class Property {
 
   private fireAndForget = false;
 
-  private value: any;
+  private value?: T;
 
-  private prevGetValue: any;
+  private prevGetValue?: T;
 
   constructor(device: Device, name: string,
               propertyDescr: PropertyDescription) {
@@ -81,7 +81,7 @@ export class Property {
     assert.equal(typeof propertyDescr, 'object',
                  'Please update plugin to use property description.');
 
-    const legacyDescription = <LegacyPropertyDescription><any>propertyDescr;
+    const legacyDescription = <LegacyPropertyDescription><unknown>propertyDescr;
 
     if (legacyDescription.hasOwnProperty('visible')) {
       this.visible = legacyDescription.visible;
@@ -105,7 +105,7 @@ export class Property {
    * This is primarily used for debugging.
    */
   asDict(): PropertyDescription &
-  { name: string, value: any, visible: boolean } {
+  { name: string, value?: T, visible: boolean } {
     return {
       name: this.name,
       value: this.value,
@@ -149,11 +149,11 @@ export class Property {
    * @returns true if this is a visible property, which is a property
    *          that is reported in the property description.
    */
-  isVisible() {
+  isVisible(): boolean {
     return this.visible;
   }
 
-  isFireAndForget() {
+  isFireAndForget(): boolean {
     return this.fireAndForget;
   }
 
@@ -161,7 +161,7 @@ export class Property {
    * Sets the value and notifies the device if the value has changed.
    * @returns true if the value has changed
    */
-  setCachedValueAndNotify(value: any) {
+  setCachedValueAndNotify(value: T): boolean {
     const oldValue = this.value;
     this.setCachedValue(value);
 
@@ -180,10 +180,10 @@ export class Property {
    * Sets this.value and makes adjustments to ensure that the value
    * is consistent with the type.
    */
-  setCachedValue(value: any) {
+  setCachedValue(value: T): unknown {
     if (this.type === 'boolean') {
       // Make sure that the value is actually a boolean.
-      this.value = !!value;
+      this.value = <T><unknown>!!value;
     } else {
       this.value = value;
     }
@@ -197,7 +197,7 @@ export class Property {
    * This implementation is a simple one that just returns
    * the previously cached value.
    */
-  getValue() {
+  getValue(): Promise<T> {
     return new Promise((resolve) => {
       if (this.value != this.prevGetValue) {
         this.prevGetValue = this.value;
@@ -216,25 +216,28 @@ export class Property {
    * It is anticipated that this method will most likely be overridden
    * by a derived class.
    */
-  setValue(value: any) {
+  setValue(value: T): Promise<T> {
     return new Promise((resolve, reject) => {
       if (this.readOnly) {
         reject('Read-only property');
         return;
       }
 
-      if (this.hasOwnProperty('minimum') && value < this.minimum) {
+      const numberValue = (<number> <unknown>value);
+
+      if (this.hasOwnProperty('minimum') && numberValue < this.minimum) {
         reject(`Value less than minimum: ${this.minimum}`);
         return;
       }
 
-      if (this.hasOwnProperty('maximum') && value > this.maximum) {
+      if (this.hasOwnProperty('maximum') && numberValue > this.maximum) {
         reject(`Value greater than maximum: ${this.maximum}`);
         return;
       }
 
       if (this.hasOwnProperty('multipleOf') &&
-        value / this.multipleOf - Math.round(value / this.multipleOf) !== 0) {
+        numberValue / this.multipleOf -
+        Math.round(numberValue / this.multipleOf) !== 0) {
         // note that we don't use the modulus operator here because it's
         // unreliable for floating point numbers
         reject(`Value is not a multiple of: ${this.multipleOf}`);
@@ -242,7 +245,7 @@ export class Property {
       }
 
       if (this.hasOwnProperty('enum') && this.enum.length > 0 &&
-        !this.enum.includes(value)) {
+        !this.enum.includes(`${value}`)) {
         reject('Invalid enum value');
         return;
       }

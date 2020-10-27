@@ -36,15 +36,15 @@ export class Outlet {
     };
   }
 
-  getId() {
+  getId(): string {
     return this.id;
   }
 
-  getName() {
+  getName(): string {
     return this.name;
   }
 
-  getNotifier() {
+  getNotifier(): Notifier {
     return this.notifier;
   }
 
@@ -56,7 +56,7 @@ export class Outlet {
    * @param {number} level Alert level.
    * @returns {Promise} Promise which resolves when the user has been notified.
    */
-  notify(title: string, message: string, level: number) {
+  notify(title: string, message: string, level: number): Promise<void> {
     if (this.notifier.isVerbose()) {
       console.log(
         `Outlet: ${this.name} notify("${title}", "${message}", ${level})`

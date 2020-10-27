@@ -25,23 +25,23 @@ export class Deferred<T, E> {
     });
   }
 
-  resolve(arg: T) {
+  resolve(arg: T): void {
     if (this.resolveFunc) {
       return this.resolveFunc(arg);
     }
   }
 
-  reject(arg: E) {
+  reject(arg: E): void {
     if (this.rejectFunc) {
       return this.rejectFunc(arg);
     }
   }
 
-  getId() {
+  getId(): number {
     return this.id;
   }
 
-  getPromise() {
+  getPromise(): Promise<T> {
     return this.promise;
   }
 }

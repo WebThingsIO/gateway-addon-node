@@ -46,7 +46,7 @@ export class Notifier {
   private preferences: any;
 
   constructor(manager: AddonManagerProxy, id: string, packageName: string,
-              {verbose}: any = {}) {
+              {verbose}: Record<string, unknown> = {}) {
     this.manager = manager;
     this.id = id;
     this.packageName = packageName;
@@ -64,7 +64,7 @@ export class Notifier {
     this.preferences = manager.getPreferences();
   }
 
-  dump() {
+  dump(): void {
     if (this.verbose) {
       console.log('Notifier:', this.name, '- dump() not implemented');
     }
@@ -74,35 +74,35 @@ export class Notifier {
    * @method getId
    * @returns the id of this adapter.
    */
-  getId() {
+  getId(): string {
     return this.id;
   }
 
-  getPackageName() {
+  getPackageName(): string {
     return this.packageName;
   }
 
-  getOutlet(id: string) {
+  getOutlet(id: string): Outlet {
     return this.outlets[id];
   }
 
-  getOutlets() {
+  getOutlets(): Record<string, Outlet> {
     return this.outlets;
   }
 
-  getName() {
+  getName(): string {
     return this.name;
   }
 
-  isReady() {
+  isReady(): boolean {
     return this.ready;
   }
 
-  isVerbose() {
+  isVerbose(): boolean {
     return this.verbose;
   }
 
-  getGatewayVersion() {
+  getGatewayVersion(): string | undefined {
     return this.gatewayVersion;
   }
 
@@ -127,7 +127,7 @@ export class Notifier {
    *
    * Called to indicate that an outlet is now being managed by this notifier.
    */
-  handleOutletAdded(outlet: Outlet) {
+  handleOutletAdded(outlet: Outlet): void {
     this.outlets[outlet.getId()] = outlet;
     this.manager.handleOutletAdded(outlet);
   }
@@ -137,7 +137,7 @@ export class Notifier {
    *
    * Called to indicate that an outlet is no longer managed by this notifier.
    */
-  handleOutletRemoved(outlet: Outlet) {
+  handleOutletRemoved(outlet: Outlet): void {
     delete this.outlets[outlet.getId()];
     this.manager.handleOutletRemoved(outlet);
   }
@@ -147,7 +147,7 @@ export class Notifier {
    *
    * @returns a promise which resolves when the notifier has finished unloading.
    */
-  unload() {
+  unload(): Promise<void> {
     if (this.verbose) {
       console.log('Notifier:', this.name, 'unloaded');
     }
