@@ -37,7 +37,7 @@ export class Adapter {
 
   private ready: boolean;
 
-  private gatewayVersion: string;
+  private gatewayVersion?: string;
 
   private userProfile: any;
 
@@ -55,9 +55,9 @@ export class Adapter {
     // set ready to false in its constructor.
     this.ready = true;
 
-    this.gatewayVersion = manager.gatewayVersion;
-    this.userProfile = manager.userProfile;
-    this.preferences = manager.preferences;
+    this.gatewayVersion = manager.getGatewayVersion();
+    this.userProfile = manager.getUserProfile();
+    this.preferences = manager.getPreferences();
   }
 
   dump() {

@@ -10,7 +10,7 @@
 
 import {Device} from './device';
 
-const utils = require('./utils');
+import {timestamp} from './utils';
 
 export interface EventDescription {
   name: string,
@@ -28,7 +28,7 @@ export class Event {
 
   private data?: any;
 
-  private timestamp = utils.timestamp();
+  private timestamp = timestamp();
 
   /**
    * Initialize the object.

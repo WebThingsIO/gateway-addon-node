@@ -12,7 +12,7 @@
 
 import {Device} from './device';
 
-const assert = require('assert');
+import assert from 'assert';
 
 interface LegacyPropertyDescription {
   min: number

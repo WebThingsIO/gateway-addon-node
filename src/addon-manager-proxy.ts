@@ -13,17 +13,15 @@
 
 import {Action} from './action';
 import {Adapter} from './adapter';
-import {APIHandler} from './api-handler';
+import {APIHandler, APIRequest, APIResponse} from './api-handler';
 import {Device} from './device';
 import {Event} from './event';
 import {Notifier} from './notifier';
 import {Outlet} from './outlet';
 import {PluginClient} from './plugin-client';
 import {Property} from './property';
-
-const {APIRequest, APIResponse} = require('./api-handler');
-const {MessageType} = require('./constants');
-const EventEmitter = require('events').EventEmitter;
+import {MessageType} from './constants';
+import {EventEmitter} from 'events';
 
 interface MockAdapter {
   clearState(): Promise<void>;
@@ -38,6 +36,14 @@ interface MockAdapter {
 }
 
 export class AddonManagerProxy extends EventEmitter {
+  private gatewayVersion?: string;
+
+  private userProfile: any;
+
+  private preferences: any;
+
+  private verbose:boolean;
+
   private adapters = new Map<string, Adapter>();
 
   private notifiers = new Map<string, Notifier>();
@@ -56,6 +62,18 @@ export class AddonManagerProxy extends EventEmitter {
     this.verbose = !!verbose;
   }
 
+  getGatewayVersion() {
+    return this.gatewayVersion;
+  }
+
+  getUserProfile() {
+    return this.userProfile;
+  }
+
+  getPreferences() {
+    return this.preferences;
+  }
+
   /**
    * @method addAdapter
    *
@@ -67,7 +85,7 @@ export class AddonManagerProxy extends EventEmitter {
 
     this.adapters.set(adapterId, adapter);
     this.pluginClient.sendNotification(
-      MessageType.ADAPTER_ADDED_NOTIFICATION,
+      (<any>MessageType).ADAPTER_ADDED_NOTIFICATION,
       {
         adapterId: adapter.getId(),
         name: adapter.getName(),
@@ -87,7 +105,7 @@ export class AddonManagerProxy extends EventEmitter {
 
     this.notifiers.set(notifierId, notifier);
     this.pluginClient.sendNotification(
-      MessageType.NOTIFIER_ADDED_NOTIFICATION,
+      (<any>MessageType).NOTIFIER_ADDED_NOTIFICATION,
       {
         notifierId: notifier.getId(),
         name: notifier.getName(),
@@ -108,7 +126,7 @@ export class AddonManagerProxy extends EventEmitter {
 
     this.apiHandlers.set(packageName, handler);
     this.pluginClient.sendNotification(
-      MessageType.API_HANDLER_ADDED_NOTIFICATION,
+      (<any>MessageType).API_HANDLER_ADDED_NOTIFICATION,
       {
         packageName,
       }
@@ -128,7 +146,7 @@ export class AddonManagerProxy extends EventEmitter {
       device: device.asDict(),
     };
     this.pluginClient.sendNotification(
-      MessageType.DEVICE_ADDED_NOTIFICATION,
+      (<any>MessageType).DEVICE_ADDED_NOTIFICATION,
       data
     );
   }
@@ -141,7 +159,7 @@ export class AddonManagerProxy extends EventEmitter {
     this.verbose &&
       console.log('AddonManagerProxy: handleDeviceRemoved:', device.getId());
     this.pluginClient.sendNotification(
-      MessageType.ADAPTER_REMOVE_DEVICE_RESPONSE,
+      (<any>MessageType).ADAPTER_REMOVE_DEVICE_RESPONSE,
       {
         adapterId: device.getAdapter().getId(),
         deviceId: device.getId(),
@@ -162,7 +180,7 @@ export class AddonManagerProxy extends EventEmitter {
       outlet: outlet.asDict(),
     };
     this.pluginClient.sendNotification(
-      MessageType.OUTLET_ADDED_NOTIFICATION,
+      (<any>MessageType).OUTLET_ADDED_NOTIFICATION,
       data
     );
   }
@@ -175,7 +193,7 @@ export class AddonManagerProxy extends EventEmitter {
     this.verbose &&
       console.log('AddonManagerProxy: handleOutletRemoved:', outlet.getId());
     this.pluginClient.sendNotification(
-      MessageType.OUTLET_REMOVED_NOTIFICATION,
+      (<any>MessageType).OUTLET_REMOVED_NOTIFICATION,
       {
         notifierId: outlet.getNotifier().getId(),
         outletId: outlet.getId(),
@@ -191,11 +209,11 @@ export class AddonManagerProxy extends EventEmitter {
     this.verbose && console.log('AddonManagerProxy: Rcvd:', msg);
 
     switch (msg.messageType) {
-      case MessageType.PLUGIN_UNLOAD_REQUEST:
+      case (<any>MessageType).PLUGIN_UNLOAD_REQUEST:
         this.unloadPlugin();
         return;
 
-      case MessageType.API_HANDLER_UNLOAD_REQUEST: {
+      case (<any>MessageType).API_HANDLER_UNLOAD_REQUEST: {
         const packageName = msg.data.packageName;
         const handler = this.apiHandlers.get(packageName);
         if (!handler) {
@@ -210,7 +228,7 @@ export class AddonManagerProxy extends EventEmitter {
         handler.unload().then(() => {
           this.apiHandlers.delete(packageName);
           this.pluginClient.sendNotification(
-            MessageType.API_HANDLER_UNLOAD_RESPONSE,
+            (<any>MessageType).API_HANDLER_UNLOAD_RESPONSE,
             {
               packageName,
             }
@@ -218,7 +236,7 @@ export class AddonManagerProxy extends EventEmitter {
         });
         return;
       }
-      case MessageType.API_HANDLER_API_REQUEST: {
+      case (<any>MessageType).API_HANDLER_API_REQUEST: {
         const packageName = msg.data.packageName;
         const handler = this.apiHandlers.get(packageName);
         if (!handler) {
@@ -234,7 +252,7 @@ export class AddonManagerProxy extends EventEmitter {
         handler.handleRequest(request)
           .then((response) => {
             this.pluginClient.sendNotification(
-              MessageType.API_HANDLER_API_RESPONSE,
+              (<any>MessageType).API_HANDLER_API_RESPONSE,
               {
                 packageName: packageName,
                 messageId: msg.data.messageId,
@@ -247,7 +265,7 @@ export class AddonManagerProxy extends EventEmitter {
               err
             );
             this.pluginClient.sendNotification(
-              MessageType.API_HANDLER_API_RESPONSE,
+              (<any>MessageType).API_HANDLER_API_RESPONSE,
               {
                 packageName: packageName,
                 messageId: msg.data.messageId,
@@ -274,18 +292,18 @@ export class AddonManagerProxy extends EventEmitter {
       }
 
       switch (msg.messageType) {
-        case MessageType.NOTIFIER_UNLOAD_REQUEST:
+        case (<any>MessageType).NOTIFIER_UNLOAD_REQUEST:
           notifier.unload().then(() => {
             this.notifiers.delete(notifierId);
             this.pluginClient.sendNotification(
-              MessageType.NOTIFIER_UNLOAD_RESPONSE,
+              (<any>MessageType).NOTIFIER_UNLOAD_RESPONSE,
               {
                 notifierId: notifier.getId(),
               }
             );
           });
           break;
-        case MessageType.OUTLET_NOTIFY_REQUEST: {
+        case (<any>MessageType).OUTLET_NOTIFY_REQUEST: {
           const outletId = msg.data.outletId;
           const outlet = notifier.getOutlet(outletId);
           if (!outlet) {
@@ -297,7 +315,7 @@ export class AddonManagerProxy extends EventEmitter {
           outlet.notify(msg.data.title, msg.data.message, msg.data.level)
             .then(() => {
               this.pluginClient.sendNotification(
-                MessageType.OUTLET_NOTIFY_RESPONSE,
+                (<any>MessageType).OUTLET_NOTIFY_RESPONSE,
                 {
                   notifierId: notifierId,
                   outletId: outletId,
@@ -308,7 +326,7 @@ export class AddonManagerProxy extends EventEmitter {
             }).catch((err) => {
               console.error('AddonManagerProxy: Failed to notify outlet:', err);
               this.pluginClient.sendNotification(
-                MessageType.OUTLET_NOTIFY_RESPONSE,
+                (<any>MessageType).OUTLET_NOTIFY_RESPONSE,
                 {
                   notifierId: notifierId,
                   outletId: outletId,
@@ -338,19 +356,19 @@ export class AddonManagerProxy extends EventEmitter {
 
     switch (msg.messageType) {
 
-      case MessageType.ADAPTER_START_PAIRING_COMMAND:
+      case (<any>MessageType).ADAPTER_START_PAIRING_COMMAND:
         adapter.startPairing(msg.data.timeout);
         return;
 
-      case MessageType.ADAPTER_CANCEL_PAIRING_COMMAND:
+      case (<any>MessageType).ADAPTER_CANCEL_PAIRING_COMMAND:
         adapter.cancelPairing();
         return;
 
-      case MessageType.ADAPTER_UNLOAD_REQUEST:
+      case (<any>MessageType).ADAPTER_UNLOAD_REQUEST:
         adapter.unload().then(() => {
           this.adapters.delete(adapterId);
           this.pluginClient.sendNotification(
-            MessageType.ADAPTER_UNLOAD_RESPONSE,
+            (<any>MessageType).ADAPTER_UNLOAD_RESPONSE,
             {
               adapterId: adapter.getId(),
             }
@@ -358,10 +376,10 @@ export class AddonManagerProxy extends EventEmitter {
         });
         return;
 
-      case MessageType.MOCK_ADAPTER_CLEAR_STATE_REQUEST:
+      case (<any>MessageType).MOCK_ADAPTER_CLEAR_STATE_REQUEST:
         adapter.clearState().then(() => {
           this.pluginClient.sendNotification(
-            MessageType.MOCK_ADAPTER_CLEAR_STATE_RESPONSE,
+            (<any>MessageType).MOCK_ADAPTER_CLEAR_STATE_RESPONSE,
             {
               adapterId: adapter.getId(),
             }
@@ -369,11 +387,11 @@ export class AddonManagerProxy extends EventEmitter {
         });
         return;
 
-      case MessageType.MOCK_ADAPTER_ADD_DEVICE_REQUEST:
+      case (<any>MessageType).MOCK_ADAPTER_ADD_DEVICE_REQUEST:
         adapter.addDevice(msg.data.deviceId, msg.data.deviceDescr)
           .then((device) => {
             this.pluginClient.sendNotification(
-              MessageType.MOCK_ADAPTER_ADD_DEVICE_RESPONSE,
+              (<any>MessageType).MOCK_ADAPTER_ADD_DEVICE_RESPONSE,
               {
                 adapterId: adapter.getId(),
                 deviceId: device.id,
@@ -382,7 +400,7 @@ export class AddonManagerProxy extends EventEmitter {
             );
           }).catch((err) => {
             this.pluginClient.sendNotification(
-              MessageType.MOCK_ADAPTER_ADD_DEVICE_RESPONSE,
+              (<any>MessageType).MOCK_ADAPTER_ADD_DEVICE_RESPONSE,
               {
                 adapterId: adapter.getId(),
                 success: false,
@@ -392,11 +410,11 @@ export class AddonManagerProxy extends EventEmitter {
           });
         return;
 
-      case MessageType.MOCK_ADAPTER_REMOVE_DEVICE_REQUEST:
+      case (<any>MessageType).MOCK_ADAPTER_REMOVE_DEVICE_REQUEST:
         adapter.removeDevice(msg.data.deviceId)
           .then((device) => {
             this.pluginClient.sendNotification(
-              MessageType.MOCK_ADAPTER_REMOVE_DEVICE_RESPONSE,
+              (<any>MessageType).MOCK_ADAPTER_REMOVE_DEVICE_RESPONSE,
               {
                 adapterId: adapter.getId(),
                 deviceId: device.id,
@@ -405,7 +423,7 @@ export class AddonManagerProxy extends EventEmitter {
             );
           }).catch((err) => {
             this.pluginClient.sendNotification(
-              MessageType.MOCK_ADAPTER_REMOVE_DEVICE_RESPONSE,
+              (<any>MessageType).MOCK_ADAPTER_REMOVE_DEVICE_RESPONSE,
               {
                 adapterId: adapter.getId(),
                 success: false,
@@ -415,15 +433,15 @@ export class AddonManagerProxy extends EventEmitter {
           });
         return;
 
-      case MessageType.MOCK_ADAPTER_PAIR_DEVICE_COMMAND:
+      case (<any>MessageType).MOCK_ADAPTER_PAIR_DEVICE_COMMAND:
         adapter.pairDevice(msg.data.deviceId, msg.data.deviceDescr);
         return;
 
-      case MessageType.MOCK_ADAPTER_UNPAIR_DEVICE_COMMAND:
+      case (<any>MessageType).MOCK_ADAPTER_UNPAIR_DEVICE_COMMAND:
         adapter.unpairDevice(msg.data.deviceId);
         return;
 
-      case MessageType.DEVICE_SAVED_NOTIFICATION:
+      case (<any>MessageType).DEVICE_SAVED_NOTIFICATION:
         adapter.handleDeviceSaved(msg.data.deviceId, msg.data.device);
         return;
     }
@@ -440,15 +458,15 @@ export class AddonManagerProxy extends EventEmitter {
 
     switch (msg.messageType) {
 
-      case MessageType.ADAPTER_REMOVE_DEVICE_REQUEST:
+      case (<any>MessageType).ADAPTER_REMOVE_DEVICE_REQUEST:
         adapter.removeThing(device);
         break;
 
-      case MessageType.ADAPTER_CANCEL_REMOVE_DEVICE_COMMAND:
+      case (<any>MessageType).ADAPTER_CANCEL_REMOVE_DEVICE_COMMAND:
         adapter.cancelRemoveThing(device);
         break;
 
-      case MessageType.DEVICE_SET_PROPERTY_COMMAND: {
+      case (<any>MessageType).DEVICE_SET_PROPERTY_COMMAND: {
         const propertyName = msg.data.propertyName;
         const propertyValue = msg.data.propertyValue;
         const property = device.findProperty(propertyName);
@@ -481,14 +499,14 @@ export class AddonManagerProxy extends EventEmitter {
         }
         break;
       }
-      case MessageType.DEVICE_REQUEST_ACTION_REQUEST: {
+      case (<any>MessageType).DEVICE_REQUEST_ACTION_REQUEST: {
         const actionName = msg.data.actionName;
         const actionId = msg.data.actionId;
         const input = msg.data.input;
         device.requestAction(actionId, actionName, input)
           .then(() => {
             this.pluginClient.sendNotification(
-              MessageType.DEVICE_REQUEST_ACTION_RESPONSE,
+              (<any>MessageType).DEVICE_REQUEST_ACTION_RESPONSE,
               {
                 adapterId: adapter.getId(),
                 deviceId: deviceId,
@@ -504,7 +522,7 @@ export class AddonManagerProxy extends EventEmitter {
               console.error(err);
             }
             this.pluginClient.sendNotification(
-              MessageType.DEVICE_REQUEST_ACTION_RESPONSE,
+              (<any>MessageType).DEVICE_REQUEST_ACTION_RESPONSE,
               {
                 adapterId: adapter.getId(),
                 deviceId: deviceId,
@@ -516,14 +534,14 @@ export class AddonManagerProxy extends EventEmitter {
           });
         break;
       }
-      case MessageType.DEVICE_REMOVE_ACTION_REQUEST: {
+      case (<any>MessageType).DEVICE_REMOVE_ACTION_REQUEST: {
         const actionName = msg.data.actionName;
         const actionId = msg.data.actionId;
         const messageId = msg.data.messageId;
         device.removeAction(actionId, actionName)
           .then(() => {
             this.pluginClient.sendNotification(
-              MessageType.DEVICE_REMOVE_ACTION_RESPONSE,
+              (<any>MessageType).DEVICE_REMOVE_ACTION_RESPONSE,
               {
                 adapterId: adapter.getId(),
                 actionName: actionName,
@@ -540,7 +558,7 @@ export class AddonManagerProxy extends EventEmitter {
               console.error(err);
             }
             this.pluginClient.sendNotification(
-              MessageType.DEVICE_REMOVE_ACTION_RESPONSE,
+              (<any>MessageType).DEVICE_REMOVE_ACTION_RESPONSE,
               {
                 adapterId: adapter.getId(),
                 actionName: actionName,
@@ -553,14 +571,14 @@ export class AddonManagerProxy extends EventEmitter {
           });
         break;
       }
-      case MessageType.DEVICE_SET_PIN_REQUEST: {
+      case (<any>MessageType).DEVICE_SET_PIN_REQUEST: {
         const pin = msg.data.pin;
         const messageId = msg.data.messageId;
         adapter.setPin(deviceId, pin)
           .then(() => {
             const dev = adapter.getDevice(deviceId);
             this.pluginClient.sendNotification(
-              MessageType.DEVICE_SET_PIN_RESPONSE,
+              (<any>MessageType).DEVICE_SET_PIN_RESPONSE,
               {
                 device: dev.asDict(),
                 messageId: messageId,
@@ -576,7 +594,7 @@ export class AddonManagerProxy extends EventEmitter {
             }
 
             this.pluginClient.sendNotification(
-              MessageType.DEVICE_SET_PIN_RESPONSE,
+              (<any>MessageType).DEVICE_SET_PIN_RESPONSE,
               {
                 deviceId: deviceId,
                 messageId: messageId,
@@ -587,7 +605,7 @@ export class AddonManagerProxy extends EventEmitter {
           });
         break;
       }
-      case MessageType.DEVICE_SET_CREDENTIALS_REQUEST: {
+      case (<any>MessageType).DEVICE_SET_CREDENTIALS_REQUEST: {
         const username = msg.data.username;
         const password = msg.data.password;
         const messageId = msg.data.messageId;
@@ -595,7 +613,7 @@ export class AddonManagerProxy extends EventEmitter {
           .then(() => {
             const dev = adapter.getDevice(deviceId);
             this.pluginClient.sendNotification(
-              MessageType.DEVICE_SET_CREDENTIALS_RESPONSE,
+              (<any>MessageType).DEVICE_SET_CREDENTIALS_RESPONSE,
               {
                 device: dev.asDict(),
                 messageId: messageId,
@@ -612,7 +630,7 @@ export class AddonManagerProxy extends EventEmitter {
             }
 
             this.pluginClient.sendNotification(
-              MessageType.DEVICE_SET_CREDENTIALS_RESPONSE,
+              (<any>MessageType).DEVICE_SET_CREDENTIALS_RESPONSE,
               {
                 deviceId: deviceId,
                 messageId: messageId,
@@ -623,7 +641,7 @@ export class AddonManagerProxy extends EventEmitter {
           });
         break;
       }
-      case MessageType.DEVICE_DEBUG_COMMAND:
+      case (<any>MessageType).DEVICE_DEBUG_COMMAND:
         device.debugCmd(msg.data.cmd, msg.data.params);
         break;
 
@@ -653,7 +671,7 @@ export class AddonManagerProxy extends EventEmitter {
     }
 
     this.pluginClient.sendNotification(
-      MessageType.ADAPTER_PAIRING_PROMPT_NOTIFICATION,
+      (<any>MessageType).ADAPTER_PAIRING_PROMPT_NOTIFICATION,
       data
     );
   }
@@ -678,7 +696,7 @@ export class AddonManagerProxy extends EventEmitter {
     }
 
     this.pluginClient.sendNotification(
-      MessageType.ADAPTER_UNPAIRING_PROMPT_NOTIFICATION,
+      (<any>MessageType).ADAPTER_UNPAIRING_PROMPT_NOTIFICATION,
       data
     );
   }
@@ -689,7 +707,7 @@ export class AddonManagerProxy extends EventEmitter {
    */
   sendPropertyChangedNotification(property: Property) {
     this.pluginClient.sendNotification(
-      MessageType.DEVICE_PROPERTY_CHANGED_NOTIFICATION,
+      (<any>MessageType).DEVICE_PROPERTY_CHANGED_NOTIFICATION,
       {
         adapterId: property.device.getAdapter().getId(),
         deviceId: property.device.getId(),
@@ -704,7 +722,7 @@ export class AddonManagerProxy extends EventEmitter {
    */
   sendActionStatusNotification(action: Action) {
     this.pluginClient.sendNotification(
-      MessageType.DEVICE_ACTION_STATUS_NOTIFICATION,
+      (<any>MessageType).DEVICE_ACTION_STATUS_NOTIFICATION,
       {
         adapterId: action.device.getAdapter().getId(),
         deviceId: action.device.getId(),
@@ -719,7 +737,7 @@ export class AddonManagerProxy extends EventEmitter {
    */
   sendEventNotification(event: Event) {
     this.pluginClient.sendNotification(
-      MessageType.DEVICE_EVENT_NOTIFICATION,
+      (<any>MessageType).DEVICE_EVENT_NOTIFICATION,
       {
         adapterId: event.getDevice().getAdapter().getId(),
         deviceId: event.getDevice().getId(),
@@ -734,7 +752,7 @@ export class AddonManagerProxy extends EventEmitter {
    */
   sendConnectedNotification(device: Device, connected: boolean) {
     this.pluginClient.sendNotification(
-      MessageType.DEVICE_CONNECTED_STATE_NOTIFICATION,
+      (<any>MessageType).DEVICE_CONNECTED_STATE_NOTIFICATION,
       {
         adapterId: device.getAdapter().getId(),
         deviceId: device.getId(),
@@ -760,12 +778,13 @@ export class AddonManagerProxy extends EventEmitter {
         this.pluginClient.unload();
       }, 500);
     }
-    this.pluginClient.sendNotification(MessageType.PLUGIN_UNLOAD_RESPONSE, {});
+    this.pluginClient.sendNotification(
+      (<any>MessageType).PLUGIN_UNLOAD_RESPONSE, {});
   }
 
   sendError(message: string) {
     this.pluginClient.sendNotification(
-      MessageType.PLUGIN_ERROR_NOTIFICATION,
+      (<any>MessageType).PLUGIN_ERROR_NOTIFICATION,
       {
         message,
       }

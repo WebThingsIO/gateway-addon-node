@@ -131,7 +131,7 @@ export class APIHandler {
 
   private verbose: boolean;
 
-  private gatewayVersion: string;
+  private gatewayVersion?: string;
 
   private userProfile: any;
 
@@ -141,9 +141,9 @@ export class APIHandler {
               {verbose}: any = {}) {
     this.packageName = packageName;
     this.verbose = !!verbose;
-    this.gatewayVersion = manager.gatewayVersion;
-    this.userProfile = manager.userProfile;
-    this.preferences = manager.preferences;
+    this.gatewayVersion = manager.getGatewayVersion();
+    this.userProfile = manager.getUserProfile();
+    this.preferences = manager.getPreferences();
   }
 
   isVerbose() {
