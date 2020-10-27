@@ -26,7 +26,7 @@ export class Adapter {
   private devices: Record<string, Device> = {};
   private actions: Record<string, Action> = {};
   private ready: boolean;
-  private gatewayVersion: any;
+  private gatewayVersion: string;
   private userProfile: any;
   private preferences: any;
 
