@@ -23,8 +23,8 @@ import { Device } from "./device";
 export class Adapter {
   private verbose: boolean;
   private name = this.constructor.name;
-  private devices: { [key: string]: Device } = {};
-  private actions: { [key: string]: Action } = {};
+  private devices: Record<string, Device> = {};
+  private actions: Record<string, Action> = {};
   private ready: boolean;
   private gatewayVersion: any;
   private userProfile: any;

@@ -23,9 +23,9 @@ export interface DeviceDescription {
   '@context': string,
   '@type': string[],
   description: string,
-  properties: { [key: string]: PropertyDescription },
-  actions: { [key: string]: ActionDescription },
-  events: { [key: string]: EventDescription },
+  properties: Record<string, PropertyDescription>,
+  actions: Record<string, ActionDescription>,
+  events: Record<string, EventDescription>,
   links: Link[],
   baseHref?: string,
   pin: {
@@ -62,7 +62,7 @@ export class Device {
   }
 
   mapToDict<V>(map: Map<string, V>) {
-    const dict: { [key: string]: V } = {};
+    const dict: Record<string, V> = {};
     map.forEach((property, propertyName) => {
       dict[propertyName] = property;
     });
@@ -70,7 +70,7 @@ export class Device {
   }
 
   mapToDictF<V>(map: Map<string, { asDict: () => V }>) {
-    const dict: { [key: string]: V } = {};
+    const dict: Record<string, V> = {};
     map.forEach((property, propertyName) => {
       dict[propertyName] = property.asDict();
     });
@@ -142,7 +142,7 @@ export class Device {
   }
 
   getPropertyDescriptions() {
-    const propDescs: { [key: string]: PropertyDescription } = {};
+    const propDescs: Record<string, PropertyDescription> = {};
     this.properties.forEach((property, propertyName) => {
       if (property.isVisible()) {
         propDescs[propertyName] = property.asPropertyDescription();

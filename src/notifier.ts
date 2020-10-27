@@ -27,7 +27,7 @@ export interface NotifierDescription {
 export class Notifier {
   private verbose: boolean;
   private name = this.constructor.name;
-  private outlets: { [key: string]: Outlet } = {};
+  private outlets: Record<string, Outlet> = {};
   private ready: boolean;
   private gatewayVersion: string;
   private userProfile: any;
