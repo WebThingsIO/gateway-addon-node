@@ -11,9 +11,9 @@
 
 'use strict';
 
-import { Action } from "./action";
-import { AddonManagerProxy } from "./addon-manager-proxy";
-import { Device } from "./device";
+import {Action} from './action';
+import {AddonManagerProxy} from './addon-manager-proxy';
+import {Device} from './device';
 
 /**
  * Base class for adapters, which manage devices.
@@ -21,16 +21,33 @@ import { Device } from "./device";
  *
  */
 export class Adapter {
+  private manager: AddonManagerProxy;
+
+  private id: string;
+
+  private packageName: string
+
   private verbose: boolean;
+
   private name = this.constructor.name;
+
   private devices: Record<string, Device> = {};
+
   private actions: Record<string, Action> = {};
+
   private ready: boolean;
+
   private gatewayVersion: string;
+
   private userProfile: any;
+
   private preferences: any;
 
-  constructor(private manager: AddonManagerProxy, private id: string, private packageName: string, { verbose }: any = {}) {
+  constructor(manager: AddonManagerProxy, id: string, packageName: string,
+              {verbose}: any = {}) {
+    this.manager = manager;
+    this.id = id;
+    this.packageName = packageName;
     this.verbose = !!verbose;
 
     // We assume that the adapter is ready right away. If, for some reason
@@ -187,7 +204,7 @@ export class Adapter {
   removeThing(device: Device) {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id,
-        'removeThing(', device.getId(), ') started');
+                  'removeThing(', device.getId(), ') started');
     }
 
     this.handleDeviceRemoved(device);
@@ -196,7 +213,7 @@ export class Adapter {
   cancelRemoveThing(device: Device) {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id,
-        'cancelRemoveThing(', device.getId(), ')');
+                  'cancelRemoveThing(', device.getId(), ')');
     }
   }
 
@@ -226,7 +243,7 @@ export class Adapter {
     if (device) {
       if (this.verbose) {
         console.log('Adapter:', this.name, 'id', this.id,
-          'setPin(', deviceId, ',', pin, ')');
+                    'setPin(', deviceId, ',', pin, ')');
       }
 
       return Promise.resolve();
@@ -249,8 +266,8 @@ export class Adapter {
     if (device) {
       if (this.verbose) {
         console.log('Adapter:', this.name, 'id', this.id,
-          'setCredentials(', deviceId, ',', username, ',', password,
-          ')');
+                    'setCredentials(', deviceId, ',', username, ',', password,
+                    ')');
       }
 
       return Promise.resolve();

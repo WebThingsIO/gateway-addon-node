@@ -11,7 +11,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { verbose, Database as SQLiteDatabase } from 'sqlite3';
+import {verbose, Database as SQLiteDatabase} from 'sqlite3';
 
 const sqlite3 = verbose();
 
@@ -19,19 +19,24 @@ const DB_PATHS = [
   path.join(os.homedir(), '.webthings', 'config', 'db.sqlite3'),
 ];
 
-if (process.env['WEBTHINGS_HOME']) {
-  DB_PATHS.unshift(path.join(process.env['WEBTHINGS_HOME'], 'config', 'db.sqlite3'));
+if (process.env.WEBTHINGS_HOME) {
+  // eslint-disable-next-line max-len
+  DB_PATHS.unshift(path.join(process.env.WEBTHINGS_HOME, 'config', 'db.sqlite3'));
 }
 
-if (process.env['WEBTHINGS_DATABASE']) {
-  DB_PATHS.unshift(process.env['WEBTHINGS_DATABASE']);
+if (process.env.WEBTHINGS_HOME) {
+  DB_PATHS.unshift(process.env.WEBTHINGS_HOME);
 }
 
 /**
  * An Action represents an individual action on a device.
  */
 export class Database {
-  private conn?: SQLiteDatabase;
+  private packageName: string;
+
+  private path: string;
+
+  private conn?: SQLiteDatabase | null;
 
   /**
    * Initialize the object.
@@ -39,7 +44,10 @@ export class Database {
    * @param {String} packageName The adapter's package name
    * @param {String?} path Optional database path
    */
-  constructor(private packageName: string, private path: string) {
+  constructor(packageName: string, path: string) {
+    this.packageName = packageName;
+    this.path = path;
+
     if (!this.path) {
       for (const p of DB_PATHS) {
         if (fs.existsSync(p)) {
@@ -84,7 +92,7 @@ export class Database {
   close() {
     if (this.conn) {
       this.conn.close();
-      this.conn = undefined;
+      this.conn = null;
     }
   }
 

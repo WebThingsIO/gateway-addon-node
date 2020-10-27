@@ -17,7 +17,8 @@ export const MessageType = {};
 const dname = path.resolve(path.join(__dirname, '..', 'schema', 'messages'));
 
 for (const fname of fs.readdirSync(dname)) {
-  const schema = JSON.parse(fs.readFileSync(path.join(dname, fname)).toString());
+  const schemaPath = path.join(dname, fname);
+  const schema = JSON.parse(fs.readFileSync(schemaPath).toString());
 
   if (!schema.hasOwnProperty('properties') ||
     !schema.properties.hasOwnProperty('messageType')) {

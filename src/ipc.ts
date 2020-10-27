@@ -6,14 +6,32 @@ import path from 'path';
 import WebSocket from 'ws';
 
 export class IpcSocket {
+
+  private isServer: boolean;
+
+  private port: number;
+
+  private onMsg: (_data: any, _ws: WebSocket) => void;
+
+  private logPrefix: string;
+
   private verbose: boolean;
+
   private validate: any;
+
   private wss?: WebSocket.Server;
+
   private ws?: WebSocket;
+
   private connectPromise?: Promise<WebSocket>;
 
-  constructor(private isServer: boolean, private port: number, private onMsg: (data: any, ws: WebSocket) => void, private logPrefix: string, { verbose }: any = {}) {
+  constructor(isServer: boolean, port: number,
+              onMsg: (_data: any, _ws: WebSocket) => void,
+              logPrefix: string, {verbose}: any = {}) {
+    this.isServer = isServer;
+    this.port = port;
     this.onMsg = onMsg;
+    this.logPrefix = logPrefix;
     this.verbose = !!verbose;
 
     // Build the JSON-Schema validator for incoming messages
@@ -27,16 +45,15 @@ export class IpcSocket {
 
     // individual message schemas
     for (const fname of fs.readdirSync(path.join(baseDir, 'messages'))) {
-      schemas.push(
-        JSON.parse(fs.readFileSync(path.join(baseDir, 'messages', fname)).toString())
-      );
+      const filePath = path.join(baseDir, 'messages', fname);
+      schemas.push(JSON.parse(fs.readFileSync(filePath).toString()));
     }
 
     // now, build the validator using all the schemas
-    this.validate = new Ajv({ schemas }).getSchema(schemas[0].$id);
+    this.validate = new Ajv({schemas}).getSchema(schemas[0].$id);
 
     if (this.isServer) {
-      this.wss = new WebSocket.Server({ host: '127.0.0.1', port: this.port });
+      this.wss = new WebSocket.Server({host: '127.0.0.1', port: this.port});
       this.wss.on('connection', (ws) => {
         ws.on('message', (data) => {
           this.onData(data, ws);
@@ -93,7 +110,7 @@ export class IpcSocket {
     this.verbose && this.log('Rcvd:', data);
 
     // validate the message before forwarding to handler
-    if (!this.validate({ message: data })) {
+    if (!this.validate({message: data})) {
       console.error('Invalid message received:', data);
     }
 

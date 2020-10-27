@@ -11,9 +11,12 @@ let id = 0;
 
 export class Deferred<T, E> {
   private id = ++id;
+
   private promise: Promise<T>;
-  private resolveFunc?: ((value: T) => void);
-  private rejectFunc?: ((reason: E) => void);
+
+  private resolveFunc?: ((_value: T) => void);
+
+  private rejectFunc?: ((_reason: E) => void);
 
   constructor() {
     this.promise = new Promise((resolve, reject) => {

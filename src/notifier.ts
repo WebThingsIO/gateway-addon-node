@@ -11,8 +11,8 @@
 
 'use strict';
 
-import { AddonManagerProxy } from "./addon-manager-proxy";
-import { Outlet } from "./outlet";
+import {AddonManagerProxy} from './addon-manager-proxy';
+import {Outlet} from './outlet';
 
 export interface NotifierDescription {
   id: string,
@@ -25,15 +25,31 @@ export interface NotifierDescription {
  * @class Notifier
  */
 export class Notifier {
+  private manager: AddonManagerProxy;
+
+  private id: string;
+
+  private packageName: string;
+
   private verbose: boolean;
+
   private name = this.constructor.name;
+
   private outlets: Record<string, Outlet> = {};
+
   private ready: boolean;
+
   private gatewayVersion: string;
+
   private userProfile: any;
+
   private preferences: any;
 
-  constructor(private manager: AddonManagerProxy, private id: string, private packageName: string, { verbose }: any = {}) {
+  constructor(manager: AddonManagerProxy, id: string, packageName: string,
+              {verbose}: any = {}) {
+    this.manager = manager;
+    this.id = id;
+    this.packageName = packageName;
     this.verbose = !!verbose;
     this.name = this.constructor.name;
     this.outlets = {};

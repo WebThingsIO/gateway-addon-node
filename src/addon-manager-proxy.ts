@@ -11,36 +11,43 @@
 
 'use strict';
 
-import { Action } from "./action";
-import { Adapter } from "./adapter";
-import { APIHandler } from "./api-handler";
-import { Device } from "./device";
-import { Event } from "./event";
-import { Notifier } from "./notifier";
-import { Outlet } from "./outlet";
-import { PluginClient } from "./plugin-client";
-import { Property } from "./property";
+import {Action} from './action';
+import {Adapter} from './adapter';
+import {APIHandler} from './api-handler';
+import {Device} from './device';
+import {Event} from './event';
+import {Notifier} from './notifier';
+import {Outlet} from './outlet';
+import {PluginClient} from './plugin-client';
+import {Property} from './property';
 
-const { APIRequest, APIResponse } = require('./api-handler');
-const { MessageType } = require('./constants');
+const {APIRequest, APIResponse} = require('./api-handler');
+const {MessageType} = require('./constants');
 const EventEmitter = require('events').EventEmitter;
 
 interface MockAdapter {
   clearState(): Promise<void>;
+  // eslint-disable-next-line no-unused-vars
   addDevice(deviceId: string, deviceDescr: any): Promise<any>;
+  // eslint-disable-next-line no-unused-vars
   removeDevice(deviceId: string): Promise<any>;
+  // eslint-disable-next-line no-unused-vars
   pairDevice(deviceId: string, deviceDescr: any): Promise<void>;
+  // eslint-disable-next-line no-unused-vars
   unpairDevice(deviceId: string): Promise<void>;
 }
 
 export class AddonManagerProxy extends EventEmitter {
   private adapters = new Map<string, Adapter>();
+
   private notifiers = new Map<string, Notifier>();
+
   private apiHandlers = new Map<string, APIHandler>();
+
   private onUnload?: () => void;
 
 
-  constructor(private pluginClient: PluginClient, { verbose }: any = {}) {
+  constructor(private pluginClient: PluginClient, {verbose}: any = {}) {
     super();
 
     this.gatewayVersion = pluginClient.getGatewayVersion();
@@ -321,7 +328,8 @@ export class AddonManagerProxy extends EventEmitter {
     // or don't need a device object.
 
     const adapterId = msg.data.adapterId;
-    const adapter: (MockAdapter & Adapter) | undefined = <MockAdapter & Adapter>this.adapters.get(adapterId);
+    const adapter: (MockAdapter & Adapter) | undefined =
+    <MockAdapter & Adapter> this.adapters.get(adapterId);
     if (!adapter) {
       console.error('AddonManagerProxy: Unrecognized adapter:', adapterId);
       console.error('AddonManagerProxy: Ignoring msg:', msg);
@@ -460,8 +468,8 @@ export class AddonManagerProxy extends EventEmitter {
             // expecting a reply, so we report the error
             // and just send whatever the current value is.
             console.error('AddonManagerProxy: Failed to setProperty',
-              propertyName, 'to', propertyValue,
-              'for device:', deviceId);
+                          propertyName, 'to', propertyValue,
+                          'for device:', deviceId);
             if (err) {
               console.error(err);
             }
@@ -469,7 +477,7 @@ export class AddonManagerProxy extends EventEmitter {
           });
         } else {
           console.error('AddonManagerProxy: Unknown property:',
-            propertyName);
+                        propertyName);
         }
         break;
       }
@@ -491,7 +499,7 @@ export class AddonManagerProxy extends EventEmitter {
             );
           }).catch((err) => {
             console.error('AddonManagerProxy: Failed to request action',
-              actionName, 'for device:', deviceId);
+                          actionName, 'for device:', deviceId);
             if (err) {
               console.error(err);
             }
@@ -527,7 +535,7 @@ export class AddonManagerProxy extends EventEmitter {
             );
           }).catch((err) => {
             console.error('AddonManagerProxy: Failed to remove action',
-              actionName, 'for device:', deviceId);
+                          actionName, 'for device:', deviceId);
             if (err) {
               console.error(err);
             }
@@ -597,6 +605,7 @@ export class AddonManagerProxy extends EventEmitter {
             );
           }).catch((err) => {
             console.error(
+              // eslint-disable-next-line max-len
               `AddonManagerProxy: Failed to set credentials for device ${deviceId}`);
             if (err) {
               console.error(err);
@@ -628,7 +637,8 @@ export class AddonManagerProxy extends EventEmitter {
    * @method sendPairingPrompt
    * Send a prompt to the UI notifying the user to take some action.
    */
-  sendPairingPrompt(adapter: Adapter, prompt: string, url?: string, device?: Device) {
+  sendPairingPrompt(adapter: Adapter, prompt: string, url?: string,
+                    device?: Device) {
     const data: any = {
       adapterId: adapter.getId(),
       prompt: prompt,
@@ -652,7 +662,8 @@ export class AddonManagerProxy extends EventEmitter {
    * @method sendUnpairingPrompt
    * Send a prompt to the UI notifying the user to take some action.
    */
-  sendUnpairingPrompt(adapter: Adapter, prompt: string, url?: string, device?: Device) {
+  sendUnpairingPrompt(adapter: Adapter, prompt: string, url?: string,
+                      device?: Device) {
     const data: any = {
       adapterId: adapter.getId(),
       prompt: prompt,
@@ -738,7 +749,7 @@ export class AddonManagerProxy extends EventEmitter {
    * Unloads the plugin, and tells the server about it.
    */
   unloadPlugin() {
-    if ((<any>this.pluginClient).ipcProtocol === 'inproc') {
+    if ((<any> this.pluginClient).ipcProtocol === 'inproc') {
       if (this.onUnload) {
         this.onUnload();
       }

@@ -11,26 +11,37 @@
 
 'use strict';
 
-import { AddonManagerProxy } from './addon-manager-proxy';
-import { MessageType } from './constants';
-import { Deferred } from './deferred';
-import { EventEmitter } from 'events';
-import { IpcSocket } from './ipc';
+import {AddonManagerProxy} from './addon-manager-proxy';
+import {MessageType} from './constants';
+import {Deferred} from './deferred';
+import {EventEmitter} from 'events';
+import {IpcSocket} from './ipc';
 import WebSocket from 'ws';
 
 export class PluginClient extends EventEmitter {
+  private pluginId: string;
+
   private verbose: boolean;
-  private deferredReply?: Deferred<AddonManagerProxy, void>;
+
+  private deferredReply?: Deferred<AddonManagerProxy, void> | null;
+
   private logPrefix: string;
+
   private gatewayVersion?: string;
+
   private userProfile: any;
+
   private preferences: any;
+
   private addonManager?: AddonManagerProxy;
+
   private ipcSocket?: IpcSocket;
+
   private ws?: WebSocket;
 
-  constructor(private pluginId: string, { verbose }: any = {}) {
+  constructor(pluginId: string, {verbose}: any = {}) {
     super();
+    this.pluginId = pluginId;
     this.verbose = !!verbose;
     this.logPrefix = `PluginClient(${this.pluginId}):`;
   }
@@ -62,7 +73,7 @@ export class PluginClient extends EventEmitter {
 
       if (this.deferredReply) {
         const deferredReply = this.deferredReply;
-        this.deferredReply = undefined;
+        this.deferredReply = null;
         deferredReply.resolve(this.addonManager);
       }
     } else if (this.addonManager) {
@@ -82,7 +93,7 @@ export class PluginClient extends EventEmitter {
       port,
       this.onMsg.bind(this),
       `IpcSocket(${this.pluginId}):`,
-      { verbose: this.verbose }
+      {verbose: this.verbose}
     );
     this.ipcSocket?.getConnectPromise()?.then((ws) => {
       this.ws = ws;
@@ -100,7 +111,7 @@ export class PluginClient extends EventEmitter {
   sendNotification(messageType: number, data: any = {}) {
     data.pluginId = this.pluginId;
 
-    const jsonObj = JSON.stringify({ messageType, data });
+    const jsonObj = JSON.stringify({messageType, data});
     this.verbose && console.log(this.logPrefix, 'Sending:', jsonObj);
     this.ws?.send(jsonObj);
   }

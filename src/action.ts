@@ -8,8 +8,8 @@
 
 'use strict';
 
-import { Device } from './device';
-import { timestamp } from './utils';
+import {Device} from './device';
+import {timestamp} from './utils';
 
 export interface ActionDescription {
   id: string
@@ -25,8 +25,18 @@ export interface ActionDescription {
  */
 export class Action {
   private status = 'created';
+
   private timeRequested = timestamp();
+
   private timeCompleted?: string;
+
+  private id: string;
+
+  public device: Device;
+
+  private name: string;
+
+  private input: any;
 
   /**
   * Initialize the object.
@@ -36,7 +46,11 @@ export class Action {
   * @param {String} name Name of the action
   * @param {Object} input Any action inputs
   */
-  constructor(private id: string, public device: Device, private name: string, private input: any) {
+  constructor(id: string, device: Device, name: string, input: any) {
+    this.id = id;
+    this.device = device;
+    this.name = name;
+    this.input = input;
   }
 
   /**

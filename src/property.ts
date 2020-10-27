@@ -10,7 +10,7 @@
 
 'use strict';
 
-import { Device } from "./device";
+import {Device} from './device';
 
 const assert = require('assert');
 
@@ -36,27 +36,50 @@ export interface PropertyDescription {
 }
 
 export class Property {
+  public device: Device;
+
+  private name: string;
+
   private title: string;
+
   private type: string;
+
   private '@type': string;
+
   private unit: string;
+
   private description: string;
+
   private minimum: number;
+
   private maximum: number;
+
   private enum: string[];
+
   private readOnly: boolean;
+
   private multipleOf: number;
+
   private links: string[];
+
   private visible = true;
+
   private fireAndForget = false;
+
   private value: any;
+
   private prevGetValue: any;
 
-  constructor(public device: Device, private name: string, propertyDescr: PropertyDescription) {
+  constructor(device: Device, name: string,
+              propertyDescr: PropertyDescription) {
+    this.device = device;
+
+    this.name = name;
+
     // The propertyDescr argument used to be the 'type' string, so we add an
     // assertion here to notify anybody who has an older plugin.
     assert.equal(typeof propertyDescr, 'object',
-      'Please update plugin to use property description.');
+                 'Please update plugin to use property description.');
 
     const legacyDescription = <LegacyPropertyDescription><any>propertyDescr;
 
@@ -70,7 +93,7 @@ export class Property {
     this.unit = propertyDescr.unit;
     this.description = propertyDescr.description;
     this.minimum = propertyDescr.minimum || legacyDescription.min;
-    this.maximum = propertyDescr.maximum || legacyDescription.max;;
+    this.maximum = propertyDescr.maximum || legacyDescription.max;
     this.enum = propertyDescr.enum;
     this.readOnly = propertyDescr.readOnly;
     this.multipleOf = propertyDescr.multipleOf;
@@ -81,7 +104,8 @@ export class Property {
    * @returns a dictionary of useful information.
    * This is primarily used for debugging.
    */
-  asDict(): PropertyDescription & { name: string, value: any, visible: boolean } {
+  asDict(): PropertyDescription &
+  { name: string, value: any, visible: boolean } {
     return {
       name: this.name,
       value: this.value,
@@ -96,7 +120,7 @@ export class Property {
       enum: this.enum,
       readOnly: this.readOnly,
       multipleOf: this.multipleOf,
-      links: this.links
+      links: this.links,
     };
   }
 
@@ -116,7 +140,7 @@ export class Property {
       enum: this.enum,
       readOnly: this.readOnly,
       multipleOf: this.multipleOf,
-      links: this.links
+      links: this.links,
     };
   }
 

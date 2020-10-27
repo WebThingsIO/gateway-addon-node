@@ -10,7 +10,7 @@
 
 'use strict';
 
-import { Notifier } from "./notifier";
+import {Notifier} from './notifier';
 
 export interface OutletDescription {
   id: string,
@@ -18,12 +18,15 @@ export interface OutletDescription {
 }
 
 export class Outlet {
+  private notifier: Notifier;
+
+  private id: string;
+
   private name = '';
 
-  constructor(private notifier: Notifier, private id: string) {
-    if (typeof id !== 'string') {
-      id = (<any>id).toString();
-    }
+  constructor(notifier: Notifier, id: string) {
+    this.notifier = notifier;
+    this.id = `${id}`;
   }
 
   asDict(): OutletDescription {

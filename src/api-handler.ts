@@ -12,7 +12,7 @@
 
 'use strict';
 
-import { AddonManagerProxy } from "./addon-manager-proxy";
+import {AddonManagerProxy} from './addon-manager-proxy';
 
 export interface APIRequestOptions {
   method: string
@@ -26,8 +26,11 @@ export interface APIRequestOptions {
  */
 export class APIRequest {
   private method: string;
+
   private path: string;
+
   private query: any;
+
   private body: any;
 
   /**
@@ -44,7 +47,7 @@ export class APIRequest {
    *                     application/x-www-form-urlencoded data in order for it
    *                     to be parsed properly.
    */
-  constructor({ method, path, query, body }: APIRequestOptions) {
+  constructor({method, path, query, body}: APIRequestOptions) {
     this.method = method;
     this.path = path;
     this.query = query || {};
@@ -80,7 +83,9 @@ export interface APIResponseOptions {
  */
 export class APIResponse {
   private status: number
+
   private contentType?: string
+
   private content?: string
 
   /**
@@ -91,7 +96,8 @@ export class APIResponse {
    *                   .contentType {string} Content-Type of response content
    *                   .content {string} Response content
    */
-  constructor({ status, contentType, content }: APIResponseOptions = { status: 500 }) {
+  constructor({status, contentType, content}: APIResponseOptions =
+  {status: 500}) {
     this.status = Number(status);
 
     if (contentType) {
@@ -121,12 +127,19 @@ export class APIResponse {
  * @class Notifier
  */
 export class APIHandler {
+  private packageName: string
+
   private verbose: boolean;
+
   private gatewayVersion: string;
+
   private userProfile: any;
+
   private preferences: any;
 
-  constructor(manager: AddonManagerProxy, private packageName: string, { verbose }: any = {}) {
+  constructor(manager: AddonManagerProxy, packageName: string,
+              {verbose}: any = {}) {
+    this.packageName = packageName;
     this.verbose = !!verbose;
     this.gatewayVersion = manager.gatewayVersion;
     this.userProfile = manager.userProfile;
@@ -168,7 +181,7 @@ export class APIHandler {
       console.log(`New API request for ${this.packageName}:`, request);
     }
 
-    return new APIResponse({ status: 404 });
+    return new APIResponse({status: 404});
   }
 
   /**

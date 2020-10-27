@@ -9,10 +9,13 @@ module.exports = {
     'node': true
   },
   'extends': 'eslint:recommended',
-  'parser': 'babel-eslint',
+  'parser': '@typescript-eslint/parser',
   'parserOptions': {
     'sourceType': 'module'
   },
+  'plugins': [
+    '@typescript-eslint'
+  ],
   'rules': {
     'arrow-parens': [
       'error',

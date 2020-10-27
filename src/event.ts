@@ -8,7 +8,7 @@
 
 'use strict';
 
-import { Device } from "./device";
+import {Device} from './device';
 
 const utils = require('./utils');
 
@@ -22,6 +22,12 @@ export interface EventDescription {
  * An Event represents an individual event from a device.
  */
 export class Event {
+  private device: Device;
+
+  private name: string;
+
+  private data?: any;
+
   private timestamp = utils.timestamp();
 
   /**
@@ -31,7 +37,10 @@ export class Event {
    * @param {String} name Name of the event
    * @param {*} data (Optional) Data associated with the event
    */
-  constructor(private device: Device, private name: string, private data?: any) {
+  constructor(device: Device, name: string, data?: any) {
+    this.device = device;
+    this.name = name;
+    this.data = data;
   }
 
   getDevice() {

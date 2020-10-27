@@ -10,11 +10,11 @@
 
 'use strict';
 
-import { Action, ActionDescription } from './action';
+import {Action, ActionDescription} from './action';
 import Ajv from 'ajv';
-import { Adapter } from './adapter';
-import { Property, PropertyDescription } from './property';
-import { Event, EventDescription } from './event';
+import {Adapter} from './adapter';
+import {Property, PropertyDescription} from './property';
+import {Event, EventDescription} from './event';
 const ajv = new Ajv();
 
 export interface DeviceDescription {
@@ -41,21 +41,40 @@ export interface Link {
 }
 
 export class Device {
+  private adapter: Adapter;
+
+  private id: string;
+
   private '@context' = 'https://webthings.io/schemas';
+
   private '@type': string[] = [];
+
   private name: string = '';
+
   private title = '';
+
   private description = '';
+
   private properties = new Map<string, Property>();
+
   private actions = new Map<string, ActionDescription>();
+
   private events = new Map<string, EventDescription>();
+
   private links: Link[] = [];
+
   private baseHref?: string;
+
   private pinRequired = false;
+
   private pinPattern?: string;
+
   private credentialsRequired = false;
 
-  constructor(private adapter: Adapter, private id: string) {
+  constructor(adapter: Adapter, id: string) {
+    this.adapter = adapter;
+    this.id = id;
+
     if (typeof id !== 'string') {
       id = (<any>id).toString();
     }

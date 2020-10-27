@@ -66,7 +66,7 @@ export function printTable(alignment: string, lines: string[][]): void {
   for (const line of lines) {
     let lineStr = '';
     for (const idx in width) {
-      if (<number>(<unknown>idx) > 0) {
+      if (<number > (<unknown>idx) > 0) {
         lineStr += ' ';
       }
       colWidth = width[idx];
