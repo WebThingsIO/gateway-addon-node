@@ -94,7 +94,7 @@ export class Device {
   asDict(): DeviceDescription {
     return {
       id: this.id,
-      title: this.title || this.name,
+      title: this.title ?? this.name,
       '@context': this['@context'],
       '@type': this['@type'],
       description: this.description,
@@ -117,7 +117,7 @@ export class Device {
   asThing(): DeviceDescription {
     return {
       id: this.id,
-      title: this.title || this.name,
+      title: this.title ?? this.name,
       '@context': this['@context'],
       '@type': this['@type'],
       description: this.description,
@@ -311,7 +311,7 @@ export class Device {
    *                          an object
    */
   addAction(name: string, metadata: ActionDescription): void {
-    metadata = metadata || {};
+    metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
       delete (<any>metadata).href;
     }
@@ -327,7 +327,7 @@ export class Device {
    *                          an object
    */
   addEvent(name: string, metadata: EventDescription): void {
-    metadata = metadata || {};
+    metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
       delete (<any>metadata).href;
     }

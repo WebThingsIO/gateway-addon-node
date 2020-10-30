@@ -48,8 +48,8 @@ export class APIRequest {
   constructor({method, path, query, body}: APIRequestOptions) {
     this.method = method;
     this.path = path;
-    this.query = query || {};
-    this.body = body || {};
+    this.query = query ?? {};
+    this.body = body ?? {};
   }
 
   getMethod(): string {

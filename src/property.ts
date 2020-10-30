@@ -85,13 +85,13 @@ export class Property<T> {
       this.visible = legacyDescription.visible;
     }
 
-    this.title = propertyDescr.title || legacyDescription.label;
+    this.title = propertyDescr.title ?? legacyDescription.label;
     this.type = propertyDescr.type;
     this['@type'] = propertyDescr['@type'];
     this.unit = propertyDescr.unit;
     this.description = propertyDescr.description;
-    this.minimum = propertyDescr.minimum || legacyDescription.min;
-    this.maximum = propertyDescr.maximum || legacyDescription.max;
+    this.minimum = propertyDescr.minimum ?? legacyDescription.min;
+    this.maximum = propertyDescr.maximum ?? legacyDescription.max;
     this.enum = propertyDescr.enum;
     this.readOnly = propertyDescr.readOnly;
     this.multipleOf = propertyDescr.multipleOf;
