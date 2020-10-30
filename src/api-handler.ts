@@ -17,8 +17,8 @@ import {AddonManagerProxy} from './addon-manager-proxy';
 export interface APIRequestOptions {
   method: string;
   path: string;
-  query: any;
-  body: any;
+  query: Record<string, unknown>;
+  body: Record<string, unknown>;
 }
 
 /**
@@ -29,9 +29,9 @@ export class APIRequest {
 
   private path: string;
 
-  private query: any;
+  private query: Record<string, unknown>;
 
-  private body: any;
+  private body: Record<string, unknown>;
 
   /**
    * Build the request.
@@ -54,19 +54,19 @@ export class APIRequest {
     this.body = body || {};
   }
 
-  getMethod() {
+  getMethod(): string {
     return this.method;
   }
 
-  getPath() {
+  getPath(): string {
     return this.path;
   }
 
-  getQuery() {
+  getQuery(): Record<string, unknown> {
     return this.query;
   }
 
-  getBody() {
+  getBody(): Record<string, unknown> {
     return this.body;
   }
 }
@@ -109,15 +109,15 @@ export class APIResponse {
     }
   }
 
-  getStatus() {
+  getStatus(): number {
     return this.status;
   }
 
-  getContentType() {
+  getContentType(): string | undefined {
     return this.contentType;
   }
 
-  getContent() {
+  getContent(): string | undefined {
     return this.content;
   }
 }
@@ -138,7 +138,7 @@ export class APIHandler {
   private preferences: any;
 
   constructor(manager: AddonManagerProxy, packageName: string,
-              {verbose}: any = {}) {
+              {verbose}: Record<string, unknown> = {}) {
     this.packageName = packageName;
     this.verbose = !!verbose;
     this.gatewayVersion = manager.getGatewayVersion();
@@ -146,15 +146,15 @@ export class APIHandler {
     this.preferences = manager.getPreferences();
   }
 
-  isVerbose() {
+  isVerbose(): boolean {
     return this.verbose;
   }
 
-  getPackageName() {
+  getPackageName(): string {
     return this.packageName;
   }
 
-  getGatewayVersion() {
+  getGatewayVersion(): string | undefined {
     return this.gatewayVersion;
   }
 
