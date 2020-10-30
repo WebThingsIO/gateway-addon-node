@@ -38,7 +38,7 @@ export {
   PluginClient,
   Property,
   Utils,
-}
+};
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 export const getVersion = () => require('./package.json').version;
