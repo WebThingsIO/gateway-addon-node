@@ -84,7 +84,8 @@ export class Device {
     return dict;
   }
 
-  mapToDictF<V>(map: Map<string, { asDict: () => V }>): Record<string, V> {
+  mapToDictFromFunction<V>(map: Map<string, { asDict: () => V }>)
+  : Record<string, V> {
     const dict: Record<string, V> = {};
     map.forEach((property, propertyName) => {
       dict[propertyName] = property.asDict();
@@ -99,7 +100,7 @@ export class Device {
       '@context': this['@context'],
       '@type': this['@type'],
       description: this.description,
-      properties: this.mapToDictF(this.properties),
+      properties: this.mapToDictFromFunction(this.properties),
       actions: this.mapToDict(this.actions),
       events: this.mapToDict(this.events),
       links: this.links,
@@ -122,7 +123,7 @@ export class Device {
       '@context': this['@context'],
       '@type': this['@type'],
       description: this.description,
-      properties: this.mapToDictF(this.properties),
+      properties: this.mapToDictFromFunction(this.properties),
       actions: this.mapToDict(this.actions),
       events: this.mapToDict(this.events),
       links: this.links,
