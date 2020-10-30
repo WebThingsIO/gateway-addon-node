@@ -15,10 +15,10 @@
 import {AddonManagerProxy} from './addon-manager-proxy';
 
 export interface APIRequestOptions {
-  method: string
-  path: string
-  query: any
-  body: any
+  method: string;
+  path: string;
+  query: any;
+  body: any;
 }
 
 /**
@@ -72,9 +72,9 @@ export class APIRequest {
 }
 
 export interface APIResponseOptions {
-  status: number
-  contentType?: string
-  content?: string
+  status: number;
+  contentType?: string;
+  content?: string;
 }
 
 

@@ -12,11 +12,11 @@ import {Device} from './device';
 import {timestamp} from './utils';
 
 export interface ActionDescription {
-  name: string
-  input?: unknown,
-  status?: string
-  timeRequested?: string
-  timeCompleted?: string
+  name: string;
+  input?: unknown;
+  status?: string;
+  timeRequested?: string;
+  timeCompleted?: string;
 }
 
 /**

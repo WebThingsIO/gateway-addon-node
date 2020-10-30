@@ -13,8 +13,8 @@
 import {Notifier} from './notifier';
 
 export interface OutletDescription {
-  id: string,
-  name: string
+  id: string;
+  name: string;
 }
 
 export class Outlet {

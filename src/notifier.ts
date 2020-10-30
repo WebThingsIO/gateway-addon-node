@@ -15,9 +15,9 @@ import {AddonManagerProxy} from './addon-manager-proxy';
 import {Outlet} from './outlet';
 
 export interface NotifierDescription {
-  id: string,
-  name: string
-  ready: boolean,
+  id: string;
+  name: string;
+  ready: boolean;
 }
 
 /**

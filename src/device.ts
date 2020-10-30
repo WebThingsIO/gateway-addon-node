@@ -18,26 +18,26 @@ import {Event, EventDescription} from './event';
 const ajv = new Ajv();
 
 export interface DeviceDescription {
-  id: string,
-  title: string,
-  '@context': string,
-  '@type': string[],
-  description: string,
-  properties: Record<string, PropertyDescription>,
-  actions: Record<string, ActionDescription>,
-  events: Record<string, EventDescription>,
-  links: Link[],
-  baseHref?: string,
+  id: string;
+  title: string;
+  '@context': string;
+  '@type': string[];
+  description: string;
+  properties: Record<string, PropertyDescription>;
+  actions: Record<string, ActionDescription>;
+  events: Record<string, EventDescription>;
+  links: Link[];
+  baseHref?: string;
   pin: {
-    required: boolean,
-    pattern?: string,
-  },
-  credentialsRequired: boolean,
+    required: boolean;
+    pattern?: string;
+  };
+  credentialsRequired: boolean;
 }
 
 export interface Link {
-  rel: string,
-  href: string
+  rel: string;
+  href: string;
 }
 
 export class Device {

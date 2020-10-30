@@ -13,9 +13,9 @@ import {Device} from './device';
 import {timestamp} from './utils';
 
 export interface EventDescription {
-  name: string,
-  data?: unknown,
-  timestamp: string
+  name: string;
+  data?: unknown;
+  timestamp: string;
 }
 
 /**

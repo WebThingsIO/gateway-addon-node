@@ -15,24 +15,24 @@ import {Device} from './device';
 import assert from 'assert';
 
 interface LegacyPropertyDescription {
-  min: number
-  max: number
-  label: string
-  visible: boolean
+  min: number;
+  max: number;
+  label: string;
+  visible: boolean;
 }
 
 export interface PropertyDescription {
-  title: string
-  type: string
-  '@type': string
-  unit: string
-  description: string
-  minimum: number
-  maximum: number
-  enum: string[]
-  readOnly: boolean
-  multipleOf: number
-  links: string[]
+  title: string;
+  type: string;
+  '@type': string;
+  unit: string;
+  description: string;
+  minimum: number;
+  maximum: number;
+  enum: string[];
+  readOnly: boolean;
+  multipleOf: number;
+  links: string[];
 }
 
 export class Property<T> {
