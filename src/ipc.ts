@@ -1,5 +1,3 @@
-'use strict';
-
 import Ajv, {ValidateFunction} from 'ajv';
 import fs from 'fs';
 import path from 'path';

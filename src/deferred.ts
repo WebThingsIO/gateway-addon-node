@@ -5,8 +5,6 @@
  * @module Deferred
  */
 
-'use strict';
-
 let id = 0;
 
 export class Deferred<T, E> {

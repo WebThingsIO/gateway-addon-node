@@ -8,8 +8,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-'use strict';
-
 import {Action, ActionDescription} from './action';
 import Ajv from 'ajv';
 import {Adapter} from './adapter';

@@ -9,8 +9,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.*
  */
 
-'use strict';
-
 import {Action} from './action';
 import {AddonManagerProxy} from './addon-manager-proxy';
 import {Device} from './device';

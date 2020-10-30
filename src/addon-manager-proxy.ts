@@ -9,8 +9,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-'use strict';
-
 import {Action} from './action';
 import {Adapter} from './adapter';
 import {APIHandler, APIRequest, APIResponse} from './api-handler';
