@@ -21,16 +21,16 @@ interface LegacyPropertyDescription {
 
 export interface PropertyDescription {
   title: string;
-  type: string;
-  '@type': string;
-  unit: string;
-  description: string;
-  minimum: number;
-  maximum: number;
-  enum: string[];
-  readOnly: boolean;
-  multipleOf: number;
-  links: string[];
+  type?: string;
+  '@type'?: string;
+  unit?: string;
+  description?: string;
+  minimum?: number;
+  maximum?: number;
+  enum?: string[];
+  readOnly?: boolean;
+  multipleOf?: number;
+  links?: string[];
 }
 
 export class Property<T> {
@@ -40,25 +40,25 @@ export class Property<T> {
 
   private title: string;
 
-  private type: string;
+  private type?: string;
 
-  private '@type': string;
+  private '@type'?: string;
 
-  private unit: string;
+  private unit?: string;
 
-  private description: string;
+  private description?: string;
 
-  private minimum: number;
+  private minimum?: number;
 
-  private maximum: number;
+  private maximum?: number;
 
-  private enum: string[];
+  private enum?: string[];
 
-  private readOnly: boolean;
+  private readOnly?: boolean;
 
-  private multipleOf: number;
+  private multipleOf?: number;
 
-  private links: string[];
+  private links?: string[];
 
   private visible = true;
 
@@ -223,17 +223,20 @@ export class Property<T> {
 
       const numberValue = (<number> <unknown>value);
 
-      if (this.hasOwnProperty('minimum') && numberValue < this.minimum) {
+      // eslint-disable-next-line no-undefined
+      if (this.minimum != undefined && numberValue < this.minimum) {
         reject(`Value less than minimum: ${this.minimum}`);
         return;
       }
 
-      if (this.hasOwnProperty('maximum') && numberValue > this.maximum) {
+      // eslint-disable-next-line no-undefined
+      if (this.maximum != undefined && numberValue > this.maximum) {
         reject(`Value greater than maximum: ${this.maximum}`);
         return;
       }
 
-      if (this.hasOwnProperty('multipleOf') &&
+      // eslint-disable-next-line no-undefined
+      if (this.multipleOf != undefined &&
         numberValue / this.multipleOf -
         Math.round(numberValue / this.multipleOf) !== 0) {
         // note that we don't use the modulus operator here because it's
@@ -242,7 +245,7 @@ export class Property<T> {
         return;
       }
 
-      if (this.hasOwnProperty('enum') && this.enum.length > 0 &&
+      if (this.enum && this.enum.length > 0 &&
         !this.enum.includes(`${value}`)) {
         reject('Invalid enum value');
         return;
@@ -273,7 +276,7 @@ export class Property<T> {
     this.title = value;
   }
 
-  getType(): string {
+  getType(): string | undefined {
     return this.type;
   }
 
@@ -281,7 +284,7 @@ export class Property<T> {
     this.type = value;
   }
 
-  getAtType(): string {
+  getAtType(): string | undefined {
     return this['@type'];
   }
 
@@ -289,7 +292,7 @@ export class Property<T> {
     this['@type'] = value;
   }
 
-  getUnit(): string {
+  getUnit(): string | undefined {
     return this.unit;
   }
 
@@ -297,7 +300,7 @@ export class Property<T> {
     this.unit = value;
   }
 
-  getDescription(): string {
+  getDescription(): string | undefined {
     return this.description;
   }
 
@@ -305,7 +308,7 @@ export class Property<T> {
     this.description = value;
   }
 
-  getMinimum(): number {
+  getMinimum(): number | undefined {
     return this.minimum;
   }
 
@@ -313,7 +316,7 @@ export class Property<T> {
     this.minimum = value;
   }
 
-  getMaximum(): number {
+  getMaximum(): number | undefined {
     return this.maximum;
   }
 
@@ -321,7 +324,7 @@ export class Property<T> {
     this.maximum = value;
   }
 
-  getEnum(): string[] {
+  getEnum(): string[] | undefined {
     return this.enum;
   }
 
@@ -329,7 +332,7 @@ export class Property<T> {
     this.enum = value;
   }
 
-  getReadOnly(): boolean {
+  getReadOnly(): boolean | undefined {
     return this.readOnly;
   }
 
@@ -337,7 +340,7 @@ export class Property<T> {
     this.readOnly = value;
   }
 
-  getMultipleOf(): number {
+  getMultipleOf(): number | undefined {
     return this.multipleOf;
   }
 
@@ -345,7 +348,7 @@ export class Property<T> {
     this.multipleOf = value;
   }
 
-  getLinks(): string[] {
+  getLinks(): string[] | undefined {
     return this.links;
   }
 
