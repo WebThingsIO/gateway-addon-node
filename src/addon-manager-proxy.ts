@@ -759,8 +759,8 @@ export class AddonManagerProxy extends EventEmitter {
     this.pluginClient.sendNotification(
       MessageType.DEVICE_PROPERTY_CHANGED_NOTIFICATION,
       {
-        adapterId: property.device.getAdapter().getId(),
-        deviceId: property.device.getId(),
+        adapterId: property.getDevice().getAdapter().getId(),
+        deviceId: property.getDevice().getId(),
         property: property.asDict(),
       }
     );

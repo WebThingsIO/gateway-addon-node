@@ -34,7 +34,7 @@ export interface PropertyDescription {
 }
 
 export class Property<T> {
-  public device: Device;
+  private device: Device;
 
   private name: string;
 
@@ -255,5 +255,9 @@ export class Property<T> {
 
   getName(): string {
     return this.name;
+  }
+
+  getDevice(): Device {
+    return this.device;
   }
 }
