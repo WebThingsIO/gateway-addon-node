@@ -252,4 +252,8 @@ export class Property<T> {
       resolve(this.value);
     });
   }
+
+  getName(): string {
+    return this.name;
+  }
 }
