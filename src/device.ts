@@ -169,6 +169,10 @@ export class Device {
     return this.properties.get(propertyName);
   }
 
+  addProperty(property: Property<unknown>): void {
+    this.properties.set(property.getName(), property);
+  }
+
   /**
    * @method getProperty
    * @returns a promise which resolves to the retrieved value.
