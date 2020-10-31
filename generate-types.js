@@ -7,7 +7,7 @@ const {compileFromFile} = require('json-schema-to-typescript');
 const path = require('path');
 
 compileFromFile('schema/schema.json', {cwd: 'schema'})
-  .then((ts) => fs.writeFileSync('src/schema.d.ts', ts));
+  .then((ts) => fs.writeFileSync('src/schema.ts', ts));
 
 const dname = path.resolve(path.join(__dirname, 'schema', 'messages'));
 
