@@ -2,6 +2,7 @@ import Ajv, {ValidateFunction} from 'ajv';
 import fs from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
+import {Message2} from './schema';
 
 export class IpcSocket {
 
@@ -9,7 +10,7 @@ export class IpcSocket {
 
   private port: number;
 
-  private onMsg: (_data: unknown, _ws: WebSocket) => void;
+  private onMsg: (_data: Message2, _ws: WebSocket) => void;
 
   private logPrefix: string;
 
@@ -24,7 +25,7 @@ export class IpcSocket {
   private connectPromise?: Promise<WebSocket>;
 
   constructor(isServer: boolean, port: number,
-              onMsg: (_data: unknown, _ws: WebSocket) => void,
+              onMsg: (_data: Message2, _ws: WebSocket) => void,
               logPrefix: string, {verbose}: Record<string, unknown> = {}) {
     this.isServer = isServer;
     this.port = port;

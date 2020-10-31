@@ -20,7 +20,28 @@ import {PluginClient} from './plugin-client';
 import {Property} from './property';
 import {MessageType} from './message-type';
 import {EventEmitter} from 'events';
-import {Preferences, UserProfile} from './plugin-register-response';
+import {AdapterRemoveDeviceRequest,
+  AdapterStartPairingCommand,
+  APIHandlerAPIRequest,
+  APIHandlerUnloadResponse,
+  DeviceDebugCommand,
+  DeviceRemoveActionRequest,
+  DeviceRequestActionRequest,
+  DeviceSavedNotification,
+  DeviceSetCredentialsRequest,
+  DeviceSetPINRequest,
+  DeviceSetPropertyCommand,
+  Message2,
+  MessageData14,
+  MessageData8,
+  MockAdapterAddDeviceRequest,
+  MockAdapterPairDeviceCommand,
+  MockAdapterRemoveDeviceRequest,
+  MockAdapterUnpairDeviceCommand,
+  NotifierAddedNotification,
+  OutletNotifyRequest,
+  Preferences,
+  UserProfile} from './schema';
 
 interface MockAdapter {
   clearState(): Promise<void>;
@@ -205,15 +226,18 @@ export class AddonManagerProxy extends EventEmitter {
    * @method onMsg
    * Called whenever a message is received from the gateway.
    */
-  onMsg(msg: any): void {
-    this.verbose && console.log('AddonManagerProxy: Rcvd:', msg);
+  onMsg(genericMsg: Message2): void {
+    this.verbose && console.log('AddonManagerProxy: Rcvd:', genericMsg);
 
-    switch (msg.messageType) {
+    switch (genericMsg.messageType) {
       case MessageType.PLUGIN_UNLOAD_REQUEST:
         this.unloadPlugin();
         return;
 
       case MessageType.API_HANDLER_UNLOAD_REQUEST: {
+        // APIHandlerUnloadRequest was somehow not generated
+        // APIHandlerUnloadResponse has the same structure
+        const msg = <APIHandlerUnloadResponse>genericMsg;
         const packageName = msg.data.packageName;
         const handler = this.apiHandlers.get(packageName);
         if (!handler) {
@@ -221,7 +245,7 @@ export class AddonManagerProxy extends EventEmitter {
             'AddonManagerProxy: Unrecognized handler:',
             packageName
           );
-          console.error('AddonManagerProxy: Ignoring msg:', msg);
+          console.error('AddonManagerProxy: Ignoring msg:', genericMsg);
           return;
         }
 
@@ -237,7 +261,8 @@ export class AddonManagerProxy extends EventEmitter {
         return;
       }
       case MessageType.API_HANDLER_API_REQUEST: {
-        const packageName = msg.data.packageName;
+        const msg = <APIHandlerAPIRequest>genericMsg;
+        const packageName = (<APIHandlerAPIRequest>msg).data.packageName;
         const handler = this.apiHandlers.get(packageName);
         if (!handler) {
           console.error(
@@ -282,16 +307,17 @@ export class AddonManagerProxy extends EventEmitter {
     }
 
     // Next, handle notifier messages.
-    if (msg.data.hasOwnProperty('notifierId')) {
+    if (genericMsg.data.hasOwnProperty('notifierId')) {
+      const msg = <NotifierAddedNotification>genericMsg;
       const notifierId = msg.data.notifierId;
       const notifier = this.notifiers.get(notifierId);
       if (!notifier) {
         console.error('AddonManagerProxy: Unrecognized notifier:', notifierId);
-        console.error('AddonManagerProxy: Ignoring msg:', msg);
+        console.error('AddonManagerProxy: Ignoring msg:', genericMsg);
         return;
       }
 
-      switch (msg.messageType) {
+      switch (genericMsg.messageType) {
         case MessageType.NOTIFIER_UNLOAD_REQUEST:
           notifier.unload().then(() => {
             this.notifiers.delete(notifierId);
@@ -304,6 +330,7 @@ export class AddonManagerProxy extends EventEmitter {
           });
           break;
         case MessageType.OUTLET_NOTIFY_REQUEST: {
+          const msg = <OutletNotifyRequest>genericMsg;
           const outletId = msg.data.outletId;
           const outlet = notifier.getOutlet(outletId);
           if (!outlet) {
@@ -345,21 +372,23 @@ export class AddonManagerProxy extends EventEmitter {
     // The next switch covers adapter messages. i.e. don't have a deviceId.
     // or don't need a device object.
 
-    const adapterId = msg.data.adapterId;
+    const noDeviceIdMsg = <AdapterStartPairingCommand>genericMsg;
+    const adapterId = noDeviceIdMsg.data.adapterId;
     const adapter: (MockAdapter & Adapter) | undefined =
     <MockAdapter & Adapter> this.adapters.get(adapterId);
     if (!adapter) {
       console.error('AddonManagerProxy: Unrecognized adapter:', adapterId);
-      console.error('AddonManagerProxy: Ignoring msg:', msg);
+      console.error('AddonManagerProxy: Ignoring msg:', noDeviceIdMsg);
       return;
     }
 
-    switch (msg.messageType) {
+    switch (genericMsg.messageType) {
 
-      case MessageType.ADAPTER_START_PAIRING_COMMAND:
+      case MessageType.ADAPTER_START_PAIRING_COMMAND: {
+        const msg = <AdapterStartPairingCommand>genericMsg;
         adapter.startPairing(msg.data.timeout);
         return;
-
+      }
       case MessageType.ADAPTER_CANCEL_PAIRING_COMMAND:
         adapter.cancelPairing();
         return;
@@ -387,7 +416,9 @@ export class AddonManagerProxy extends EventEmitter {
         });
         return;
 
-      case MessageType.MOCK_ADAPTER_ADD_DEVICE_REQUEST:
+      case MessageType.MOCK_ADAPTER_ADD_DEVICE_REQUEST: {
+        const msg = <MockAdapterAddDeviceRequest>genericMsg;
+
         adapter.addDevice(msg.data.deviceId, msg.data.deviceDescr)
           .then((device) => {
             this.pluginClient.sendNotification(
@@ -409,8 +440,10 @@ export class AddonManagerProxy extends EventEmitter {
             );
           });
         return;
+      }
+      case MessageType.MOCK_ADAPTER_REMOVE_DEVICE_REQUEST: {
+        const msg = <MockAdapterRemoveDeviceRequest>genericMsg;
 
-      case MessageType.MOCK_ADAPTER_REMOVE_DEVICE_REQUEST:
         adapter.removeDevice(msg.data.deviceId)
           .then((device) => {
             this.pluginClient.sendNotification(
@@ -432,31 +465,38 @@ export class AddonManagerProxy extends EventEmitter {
             );
           });
         return;
+      }
+      case MessageType.MOCK_ADAPTER_PAIR_DEVICE_COMMAND: {
+        const msg = <MockAdapterPairDeviceCommand>genericMsg;
 
-      case MessageType.MOCK_ADAPTER_PAIR_DEVICE_COMMAND:
         adapter.pairDevice(msg.data.deviceId, msg.data.deviceDescr);
         return;
-
-      case MessageType.MOCK_ADAPTER_UNPAIR_DEVICE_COMMAND:
+      }
+      case MessageType.MOCK_ADAPTER_UNPAIR_DEVICE_COMMAND: {
+        const msg = <MockAdapterUnpairDeviceCommand>genericMsg;
         adapter.unpairDevice(msg.data.deviceId);
         return;
+      }
 
-      case MessageType.DEVICE_SAVED_NOTIFICATION:
+      case MessageType.DEVICE_SAVED_NOTIFICATION: {
+        const msg = <DeviceSavedNotification>genericMsg;
         adapter.handleDeviceSaved(msg.data.deviceId, msg.data.device);
         return;
+      }
     }
 
     // All messages from here on are assumed to require a valid deviceId.
 
-    const deviceId = msg.data.deviceId;
+    const deviceIdMessage = <AdapterRemoveDeviceRequest>genericMsg;
+    const deviceId = deviceIdMessage.data.deviceId;
     const device = adapter.getDevice(deviceId);
     if (!device) {
       console.error('AddonManagerProxy: No such device:', deviceId);
-      console.error('AddonManagerProxy: Ignoring msg:', msg);
+      console.error('AddonManagerProxy: Ignoring msg:', deviceIdMessage);
       return;
     }
 
-    switch (msg.messageType) {
+    switch (genericMsg.messageType) {
 
       case MessageType.ADAPTER_REMOVE_DEVICE_REQUEST:
         adapter.removeThing(device);
@@ -467,6 +507,7 @@ export class AddonManagerProxy extends EventEmitter {
         break;
 
       case MessageType.DEVICE_SET_PROPERTY_COMMAND: {
+        const msg = <DeviceSetPropertyCommand>genericMsg;
         const propertyName = msg.data.propertyName;
         const propertyValue = msg.data.propertyValue;
         const property = device.findProperty(propertyName);
@@ -500,6 +541,7 @@ export class AddonManagerProxy extends EventEmitter {
         break;
       }
       case MessageType.DEVICE_REQUEST_ACTION_REQUEST: {
+        const msg = <DeviceRequestActionRequest>genericMsg;
         const actionName = msg.data.actionName;
         const actionId = msg.data.actionId;
         const input = msg.data.input;
@@ -535,6 +577,7 @@ export class AddonManagerProxy extends EventEmitter {
         break;
       }
       case MessageType.DEVICE_REMOVE_ACTION_REQUEST: {
+        const msg = <DeviceRemoveActionRequest>genericMsg;
         const actionName = msg.data.actionName;
         const actionId = msg.data.actionId;
         const messageId = msg.data.messageId;
@@ -572,6 +615,7 @@ export class AddonManagerProxy extends EventEmitter {
         break;
       }
       case MessageType.DEVICE_SET_PIN_REQUEST: {
+        const msg = <DeviceSetPINRequest>genericMsg;
         const pin = msg.data.pin;
         const messageId = msg.data.messageId;
         adapter.setPin(deviceId, pin)
@@ -606,6 +650,7 @@ export class AddonManagerProxy extends EventEmitter {
         break;
       }
       case MessageType.DEVICE_SET_CREDENTIALS_REQUEST: {
+        const msg = <DeviceSetCredentialsRequest>genericMsg;
         const username = msg.data.username;
         const password = msg.data.password;
         const messageId = msg.data.messageId;
@@ -641,12 +686,13 @@ export class AddonManagerProxy extends EventEmitter {
           });
         break;
       }
-      case MessageType.DEVICE_DEBUG_COMMAND:
+      case MessageType.DEVICE_DEBUG_COMMAND: {
+        const msg = <DeviceDebugCommand>genericMsg;
         device.debugCmd(msg.data.cmd, msg.data.params);
         break;
-
+      }
       default:
-        console.warn('AddonManagerProxy: unrecognized msg:', msg);
+        console.warn('AddonManagerProxy: unrecognized msg:', genericMsg);
         break;
     }
   }
@@ -657,7 +703,9 @@ export class AddonManagerProxy extends EventEmitter {
    */
   sendPairingPrompt(adapter: Adapter, prompt: string, url?: string,
                     device?: Device): void {
-    const data: any = {
+    const data: MessageData8 = {
+      // The pluginId will be set in sendNotification
+      pluginId: '',
       adapterId: adapter.getId(),
       prompt: prompt,
     };
@@ -682,7 +730,9 @@ export class AddonManagerProxy extends EventEmitter {
    */
   sendUnpairingPrompt(adapter: Adapter, prompt: string, url?: string,
                       device?: Device): void {
-    const data: any = {
+    const data: MessageData14 = {
+      // The pluginId will be set in sendNotification
+      pluginId: '',
       adapterId: adapter.getId(),
       prompt: prompt,
     };

@@ -6,8 +6,8 @@ const {compileFromFile} = require('json-schema-to-typescript');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require('path');
 
-compileFromFile('schema/messages/plugin-register-response.json')
-  .then((ts) => fs.writeFileSync('src/plugin-register-response.d.ts', ts));
+compileFromFile('schema/schema.json', {cwd: 'schema'})
+  .then((ts) => fs.writeFileSync('src/schema.d.ts', ts));
 
 const dname = path.resolve(path.join(__dirname, 'schema', 'messages'));
 

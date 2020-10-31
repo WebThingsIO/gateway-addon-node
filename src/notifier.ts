@@ -11,7 +11,7 @@
 
 import {AddonManagerProxy} from './addon-manager-proxy';
 import {Outlet} from './outlet';
-import {Preferences, UserProfile} from './plugin-register-response';
+import {Preferences, UserProfile} from './schema';
 
 export interface NotifierDescription {
   id: string;

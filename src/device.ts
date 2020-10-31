@@ -134,7 +134,7 @@ export class Device {
     };
   }
 
-  debugCmd(cmd: string, params: Record<string, unknown>): void {
+  debugCmd(cmd: string, params: unknown): void {
     console.log('Device:', this.name, 'got debugCmd:', cmd, 'params:', params);
   }
 

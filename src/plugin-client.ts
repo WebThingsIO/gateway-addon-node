@@ -15,7 +15,10 @@ import {Deferred} from './deferred';
 import {EventEmitter} from 'events';
 import {IpcSocket} from './ipc';
 import WebSocket from 'ws';
-import {Preferences, UserProfile} from './plugin-register-response';
+import {Message2,
+  PluginRegisterResponse,
+  Preferences,
+  UserProfile} from './schema';
 
 export class PluginClient extends EventEmitter {
   private pluginId: string;
@@ -57,11 +60,12 @@ export class PluginClient extends EventEmitter {
     return this.preferences;
   }
 
-  onMsg(msg: any): void {
+  onMsg(genericMsg: Message2): void {
     this.verbose &&
-      console.log(this.logPrefix, 'rcvd ManagerMsg:', msg);
+      console.log(this.logPrefix, 'rcvd ManagerMsg:', genericMsg);
 
-    if (msg.messageType === MessageType.PLUGIN_REGISTER_RESPONSE) {
+    if (genericMsg.messageType === MessageType.PLUGIN_REGISTER_RESPONSE) {
+      const msg = <PluginRegisterResponse>genericMsg;
       this.gatewayVersion = msg.data.gatewayVersion;
       this.userProfile = msg.data.userProfile;
       this.preferences = msg.data.preferences;
@@ -76,7 +80,7 @@ export class PluginClient extends EventEmitter {
         deferredReply.resolve(this.addonManager);
       }
     } else if (this.addonManager) {
-      this.addonManager.onMsg(msg);
+      this.addonManager.onMsg(genericMsg);
     }
   }
 
@@ -107,7 +111,8 @@ export class PluginClient extends EventEmitter {
     return this.deferredReply.getPromise();
   }
 
-  sendNotification(messageType: number, data: any = {}): void {
+  sendNotification(messageType: number, data: Record<string, unknown> = {})
+  : void {
     data.pluginId = this.pluginId;
 
     const jsonObj = JSON.stringify({messageType, data});
