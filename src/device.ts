@@ -13,6 +13,7 @@ import Ajv from 'ajv';
 import {Adapter} from './adapter';
 import {Property, PropertyDescription} from './property';
 import {Event, EventDescription} from './event';
+
 const ajv = new Ajv();
 
 export interface DeviceDescription {
