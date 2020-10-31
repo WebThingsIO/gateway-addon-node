@@ -20,6 +20,7 @@ import {PluginClient} from './plugin-client';
 import {Property} from './property';
 import {MessageType} from './constants';
 import {EventEmitter} from 'events';
+import {Preferences, UserProfile} from './plugin-register-response';
 
 interface MockAdapter {
   clearState(): Promise<void>;
@@ -36,9 +37,9 @@ interface MockAdapter {
 export class AddonManagerProxy extends EventEmitter {
   private gatewayVersion?: string;
 
-  private userProfile: any;
+  private userProfile?: UserProfile;
 
-  private preferences: any;
+  private preferences?: Preferences;
 
   private verbose:boolean;
 
@@ -57,7 +58,7 @@ export class AddonManagerProxy extends EventEmitter {
 
     this.gatewayVersion = pluginClient.getGatewayVersion();
     this.userProfile = pluginClient.getUserProfile();
-    this.preferences = pluginClient.getUserProfile();
+    this.preferences = pluginClient.getPreferences();
     this.verbose = !!verbose;
   }
 
@@ -65,11 +66,11 @@ export class AddonManagerProxy extends EventEmitter {
     return this.gatewayVersion;
   }
 
-  getUserProfile() {
+  getUserProfile(): UserProfile | undefined {
     return this.userProfile;
   }
 
-  getPreferences() {
+  getPreferences(): Preferences | undefined {
     return this.preferences;
   }
 

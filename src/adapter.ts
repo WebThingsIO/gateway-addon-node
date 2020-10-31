@@ -12,6 +12,7 @@
 import {Action} from './action';
 import {AddonManagerProxy} from './addon-manager-proxy';
 import {Device} from './device';
+import {Preferences, UserProfile} from './plugin-register-response';
 
 
 export interface AdapterDescription {
@@ -44,9 +45,9 @@ export class Adapter {
 
   private gatewayVersion?: string;
 
-  private userProfile: any;
+  private userProfile?: UserProfile;
 
-  private preferences: any;
+  private preferences?: Preferences;
 
   constructor(manager: AddonManagerProxy, id: string, packageName: string,
               {verbose}: Record<string, unknown> = {}) {
@@ -116,11 +117,11 @@ export class Adapter {
     return this.gatewayVersion;
   }
 
-  getUserProfile() {
+  getUserProfile(): UserProfile | undefined {
     return this.userProfile;
   }
 
-  getPreferences() {
+  getPreferences(): Preferences | undefined {
     return this.preferences;
   }
 

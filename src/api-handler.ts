@@ -11,6 +11,7 @@
  */
 
 import {AddonManagerProxy} from './addon-manager-proxy';
+import {Preferences, UserProfile} from './plugin-register-response';
 
 export interface APIRequestOptions {
   method: string;
@@ -131,9 +132,9 @@ export class APIHandler {
 
   private gatewayVersion?: string;
 
-  private userProfile: any;
+  private userProfile?: UserProfile;
 
-  private preferences: any;
+  private preferences?: Preferences;
 
   constructor(manager: AddonManagerProxy, packageName: string,
               {verbose}: Record<string, unknown> = {}) {
@@ -156,11 +157,11 @@ export class APIHandler {
     return this.gatewayVersion;
   }
 
-  getUserProfile() {
+  getUserProfile(): UserProfile | undefined {
     return this.userProfile;
   }
 
-  getPreferences() {
+  getPreferences(): Preferences | undefined {
     return this.preferences;
   }
 

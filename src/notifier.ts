@@ -11,6 +11,7 @@
 
 import {AddonManagerProxy} from './addon-manager-proxy';
 import {Outlet} from './outlet';
+import {Preferences, UserProfile} from './plugin-register-response';
 
 export interface NotifierDescription {
   id: string;
@@ -39,9 +40,9 @@ export class Notifier {
 
   private gatewayVersion?: string;
 
-  private userProfile: any;
+  private userProfile?: UserProfile;
 
-  private preferences: any;
+  private preferences?: Preferences;
 
   constructor(manager: AddonManagerProxy, id: string, packageName: string,
               {verbose}: Record<string, unknown> = {}) {
@@ -104,11 +105,11 @@ export class Notifier {
     return this.gatewayVersion;
   }
 
-  getUserProfile() {
+  getUserProfile(): UserProfile | undefined {
     return this.userProfile;
   }
 
-  getPreferences() {
+  getPreferences(): Preferences | undefined {
     return this.preferences;
   }
 

@@ -15,6 +15,7 @@ import {Deferred} from './deferred';
 import {EventEmitter} from 'events';
 import {IpcSocket} from './ipc';
 import WebSocket from 'ws';
+import {Preferences, UserProfile} from './plugin-register-response';
 
 export class PluginClient extends EventEmitter {
   private pluginId: string;
@@ -27,9 +28,9 @@ export class PluginClient extends EventEmitter {
 
   private gatewayVersion?: string;
 
-  private userProfile: any;
+  private userProfile?: UserProfile;
 
-  private preferences: any;
+  private preferences?: Preferences;
 
   private addonManager?: AddonManagerProxy;
 
@@ -48,11 +49,11 @@ export class PluginClient extends EventEmitter {
     return this.gatewayVersion;
   }
 
-  getUserProfile() {
+  getUserProfile(): UserProfile | undefined {
     return this.userProfile;
   }
 
-  getPreferences() {
+  getPreferences(): Preferences | undefined {
     return this.preferences;
   }
 
