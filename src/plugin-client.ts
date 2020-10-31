@@ -61,7 +61,7 @@ export class PluginClient extends EventEmitter {
     this.verbose &&
       console.log(this.logPrefix, 'rcvd ManagerMsg:', msg);
 
-    if (msg.messageType === (<any>MessageType).PLUGIN_REGISTER_RESPONSE) {
+    if (msg.messageType === MessageType.PLUGIN_REGISTER_RESPONSE) {
       this.gatewayVersion = msg.data.gatewayVersion;
       this.userProfile = msg.data.userProfile;
       this.preferences = msg.data.preferences;
@@ -101,7 +101,7 @@ export class PluginClient extends EventEmitter {
       this.verbose &&
         console.log(this.logPrefix, 'Connected to server, registering...');
 
-      this.sendNotification((<any>MessageType).PLUGIN_REGISTER_REQUEST);
+      this.sendNotification(MessageType.PLUGIN_REGISTER_REQUEST);
     });
 
     return this.deferredReply.getPromise();

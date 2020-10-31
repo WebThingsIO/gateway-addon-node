@@ -6,28 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import fs from 'fs';
-import path from 'path';
+import {MessageType} from './message-type';
 
-export const MessageType = {};
-
-// Build up message types dynamically from schemas
-const dname = path.resolve(path.join(__dirname, '..', 'schema', 'messages'));
-
-for (const fname of fs.readdirSync(dname)) {
-  const schemaPath = path.join(dname, fname);
-  const schema = JSON.parse(fs.readFileSync(schemaPath).toString());
-
-  if (!schema.hasOwnProperty('properties') ||
-    !schema.properties.hasOwnProperty('messageType')) {
-    continue;
-  }
-
-  const name = fname.split('.')[0].toUpperCase().replace(/-/g, '_');
-  const value = schema.properties.messageType.const;
-
-  exports.MessageType[name] = value;
-}
+export {MessageType};
 
 export const NotificationLevel = {
   LOW: 0,
