@@ -10,10 +10,10 @@ import {MessageType} from './message-type';
 
 export {MessageType};
 
-export const NotificationLevel = {
-  LOW: 0,
-  NORMAL: 1,
-  HIGH: 2,
-};
+export enum NotificationLevel {
+  LOW = 0,
+  NORMAL = 1,
+  HIGH = 2,
+}
 
 export const DONT_RESTART_EXIT_CODE = 100;
