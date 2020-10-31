@@ -253,11 +253,103 @@ export class Property<T> {
     });
   }
 
+  getDevice(): Device {
+    return this.device;
+  }
+
   getName(): string {
     return this.name;
   }
 
-  getDevice(): Device {
-    return this.device;
+  setName(value: string): void {
+    this.name = value;
+  }
+
+  getTitle(): string {
+    return this.title;
+  }
+
+  setTitle(value: string): void {
+    this.title = value;
+  }
+
+  getType(): string {
+    return this.type;
+  }
+
+  setType(value: string): void {
+    this.type = value;
+  }
+
+  getAtType(): string {
+    return this['@type'];
+  }
+
+  setAtType(value: string): void {
+    this['@type'] = value;
+  }
+
+  getUnit(): string {
+    return this.unit;
+  }
+
+  setUnit(value: string): void {
+    this.unit = value;
+  }
+
+  getDescription(): string {
+    return this.description;
+  }
+
+  setDescription(value: string): void {
+    this.description = value;
+  }
+
+  getMinimum(): number {
+    return this.minimum;
+  }
+
+  setMinimum(value: number): void {
+    this.minimum = value;
+  }
+
+  getMaximum(): number {
+    return this.maximum;
+  }
+
+  setMaximum(value: number): void {
+    this.maximum = value;
+  }
+
+  getEnum(): string[] {
+    return this.enum;
+  }
+
+  setEnum(value: string[]): void {
+    this.enum = value;
+  }
+
+  getReadOnly(): boolean {
+    return this.readOnly;
+  }
+
+  setReadOnly(value: boolean): void {
+    this.readOnly = value;
+  }
+
+  getMultipleOf(): number {
+    return this.multipleOf;
+  }
+
+  setMultipleOf(value: number): void {
+    this.multipleOf = value;
+  }
+
+  getLinks(): string[] {
+    return this.links;
+  }
+
+  setLinks(value: string[]): void {
+    this.links = value;
   }
 }
