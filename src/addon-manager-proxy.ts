@@ -471,7 +471,7 @@ export class AddonManagerProxy extends EventEmitter {
         const propertyValue = msg.data.propertyValue;
         const property = device.findProperty(propertyName);
         if (property) {
-          property.setValue(propertyValue).then((_updatedValue) => {
+          property.setValue(propertyValue).then(() => {
             if (property.isFireAndForget()) {
               // This property doesn't send propertyChanged notifications,
               // so we fake one.
@@ -767,7 +767,10 @@ export class AddonManagerProxy extends EventEmitter {
    * Unloads the plugin, and tells the server about it.
    */
   unloadPlugin(): void {
-    if ((<any> this.pluginClient).ipcProtocol === 'inproc') {
+    const pluginClientWithIpc =
+      <{ipcProtocol: string}><unknown> this.pluginClient;
+
+    if (pluginClientWithIpc.ipcProtocol === 'inproc') {
       if (this.onUnload) {
         this.onUnload();
       }

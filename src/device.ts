@@ -313,7 +313,8 @@ export class Device {
   addAction(name: string, metadata: ActionDescription): void {
     metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
-      delete (<any>metadata).href;
+      const metadataWithHref = <{href?: string}><unknown>metadata;
+      delete metadataWithHref.href;
     }
 
     this.actions.set(name, metadata);
@@ -329,7 +330,8 @@ export class Device {
   addEvent(name: string, metadata: EventDescription): void {
     metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
-      delete (<any>metadata).href;
+      const metadataWithHref = <{href?: string}><unknown>metadata;
+      delete metadataWithHref.href;
     }
 
     this.events.set(name, metadata);

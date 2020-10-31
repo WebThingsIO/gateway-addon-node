@@ -40,5 +40,7 @@ export {
   Utils,
 };
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-export const getVersion = () => require('./package.json').version;
+export function getVersion(): number {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  return require('./package.json').version;
+}
