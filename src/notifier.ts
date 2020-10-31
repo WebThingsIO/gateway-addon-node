@@ -50,7 +50,6 @@ export class Notifier {
     this.id = id;
     this.packageName = packageName;
     this.verbose = !!verbose;
-    this.name = this.constructor.name;
     this.outlets = {};
 
     // We assume that the notifier is ready right away. If, for some reason a
