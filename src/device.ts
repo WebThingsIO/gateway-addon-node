@@ -143,6 +143,9 @@ export class Device {
     return this.id;
   }
 
+  /**
+ * @deprecated Please use getTitle()
+ */
   getName(): string {
     console.log('getName() is deprecated. Please use getTitle().');
     return this.getTitle();
