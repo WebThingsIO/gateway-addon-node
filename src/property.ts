@@ -35,7 +35,7 @@ export interface PropertyDescription {
   readOnly?: boolean;
   multipleOf?: number;
   links?: Link[];
-  visible?: boolean;
+  visible: boolean;
 }
 
 export class Property<T> {
@@ -65,7 +65,7 @@ export class Property<T> {
 
   private links: Link[];
 
-  private visible;
+  private visible: boolean;
 
   private fireAndForget = false;
 
@@ -141,6 +141,7 @@ export class Property<T> {
       readOnly: this.readOnly,
       multipleOf: this.multipleOf,
       links: this.links,
+      visible: this.visible,
     };
   }
 
