@@ -21,7 +21,6 @@ interface LegacyPropertyDescription {
   min: number;
   max: number;
   label: string;
-  visible: boolean;
 }
 
 export interface PropertyDescription {
@@ -36,6 +35,7 @@ export interface PropertyDescription {
   readOnly?: boolean;
   multipleOf?: number;
   links?: Link[];
+  visible?: boolean;
 }
 
 export class Property<T> {
@@ -65,7 +65,7 @@ export class Property<T> {
 
   private links: Link[];
 
-  private visible = true;
+  private visible;
 
   private fireAndForget = false;
 
@@ -86,10 +86,6 @@ export class Property<T> {
 
     const legacyDescription = <LegacyPropertyDescription><unknown>propertyDescr;
 
-    if (legacyDescription.hasOwnProperty('visible')) {
-      this.visible = legacyDescription.visible;
-    }
-
     this.title = propertyDescr.title ?? legacyDescription.label;
     this.type = propertyDescr.type;
     this['@type'] = propertyDescr['@type'];
@@ -101,6 +97,7 @@ export class Property<T> {
     this.readOnly = propertyDescr.readOnly;
     this.multipleOf = propertyDescr.multipleOf;
     this.links = propertyDescr.links ?? [];
+    this.visible = propertyDescr.visible ?? true;
   }
 
   /**
