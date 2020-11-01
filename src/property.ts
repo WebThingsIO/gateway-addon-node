@@ -24,7 +24,7 @@ interface LegacyPropertyDescription {
 }
 
 export interface PropertyDescription {
-  title: string;
+  title?: string;
   type?: string;
   '@type'?: string;
   unit?: string;
@@ -43,7 +43,7 @@ export class Property<T> {
 
   private name: string;
 
-  private title: string;
+  private title?: string;
 
   private type?: string;
 
@@ -270,7 +270,7 @@ export class Property<T> {
     this.name = value;
   }
 
-  getTitle(): string {
+  getTitle(): string | undefined {
     return this.title;
   }
 
