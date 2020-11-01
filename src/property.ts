@@ -25,7 +25,7 @@ interface LegacyPropertyDescription {
 
 export interface PropertyDescription {
   title?: string;
-  type?: string;
+  type: string;
   '@type'?: string;
   unit?: string;
   description?: string;
@@ -45,7 +45,7 @@ export class Property<T> {
 
   private title?: string;
 
-  private type?: string;
+  private type: string;
 
   private '@type'?: string;
 
