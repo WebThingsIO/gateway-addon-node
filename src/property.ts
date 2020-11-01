@@ -12,6 +12,11 @@ import {Device} from './device';
 
 import assert from 'assert';
 
+interface Link {
+  rel: string,
+  href: string
+}
+
 interface LegacyPropertyDescription {
   min: number;
   max: number;
@@ -30,7 +35,7 @@ export interface PropertyDescription {
   enum?: string[];
   readOnly?: boolean;
   multipleOf?: number;
-  links?: string[];
+  links?: Link[];
 }
 
 export class Property<T> {
@@ -58,7 +63,7 @@ export class Property<T> {
 
   private multipleOf?: number;
 
-  private links: string[];
+  private links: Link[];
 
   private visible = true;
 
@@ -348,11 +353,11 @@ export class Property<T> {
     this.multipleOf = value;
   }
 
-  getLinks(): string[] | undefined {
+  getLinks(): Link[] {
     return this.links;
   }
 
-  setLinks(value: string[]): void {
+  setLinks(value: Link[]): void {
     this.links = value;
   }
 }
