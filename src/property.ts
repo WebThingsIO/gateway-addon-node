@@ -58,7 +58,7 @@ export class Property<T> {
 
   private multipleOf?: number;
 
-  private links?: string[];
+  private links: string[];
 
   private visible = true;
 
@@ -95,7 +95,7 @@ export class Property<T> {
     this.enum = propertyDescr.enum;
     this.readOnly = propertyDescr.readOnly;
     this.multipleOf = propertyDescr.multipleOf;
-    this.links = propertyDescr.links;
+    this.links = propertyDescr.links ?? [];
   }
 
   /**
