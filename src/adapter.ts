@@ -172,8 +172,8 @@ export class Adapter {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
   }
 
-  // eslint-disable-next-line
-  startPairing(_timeoutSeconds: number) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  startPairing(_timeoutSeconds: number): void {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id, 'pairing started');
     }
