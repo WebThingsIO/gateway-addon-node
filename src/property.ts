@@ -155,6 +155,13 @@ export class Property<T> {
     return this.visible;
   }
 
+  /**
+   * Make the property visible or invisible
+   */
+  setVisible(visible: boolean): void {
+    this.visible = visible;
+  }
+
   isFireAndForget(): boolean {
     return this.fireAndForget;
   }
