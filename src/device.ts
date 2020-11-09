@@ -35,8 +35,9 @@ export interface DeviceDescription {
 }
 
 export interface Link {
-  rel: string;
   href: string;
+  rel: string;
+  mediaType?: string;
 }
 
 export class Device {
