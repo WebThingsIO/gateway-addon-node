@@ -13,8 +13,9 @@ import {Device} from './device';
 import assert from 'assert';
 
 interface Link {
-  rel: string,
-  href: string
+  href: string;
+  rel: string;
+  mediaType?: string;
 }
 
 interface LegacyPropertyDescription {
