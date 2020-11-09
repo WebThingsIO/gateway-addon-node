@@ -228,19 +228,19 @@ export class Property<T> {
       const numberValue = (<number> <unknown>value);
 
       // eslint-disable-next-line no-undefined
-      if (this.minimum != undefined && numberValue < this.minimum) {
+      if (this.minimum !== undefined && numberValue < this.minimum) {
         reject(`Value less than minimum: ${this.minimum}`);
         return;
       }
 
       // eslint-disable-next-line no-undefined
-      if (this.maximum != undefined && numberValue > this.maximum) {
+      if (this.maximum !== undefined && numberValue > this.maximum) {
         reject(`Value greater than maximum: ${this.maximum}`);
         return;
       }
 
       // eslint-disable-next-line no-undefined
-      if (this.multipleOf != undefined &&
+      if (this.multipleOf !== undefined &&
         numberValue / this.multipleOf -
         Math.round(numberValue / this.multipleOf) !== 0) {
         // note that we don't use the modulus operator here because it's
