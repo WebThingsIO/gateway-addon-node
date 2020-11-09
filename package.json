@@ -21,13 +21,13 @@
     "url": "https://github.com/WebThingsIO/gateway-addon-node/issues"
   },
   "dependencies": {
-    "ajv": "^6.12.5",
+    "ajv": "^6.12.6",
     "sqlite3": "^4.2.0",
-    "ws": "^7.3.1"
+    "ws": "^7.4.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
-    "eslint": "^7.10.0"
+    "eslint": "^7.13.0"
   },
   "files": [
     "LICENSE",
