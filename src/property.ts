@@ -87,7 +87,7 @@ export class Property<T> {
 
     const legacyDescription = <LegacyPropertyDescription><unknown>propertyDescr;
 
-    this.title = propertyDescr.title ?? legacyDescription.label;
+    this.title = propertyDescr.title || legacyDescription.label;
     this.type = propertyDescr.type;
     this['@type'] = propertyDescr['@type'];
     this.unit = propertyDescr.unit;

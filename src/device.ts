@@ -119,7 +119,7 @@ export class Device {
   asThing(): DeviceDescription {
     return {
       id: this.id,
-      title: this.title ?? this.name,
+      title: this.title || this.name,
       '@context': this['@context'],
       '@type': this['@type'],
       description: this.description,
