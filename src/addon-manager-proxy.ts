@@ -62,7 +62,7 @@ export class AddonManagerProxy extends EventEmitter {
 
   private preferences?: Preferences;
 
-  private verbose:boolean;
+  private verbose: boolean;
 
   private adapters = new Map<string, Adapter>();
 
