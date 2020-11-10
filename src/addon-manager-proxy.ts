@@ -70,9 +70,6 @@ export class AddonManagerProxy extends EventEmitter {
 
   private apiHandlers = new Map<string, APIHandler>();
 
-  private onUnload?: () => void;
-
-
   constructor(private pluginClient: PluginClient,
               {verbose}: Record<string, unknown> = {}) {
     super();
@@ -817,20 +814,12 @@ export class AddonManagerProxy extends EventEmitter {
    * Unloads the plugin, and tells the server about it.
    */
   unloadPlugin(): void {
-    const pluginClientWithIpc =
-      <{ipcProtocol: string}><unknown> this.pluginClient;
+    // Wait a small amount of time to allow the pluginUnloaded
+    // message to be processed by the server before closing.
+    setTimeout(() => {
+      this.pluginClient.unload();
+    }, 500);
 
-    if (pluginClientWithIpc.ipcProtocol === 'inproc') {
-      if (this.onUnload) {
-        this.onUnload();
-      }
-    } else {
-      // Wait a small amount of time to allow the pluginUnloaded
-      // message to be processed by the server before closing.
-      setTimeout(() => {
-        this.pluginClient.unload();
-      }, 500);
-    }
     this.pluginClient.sendNotification(
       MessageType.PLUGIN_UNLOAD_RESPONSE, {});
   }
