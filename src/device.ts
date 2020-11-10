@@ -79,7 +79,7 @@ export class Device {
   mapToDict<V>(map: Map<string, V>): Record<string, V> {
     const dict: Record<string, V> = {};
     map.forEach((property, propertyName) => {
-      dict[propertyName] = property;
+      dict[propertyName] = Object.assign({}, property);
     });
     return dict;
   }
