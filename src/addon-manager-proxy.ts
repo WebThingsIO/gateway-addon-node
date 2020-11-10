@@ -23,7 +23,6 @@ import {EventEmitter} from 'events';
 import {AdapterRemoveDeviceRequest,
   AdapterStartPairingCommand,
   APIHandlerAPIRequest,
-  APIHandlerUnloadResponse,
   DeviceDebugCommand,
   DeviceRemoveActionRequest,
   DeviceRequestActionRequest,
@@ -232,9 +231,7 @@ export class AddonManagerProxy extends EventEmitter {
         return;
 
       case MessageType.API_HANDLER_UNLOAD_REQUEST: {
-        // APIHandlerUnloadRequest was somehow not generated
-        // APIHandlerUnloadResponse has the same structure
-        const msg = <APIHandlerUnloadResponse>genericMsg;
+        const msg = <APIHandlerAPIRequest>genericMsg;
         const packageName = msg.data.packageName;
         const handler = this.apiHandlers.get(packageName);
         if (!handler) {
