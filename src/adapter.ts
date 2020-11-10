@@ -92,7 +92,6 @@ export class Adapter {
     return this.devices;
   }
 
-
   getActions(): Record<string, Action> {
     return this.actions;
   }
