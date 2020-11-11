@@ -18,7 +18,7 @@ for (const fname of fs.readdirSync(dname)) {
   const schema = JSON.parse(fs.readFileSync(schemaPath).toString());
 
   if (!schema.hasOwnProperty('properties') ||
-    !schema.properties.hasOwnProperty('messageType')) {
+      !schema.properties.hasOwnProperty('messageType')) {
     continue;
   }
 

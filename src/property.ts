@@ -248,8 +248,8 @@ export class Property<T> {
 
       // eslint-disable-next-line no-undefined
       if (typeof this.multipleOf !== 'undefined' &&
-        numberValue / this.multipleOf -
-        Math.round(numberValue / this.multipleOf) !== 0) {
+          numberValue / this.multipleOf -
+          Math.round(numberValue / this.multipleOf) !== 0) {
         // note that we don't use the modulus operator here because it's
         // unreliable for floating point numbers
         reject(`Value is not a multiple of: ${this.multipleOf}`);
@@ -257,7 +257,7 @@ export class Property<T> {
       }
 
       if (this.enum && this.enum.length > 0 &&
-        !this.enum.includes(`${value}`)) {
+          !this.enum.includes(`${value}`)) {
         reject('Invalid enum value');
         return;
       }
