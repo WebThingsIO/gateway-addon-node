@@ -32,7 +32,7 @@ import {AdapterPairingPromptNotificationMessageData, AdapterRemoveDeviceRequest,
   DeviceSetCredentialsRequest,
   DeviceSetPINRequest,
   DeviceSetPropertyCommand,
-  Message2,
+  Message,
   MockAdapterAddDeviceRequest,
   MockAdapterPairDeviceCommand,
   MockAdapterRemoveDeviceRequest,
@@ -222,7 +222,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method onMsg
    * Called whenever a message is received from the gateway.
    */
-  onMsg(genericMsg: Message2): void {
+  onMsg(genericMsg: Message): void {
     this.verbose && console.log('AddonManagerProxy: Rcvd:', genericMsg);
 
     switch (genericMsg.messageType) {

@@ -15,7 +15,7 @@ import {Deferred} from './deferred';
 import {EventEmitter} from 'events';
 import {IpcSocket} from './ipc';
 import WebSocket from 'ws';
-import {Message2,
+import {Message,
   PluginRegisterResponse,
   Preferences,
   UserProfile} from './schema';
@@ -60,7 +60,7 @@ export class PluginClient extends EventEmitter {
     return this.preferences;
   }
 
-  onMsg(genericMsg: Message2): void {
+  onMsg(genericMsg: Message): void {
     this.verbose &&
       console.log(this.logPrefix, 'rcvd ManagerMsg:', genericMsg);
 
