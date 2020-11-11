@@ -20,8 +20,9 @@ import {PluginClient} from './plugin-client';
 import {Property} from './property';
 import {MessageType} from './message-type';
 import {EventEmitter} from 'events';
-import {AdapterRemoveDeviceRequest,
+import {AdapterPairingPromptNotificationMessageData, AdapterRemoveDeviceRequest,
   AdapterStartPairingCommand,
+  AdapterUnpairingPromptNotificationMessageData,
   APIHandlerAPIRequest,
   APIHandlerUnloadRequest,
   DeviceDebugCommand,
@@ -32,8 +33,6 @@ import {AdapterRemoveDeviceRequest,
   DeviceSetPINRequest,
   DeviceSetPropertyCommand,
   Message2,
-  MessageData14,
-  MessageData8,
   MockAdapterAddDeviceRequest,
   MockAdapterPairDeviceCommand,
   MockAdapterRemoveDeviceRequest,
@@ -698,7 +697,7 @@ export class AddonManagerProxy extends EventEmitter {
    */
   sendPairingPrompt(adapter: Adapter, prompt: string, url?: string,
                     device?: Device): void {
-    const data: MessageData8 = {
+    const data: AdapterPairingPromptNotificationMessageData = {
       // The pluginId will be set in sendNotification
       pluginId: '',
       adapterId: adapter.getId(),
@@ -725,7 +724,7 @@ export class AddonManagerProxy extends EventEmitter {
    */
   sendUnpairingPrompt(adapter: Adapter, prompt: string, url?: string,
                       device?: Device): void {
-    const data: MessageData14 = {
+    const data: AdapterUnpairingPromptNotificationMessageData = {
       // The pluginId will be set in sendNotification
       pluginId: '',
       adapterId: adapter.getId(),
