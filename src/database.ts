@@ -22,8 +22,8 @@ if (process.env.WEBTHINGS_HOME) {
   DB_PATHS.unshift(path.join(process.env.WEBTHINGS_HOME, 'config', 'db.sqlite3'));
 }
 
-if (process.env.WEBTHINGS_HOME) {
-  DB_PATHS.unshift(process.env.WEBTHINGS_HOME);
+if (process.env.WEBTHINGS_DATABASE) {
+  DB_PATHS.unshift(process.env.WEBTHINGS_DATABASE);
 }
 
 /**
