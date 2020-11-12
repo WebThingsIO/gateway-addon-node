@@ -8,32 +8,42 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-'use strict';
+import {Notifier} from './notifier';
 
-class Outlet {
-  constructor(notifier, id) {
-    if (typeof id !== 'string') {
-      id = id.toString();
-    }
+export interface OutletDescription {
+  id: string;
+  name: string;
+}
 
+export class Outlet {
+  private notifier: Notifier;
+
+  private id: string;
+
+  private name = '';
+
+  constructor(notifier: Notifier, id: string) {
     this.notifier = notifier;
-    this.id = id;
-    this.name = '';
+    this.id = `${id}`;
   }
 
-  asDict() {
+  asDict(): OutletDescription {
     return {
       id: this.id,
       name: this.name,
     };
   }
 
-  getId() {
+  getId(): string {
     return this.id;
   }
 
-  getName() {
+  getName(): string {
     return this.name;
+  }
+
+  getNotifier(): Notifier {
+    return this.notifier;
   }
 
   /**
@@ -44,8 +54,8 @@ class Outlet {
    * @param {number} level Alert level.
    * @returns {Promise} Promise which resolves when the user has been notified.
    */
-  notify(title, message, level) {
-    if (this.notifier.verbose) {
+  notify(title: string, message: string, level: number): Promise<void> {
+    if (this.notifier.isVerbose()) {
       console.log(
         `Outlet: ${this.name} notify("${title}", "${message}", ${level})`
       );
@@ -54,5 +64,3 @@ class Outlet {
     return Promise.resolve();
   }
 }
-
-module.exports = Outlet;

@@ -6,30 +6,48 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-'use strict';
+import {Device} from './device';
+import {timestamp} from './utils';
 
-const utils = require('./utils');
+export interface ActionDescription {
+  name: string;
+  input?: unknown;
+  status?: string;
+  timeRequested?: string;
+  timeCompleted?: string;
+}
 
 /**
  * An Action represents an individual action on a device.
  */
-class Action {
-  constructor(id, device, name, input) {
-    /**
-     * Initialize the object.
-     *
-     * @param {String} id ID of this action
-     * @param {Object} device Device this action belongs to
-     * @param {String} name Name of the action
-     * @param {Object} input Any action inputs
-     */
+export class Action {
+  private status = 'created';
+
+  private timeRequested = timestamp();
+
+  private timeCompleted?: string;
+
+  private id: string;
+
+  public device: Device;
+
+  private name: string;
+
+  private input: unknown;
+
+  /**
+  * Initialize the object.
+  *
+  * @param {String} id ID of this action
+  * @param {Object} device Device this action belongs to
+  * @param {String} name Name of the action
+  * @param {unknown} input Any action inputs
+  */
+  constructor(id: string, device: Device, name: string, input: unknown) {
     this.id = id;
     this.device = device;
     this.name = name;
     this.input = input;
-    this.status = 'created';
-    this.timeRequested = utils.timestamp();
-    this.timeCompleted = null;
   }
 
   /**
@@ -37,8 +55,8 @@ class Action {
    *
    * @returns {Object} Description of the action as an object.
    */
-  asActionDescription() {
-    const description = {
+  asActionDescription(): ActionDescription {
+    const description: ActionDescription = {
       name: this.name,
       timeRequested: this.timeRequested,
       status: this.status,
@@ -60,7 +78,7 @@ class Action {
    *
    * @returns {Object} Description of the action as an object.
    */
-  asDict() {
+  asDict(): ActionDescription & {id: string} {
     return {
       id: this.id,
       name: this.name,
@@ -74,7 +92,7 @@ class Action {
   /**
    * Start performing the action.
    */
-  start() {
+  start(): void {
     this.status = 'pending';
     this.device.actionNotify(this);
   }
@@ -82,11 +100,9 @@ class Action {
   /**
    * Finish performing the action.
    */
-  finish() {
+  finish(): void {
     this.status = 'completed';
-    this.timeCompleted = utils.timestamp();
+    this.timeCompleted = timestamp();
     this.device.actionNotify(this);
   }
 }
-
-module.exports = Action;

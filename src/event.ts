@@ -6,14 +6,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-'use strict';
+import {Device} from './device';
 
-const utils = require('./utils');
+import {timestamp} from './utils';
+
+export interface EventDescription {
+  name: string;
+  data?: unknown;
+  timestamp: string;
+}
 
 /**
  * An Event represents an individual event from a device.
  */
-class Event {
+export class Event {
+  private device: Device;
+
+  private name: string;
+
+  private data?: unknown;
+
+  private timestamp = timestamp();
+
   /**
    * Initialize the object.
    *
@@ -21,11 +35,14 @@ class Event {
    * @param {String} name Name of the event
    * @param {*} data (Optional) Data associated with the event
    */
-  constructor(device, name, data) {
+  constructor(device: Device, name: string, data?: unknown) {
     this.device = device;
     this.name = name;
-    this.data = typeof data === 'undefined' ? null : data;
-    this.timestamp = utils.timestamp();
+    this.data = data;
+  }
+
+  getDevice(): Device {
+    return this.device;
   }
 
   /**
@@ -33,8 +50,8 @@ class Event {
    *
    * @returns {Object} Description of the event as an object.
    */
-  asEventDescription() {
-    const description = {
+  asEventDescription(): EventDescription {
+    const description: EventDescription = {
       name: this.name,
       timestamp: this.timestamp,
     };
@@ -51,7 +68,7 @@ class Event {
    *
    * @returns {Object} Description of the event as an object.
    */
-  asDict() {
+  asDict(): EventDescription {
     return {
       name: this.name,
       data: this.data,
@@ -59,5 +76,3 @@ class Event {
     };
   }
 }
-
-module.exports = Event;

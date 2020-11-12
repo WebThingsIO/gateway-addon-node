@@ -6,41 +6,45 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-'use strict';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import {verbose, Database as SQLiteDatabase} from 'sqlite3';
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = verbose();
 
 const DB_PATHS = [
   path.join(os.homedir(), '.webthings', 'config', 'db.sqlite3'),
 ];
 
-if (process.env.hasOwnProperty('WEBTHINGS_HOME')) {
-  DB_PATHS.unshift(
-    path.join(process.env.WEBTHINGS_HOME, 'config', 'db.sqlite3')
-  );
+if (process.env.WEBTHINGS_HOME) {
+  // eslint-disable-next-line max-len
+  DB_PATHS.unshift(path.join(process.env.WEBTHINGS_HOME, 'config', 'db.sqlite3'));
 }
 
-if (process.env.hasOwnProperty('WEBTHINGS_DATABASE')) {
-  DB_PATHS.unshift(process.env.WEBTHINGS_DATABASE);
+if (process.env.WEBTHINGS_HOME) {
+  DB_PATHS.unshift(process.env.WEBTHINGS_HOME);
 }
 
 /**
  * An Action represents an individual action on a device.
  */
-class Database {
+export class Database {
+  private packageName: string;
+
+  private path: string;
+
+  private conn?: SQLiteDatabase | null;
+
   /**
    * Initialize the object.
    *
    * @param {String} packageName The adapter's package name
    * @param {String?} path Optional database path
    */
-  constructor(packageName, path = null) {
+  constructor(packageName: string, path: string) {
     this.packageName = packageName;
     this.path = path;
-    this.conn = null;
 
     if (!this.path) {
       for (const p of DB_PATHS) {
@@ -57,7 +61,7 @@ class Database {
    *
    * @returns Promise which resolves when the database has been opened.
    */
-  open() {
+  open(): Promise<void> {
     if (this.conn) {
       return Promise.resolve();
     }
@@ -73,7 +77,7 @@ class Database {
           if (err) {
             reject(err);
           } else {
-            this.conn.configure('busyTimeout', 10000);
+            this?.conn?.configure('busyTimeout', 10000);
             resolve();
           }
         });
@@ -83,7 +87,7 @@ class Database {
   /**
    * Close the database.
    */
-  close() {
+  close(): void {
     if (this.conn) {
       this.conn.close();
       this.conn = null;
@@ -95,7 +99,7 @@ class Database {
    *
    * @returns Promise which resolves to the config object.
    */
-  loadConfig() {
+  loadConfig(): Promise<Record<string, unknown>> {
     if (!this.conn) {
       return Promise.reject('Database not open');
     }
@@ -103,7 +107,7 @@ class Database {
     const key = `addons.config.${this.packageName}`;
 
     return new Promise((resolve, reject) => {
-      this.conn.get(
+      this?.conn?.get(
         'SELECT value FROM settings WHERE key = ?',
         [key],
         (error, row) => {
@@ -121,15 +125,15 @@ class Database {
   /**
    * Save the package's config to the database.
    */
-  saveConfig(config) {
+  saveConfig(config: Record<string, unknown>): Promise<void> {
     if (!this.conn) {
-      return;
+      return Promise.resolve();
     }
 
     const key = `addons.config.${this.packageName}`;
 
     return new Promise((resolve, reject) => {
-      this.conn.run(
+      this?.conn?.run(
         'INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)',
         [key, JSON.stringify(config)],
         (error) => {
@@ -142,5 +146,3 @@ class Database {
     });
   }
 }
-
-module.exports = Database;

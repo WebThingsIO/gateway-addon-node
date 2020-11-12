@@ -8,63 +8,101 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-'use strict';
+import {Action, ActionDescription} from './action';
+import Ajv from 'ajv';
+import {Adapter} from './adapter';
+import {Property, PropertyDescription} from './property';
+import {Event, EventDescription} from './event';
 
-const Action = require('./action');
-const Ajv = require('ajv');
 const ajv = new Ajv();
 
-class Device {
-  constructor(adapter, id) {
-    if (typeof id !== 'string') {
-      id = id.toString();
-    }
+export interface DeviceDescription {
+  id: string;
+  title: string;
+  '@context': string;
+  '@type': string[];
+  description: string;
+  properties: Record<string, PropertyDescription>;
+  actions: Record<string, ActionDescription>;
+  events: Record<string, EventDescription>;
+  links: Link[];
+  baseHref?: string;
+  pin: {
+    required: boolean;
+    pattern?: string;
+  };
+  credentialsRequired: boolean;
+}
 
+export interface Link {
+  href: string;
+  rel: string;
+  mediaType?: string;
+}
+
+export class Device {
+  private adapter: Adapter;
+
+  private id: string;
+
+  private '@context' = 'https://webthings.io/schemas';
+
+  private '@type': string[] = [];
+
+  private name = '';
+
+  private title = '';
+
+  private description = '';
+
+  private properties = new Map<string, Property<unknown>>();
+
+  private actions = new Map<string, ActionDescription>();
+
+  private events = new Map<string, EventDescription>();
+
+  private links: Link[] = [];
+
+  private baseHref?: string;
+
+  private pinRequired = false;
+
+  private pinPattern?: string;
+
+  private credentialsRequired = false;
+
+  constructor(adapter: Adapter, id: string) {
     this.adapter = adapter;
-    this.id = id;
-    this['@context'] = 'https://webthings.io/schemas';
-    this['@type'] = [];
-    this.title = '';
-    this.description = '';
-    this.properties = new Map();
-    this.actions = new Map();
-    this.events = new Map();
-    this.links = [];
-    this.baseHref = null;
-    this.pinRequired = false;
-    this.pinPattern = null;
-    this.credentialsRequired = false;
+    this.id = `${id}`;
   }
 
-  asDict() {
-    const properties = {};
-    this.properties.forEach((property, propertyName) => {
-      properties[propertyName] = property.asDict();
+  mapToDict<V>(map: Map<string, V>): Record<string, V> {
+    const dict: Record<string, V> = {};
+    map.forEach((property, propertyName) => {
+      dict[propertyName] = Object.assign({}, property);
     });
+    return dict;
+  }
 
-    const actions = {};
-    this.actions.forEach((metadata, actionName) => {
-      actions[actionName] = Object.assign({}, metadata);
+  mapToDictFromFunction<V>(map: Map<string, { asDict: () => V }>)
+  : Record<string, V> {
+    const dict: Record<string, V> = {};
+    map.forEach((property, propertyName) => {
+      dict[propertyName] = property.asDict();
     });
+    return dict;
+  }
 
-    const events = {};
-    this.events.forEach((metadata, eventName) => {
-      events[eventName] = Object.assign({}, metadata);
-    });
-
-    if (this.name && !this.title) {
-      this.title = this.name;
-    }
-
+  asDict(): DeviceDescription {
     return {
       id: this.id,
-      title: this.title,
+      title: this.title || this.name,
       '@context': this['@context'],
       '@type': this['@type'],
       description: this.description,
-      properties: properties,
-      actions: actions,
-      events: events,
+      properties: this.mapToDictFromFunction(this.properties),
+      actions: this.mapToDict(this.actions),
+      events: this.mapToDict(this.events),
       links: this.links,
       baseHref: this.baseHref,
       pin: {
@@ -78,17 +116,16 @@ class Device {
   /**
    * @returns this object as a thing
    */
-  asThing() {
-    if (this.name && !this.title) {
-      this.title = this.name;
-    }
-
-    const thing = {
+  asThing(): DeviceDescription {
+    return {
       id: this.id,
-      title: this.title,
+      title: this.title || this.name,
       '@context': this['@context'],
       '@type': this['@type'],
-      properties: this.getPropertyDescriptions(),
+      description: this.description,
+      properties: this.mapToDictFromFunction(this.properties),
+      actions: this.mapToDict(this.actions),
+      events: this.mapToDict(this.events),
       links: this.links,
       baseHref: this.baseHref,
       pin: {
@@ -97,42 +134,25 @@ class Device {
       },
       credentialsRequired: this.credentialsRequired,
     };
-
-    if (this.description) {
-      thing.description = this.description;
-    }
-
-    if (this.actions) {
-      thing.actions = {};
-      this.actions.forEach((metadata, actionName) => {
-        thing.actions[actionName] = Object.assign({}, metadata);
-      });
-    }
-
-    if (this.events) {
-      thing.events = {};
-      this.events.forEach((metadata, eventName) => {
-        thing.events[eventName] = Object.assign({}, metadata);
-      });
-    }
-
-    return thing;
   }
 
-  debugCmd(cmd, params) {
+  debugCmd(cmd: string, params: unknown): void {
     console.log('Device:', this.name, 'got debugCmd:', cmd, 'params:', params);
   }
 
-  getId() {
+  getId(): string {
     return this.id;
   }
 
-  getName() {
+  /**
+ * @deprecated Please use getTitle()
+ */
+  getName(): string {
     console.log('getName() is deprecated. Please use getTitle().');
     return this.getTitle();
   }
 
-  getTitle() {
+  getTitle(): string {
     if (this.name && !this.title) {
       this.title = this.name;
     }
@@ -140,8 +160,8 @@ class Device {
     return this.title;
   }
 
-  getPropertyDescriptions() {
-    const propDescs = {};
+  getPropertyDescriptions(): Record<string, unknown> {
+    const propDescs: Record<string, PropertyDescription> = {};
     this.properties.forEach((property, propertyName) => {
       if (property.isVisible()) {
         propDescs[propertyName] = property.asPropertyDescription();
@@ -150,15 +170,19 @@ class Device {
     return propDescs;
   }
 
-  findProperty(propertyName) {
+  findProperty(propertyName: string): Property<unknown> | undefined {
     return this.properties.get(propertyName);
+  }
+
+  addProperty(property: Property<unknown>): void {
+    this.properties.set(property.getName(), property);
   }
 
   /**
    * @method getProperty
    * @returns a promise which resolves to the retrieved value.
    */
-  getProperty(propertyName) {
+  getProperty(propertyName: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       const property = this.findProperty(propertyName);
       if (property) {
@@ -171,36 +195,36 @@ class Device {
     });
   }
 
-  hasProperty(propertyName) {
+  hasProperty(propertyName: string): boolean {
     return this.properties.has(propertyName);
   }
 
-  notifyPropertyChanged(property) {
-    this.adapter.manager.sendPropertyChangedNotification(property);
+  notifyPropertyChanged(property: Property<unknown>): void {
+    this.adapter.getManager().sendPropertyChangedNotification(property);
   }
 
-  actionNotify(action) {
-    this.adapter.manager.sendActionStatusNotification(action);
+  actionNotify(action: Action): void {
+    this.adapter.getManager().sendActionStatusNotification(action);
   }
 
-  eventNotify(event) {
-    this.adapter.manager.sendEventNotification(event);
+  eventNotify(event: Event): void {
+    this.adapter.getManager().sendEventNotification(event);
   }
 
-  connectedNotify(connected) {
-    this.adapter.manager.sendConnectedNotification(this, connected);
+  connectedNotify(connected: boolean): void {
+    this.adapter.getManager().sendConnectedNotification(this, connected);
   }
 
-  setDescription(description) {
+  setDescription(description: string): void {
     this.description = description;
   }
 
-  setName(name) {
+  setName(name: string): void {
     console.log('setName() is deprecated. Please use setTitle().');
     this.setTitle(name);
   }
 
-  setTitle(title) {
+  setTitle(title: string): void {
     this.title = title;
   }
 
@@ -211,7 +235,7 @@ class Device {
    * @note it is possible that the updated value doesn't match
    * the value passed in.
    */
-  setProperty(propertyName, value) {
+  setProperty(propertyName: string, value: unknown): Promise<unknown> {
     const property = this.findProperty(propertyName);
     if (property) {
       return property.setValue(value);
@@ -220,11 +244,16 @@ class Device {
     return Promise.reject(`Property "${propertyName}" not found`);
   }
 
+  getAdapter(): Adapter {
+    return this.adapter;
+  }
+
   /**
    * @method requestAction
    * @returns a promise which resolves when the action has been requested.
    */
-  requestAction(actionId, actionName, input) {
+  requestAction(actionId: string, actionName: string, input: unknown)
+  : Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.actions.has(actionName)) {
         reject(`Action "${actionName}" not found`);
@@ -235,7 +264,8 @@ class Device {
       const metadata = this.actions.get(actionName);
       if (metadata) {
         if (metadata.hasOwnProperty('input')) {
-          const valid = ajv.validate(metadata.input, input);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const valid = ajv.validate(<any>metadata.input, input);
           if (!valid) {
             reject(`Action "${actionName}": input "${input}" is invalid`);
           }
@@ -254,7 +284,7 @@ class Device {
    * @method removeAction
    * @returns a promise which resolves when the action has been removed.
    */
-  removeAction(actionId, actionName) {
+  removeAction(actionId: string, actionName: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.actions.has(actionName)) {
         reject(`Action "${actionName}" not found`);
@@ -269,14 +299,16 @@ class Device {
   /**
    * @method performAction
    */
-  performAction(_action) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  performAction(_action: Action): Promise<void> {
     return Promise.resolve();
   }
 
   /**
    * @method cancelAction
    */
-  cancelAction(_actionId, _actionName) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  cancelAction(_actionId: string, _actionName: string): Promise<void> {
     return Promise.resolve();
   }
 
@@ -287,10 +319,11 @@ class Device {
    * @param {Object} metadata Action metadata, i.e. type, description, etc., as
    *                          an object
    */
-  addAction(name, metadata) {
-    metadata = metadata || {};
+  addAction(name: string, metadata: ActionDescription): void {
+    metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
-      delete metadata.href;
+      const metadataWithHref = <{href?: string}><unknown>metadata;
+      delete metadataWithHref.href;
     }
 
     this.actions.set(name, metadata);
@@ -303,14 +336,13 @@ class Device {
    * @param {Object} metadata Event metadata, i.e. type, description, etc., as
    *                          an object
    */
-  addEvent(name, metadata) {
-    metadata = metadata || {};
+  addEvent(name: string, metadata: EventDescription): void {
+    metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
-      delete metadata.href;
+      const metadataWithHref = <{href?: string}><unknown>metadata;
+      delete metadataWithHref.href;
     }
 
     this.events.set(name, metadata);
   }
 }
-
-module.exports = Device;

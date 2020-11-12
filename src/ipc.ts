@@ -1,12 +1,32 @@
-'use strict';
+import Ajv, {ValidateFunction} from 'ajv';
+import fs from 'fs';
+import path from 'path';
+import WebSocket from 'ws';
+import {Message} from './schema';
 
-const Ajv = require('ajv');
-const fs = require('fs');
-const path = require('path');
-const WebSocket = require('ws');
+export class IpcSocket {
 
-class IpcSocket {
-  constructor(isServer, port, onMsg, logPrefix, {verbose} = {}) {
+  private isServer: boolean;
+
+  private port: number;
+
+  private onMsg: (_data: Message, _ws: WebSocket) => void;
+
+  private logPrefix: string;
+
+  private verbose: boolean;
+
+  private validate?: ValidateFunction;
+
+  private wss?: WebSocket.Server;
+
+  private ws?: WebSocket;
+
+  private connectPromise?: Promise<WebSocket>;
+
+  constructor(isServer: boolean, port: number,
+              onMsg: (_data: Message, _ws: WebSocket) => void,
+              logPrefix: string, {verbose}: Record<string, unknown> = {}) {
     this.isServer = isServer;
     this.port = port;
     this.onMsg = onMsg;
@@ -19,14 +39,13 @@ class IpcSocket {
 
     // top-level schema
     schemas.push(
-      JSON.parse(fs.readFileSync(path.join(baseDir, 'schema.json')))
+      JSON.parse(fs.readFileSync(path.join(baseDir, 'schema.json')).toString())
     );
 
     // individual message schemas
     for (const fname of fs.readdirSync(path.join(baseDir, 'messages'))) {
-      schemas.push(
-        JSON.parse(fs.readFileSync(path.join(baseDir, 'messages', fname)))
-      );
+      const filePath = path.join(baseDir, 'messages', fname);
+      schemas.push(JSON.parse(fs.readFileSync(filePath).toString()));
     }
 
     // now, build the validator using all the schemas
@@ -42,27 +61,31 @@ class IpcSocket {
     } else {
       this.ws = new WebSocket(`ws://127.0.0.1:${this.port}/`);
       this.connectPromise = new Promise((resolve) => {
-        this.ws.on('open', () => resolve(this.ws));
+        this?.ws?.on('open', () => resolve(this.ws));
       });
       this.ws.on('message', this.onData.bind(this));
     }
   }
 
-  error() {
-    Array.prototype.unshift.call(arguments, this.logPrefix);
-    console.error.apply(null, arguments);
+  getConnectPromise(): Promise<WebSocket> | undefined {
+    return this.connectPromise;
   }
 
-  log() {
-    Array.prototype.unshift.call(arguments, this.logPrefix);
-    console.log.apply(null, arguments);
+  error(...args: unknown[]): void {
+    Array.prototype.unshift.call(args, this.logPrefix);
+    console.error.apply(null, args);
   }
 
-  close() {
+  log(...args: unknown[]): void {
+    Array.prototype.unshift.call(args, this.logPrefix);
+    console.log.apply(null, args);
+  }
+
+  close(): void {
     if (this.isServer) {
-      this.wss.close();
+      this?.wss?.close();
     } else {
-      this.ws.close();
+      this?.ws?.close();
     }
   }
 
@@ -72,7 +95,7 @@ class IpcSocket {
    *
    * Called anytime a new message has been received.
    */
-  onData(buf, ws) {
+  onData(buf: WebSocket.Data, ws: WebSocket): void {
     const bufStr = buf.toString();
     let data;
     try {
@@ -86,12 +109,10 @@ class IpcSocket {
     this.verbose && this.log('Rcvd:', data);
 
     // validate the message before forwarding to handler
-    if (!this.validate({message: data})) {
+    if (this.validate && !this.validate({message: data})) {
       console.error('Invalid message received:', data);
     }
 
     this.onMsg(data, ws);
   }
 }
-
-module.exports = IpcSocket;

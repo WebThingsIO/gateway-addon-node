@@ -9,34 +9,64 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.*
  */
 
-'use strict';
+import {Action} from './action';
+import {AddonManagerProxy} from './addon-manager-proxy';
+import {Device} from './device';
+import {Device3, Preferences, UserProfile} from './schema';
+
+
+export interface AdapterDescription {
+  id: string;
+  name: string;
+  ready: boolean;
+}
 
 /**
  * Base class for adapters, which manage devices.
  * @class Adapter
  *
  */
-class Adapter {
-  constructor(addonManager, id, packageName, {verbose} = {}) {
-    this.manager = addonManager;
+export class Adapter {
+  private manager: AddonManagerProxy;
+
+  private id: string;
+
+  private packageName: string
+
+  private verbose: boolean;
+
+  private name = this.constructor.name;
+
+  private devices: Record<string, Device> = {};
+
+  private actions: Record<string, Action> = {};
+
+  private ready: boolean;
+
+  private gatewayVersion?: string;
+
+  private userProfile?: UserProfile;
+
+  private preferences?: Preferences;
+
+  constructor(manager: AddonManagerProxy, id: string, packageName: string,
+              {verbose}: Record<string, unknown> = {}) {
+    this.manager = manager;
     this.id = id;
     this.packageName = packageName;
     this.verbose = !!verbose;
-    this.name = this.constructor.name;
-    this.devices = {};
-    this.actions = {};
 
     // We assume that the adapter is ready right away. If, for some reason
     // a particular adapter (like ZWave) needs some time, then it should
     // set ready to false in its constructor.
     this.ready = true;
 
-    this.gatewayVersion = addonManager.gatewayVersion;
-    this.userProfile = addonManager.userProfile;
-    this.preferences = addonManager.preferences;
+    this.gatewayVersion = manager.getGatewayVersion();
+    this.userProfile = manager.getUserProfile();
+    this.preferences = manager.getPreferences();
   }
 
-  dump() {
+  dump(): void {
     if (this.verbose) {
       console.log('Adapter:', this.name, '- dump() not implemented');
     }
@@ -46,31 +76,55 @@ class Adapter {
    * @method getId
    * @returns the id of this adapter.
    */
-  getId() {
+  getId(): string {
     return this.id;
   }
 
-  getPackageName() {
+  getPackageName(): string {
     return this.packageName;
   }
 
-  getDevice(id) {
+  getDevice(id: string): Device {
     return this.devices[id];
   }
 
-  getDevices() {
+  getDevices(): Record<string, Device> {
     return this.devices;
   }
 
-  getName() {
+  getActions(): Record<string, Action> {
+    return this.actions;
+  }
+
+  getName(): string {
     return this.name;
   }
 
-  isReady() {
+  isReady(): boolean {
     return this.ready;
   }
 
-  asDict() {
+  getManager(): AddonManagerProxy {
+    return this.manager;
+  }
+
+  isVerbose(): boolean {
+    return this.verbose;
+  }
+
+  getGatewayVersion(): string | undefined {
+    return this.gatewayVersion;
+  }
+
+  getUserProfile(): UserProfile | undefined {
+    return this.userProfile;
+  }
+
+  getPreferences(): Preferences | undefined {
+    return this.preferences;
+  }
+
+  asDict(): AdapterDescription {
     return {
       id: this.getId(),
       name: this.getName(),
@@ -83,8 +137,8 @@ class Adapter {
    *
    * Called to indicate that a device is now being managed by this adapter.
    */
-  handleDeviceAdded(device) {
-    this.devices[device.id] = device;
+  handleDeviceAdded(device: Device): void {
+    this.devices[device.getId()] = device;
     this.manager.handleDeviceAdded(device);
   }
 
@@ -93,8 +147,8 @@ class Adapter {
    *
    * Called to indicate that a device is no longer managed by this adapter.
    */
-  handleDeviceRemoved(device) {
-    delete this.devices[device.id];
+  handleDeviceRemoved(device: Device): void {
+    delete this.devices[device.getId()];
     this.manager.handleDeviceRemoved(device);
   }
 
@@ -112,11 +166,13 @@ class Adapter {
    * @param {string} deviceId - ID of the device
    * @param {object} device - the saved device description
    */
-  handleDeviceSaved(_deviceId, _device) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  handleDeviceSaved(_deviceId: string, _device: Device3) : void {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   }
 
-  // eslint-disable-next-line
-  startPairing(timeoutSeconds) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  startPairing(_timeoutSeconds: number): void {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id, 'pairing started');
     }
@@ -130,7 +186,7 @@ class Adapter {
    *                 troubleshooting info
    * @param {Object?} device - Device the prompt is associated with
    */
-  sendPairingPrompt(prompt, url = null, device = null) {
+  sendPairingPrompt(prompt: string, url?: string, device?: Device): void {
     this.manager.sendPairingPrompt(this, prompt, url, device);
   }
 
@@ -142,29 +198,29 @@ class Adapter {
    *                 troubleshooting info
    * @param {Object?} device - Device the prompt is associated with
    */
-  sendUnpairingPrompt(prompt, url = null, device = null) {
+  sendUnpairingPrompt(prompt: string, url?: string, device?: Device): void {
     this.manager.sendUnpairingPrompt(this, prompt, url, device);
   }
 
-  cancelPairing() {
+  cancelPairing(): void {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id, 'pairing cancelled');
     }
   }
 
-  removeThing(device) {
+  removeThing(device: Device): void {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id,
-                  'removeThing(', device.id, ') started');
+                  'removeThing(', device.getId(), ') started');
     }
 
     this.handleDeviceRemoved(device);
   }
 
-  cancelRemoveThing(device) {
+  cancelRemoveThing(device: Device): void {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id,
-                  'cancelRemoveThing(', device.id, ')');
+                  'cancelRemoveThing(', device.getId(), ')');
     }
   }
 
@@ -173,7 +229,7 @@ class Adapter {
    *
    * @returns a promise which resolves when the adapter has finished unloading.
    */
-  unload() {
+  unload(): Promise<void> {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'unloaded');
     }
@@ -189,7 +245,7 @@ class Adapter {
    *
    * @returns a promise which resolves when the PIN has been set.
    */
-  setPin(deviceId, pin) {
+  setPin(deviceId: string, pin: string): Promise<void> {
     const device = this.getDevice(deviceId);
     if (device) {
       if (this.verbose) {
@@ -212,7 +268,8 @@ class Adapter {
    *
    * @returns a promise which resolves when the credentials have been set.
    */
-  setCredentials(deviceId, username, password) {
+  setCredentials(deviceId: string, username: string, password: string)
+  : Promise<void> {
     const device = this.getDevice(deviceId);
     if (device) {
       if (this.verbose) {
@@ -227,5 +284,3 @@ class Adapter {
     return Promise.reject('Device not found');
   }
 }
-
-module.exports = Adapter;
