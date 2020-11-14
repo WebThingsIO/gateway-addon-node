@@ -8,37 +8,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Action, ActionDescription} from './action';
+import {Action} from './action';
 import Ajv from 'ajv';
 import {Adapter} from './adapter';
-import {Property, PropertyDescription} from './property';
-import {Event, EventDescription} from './event';
+import {Property} from './property';
+import {Event} from './event';
+import {
+  Action1 as ActionSchema,
+  Event as EventSchema,
+  Device as DeviceSchema,
+  DeviceLink,
+  Property as PropertySchema,
+} from './schema';
 
 const ajv = new Ajv();
-
-export interface DeviceDescription {
-  id: string;
-  title: string;
-  '@context': string;
-  '@type': string[];
-  description: string;
-  properties: Record<string, PropertyDescription>;
-  actions: Record<string, ActionDescription>;
-  events: Record<string, EventDescription>;
-  links: Link[];
-  baseHref?: string;
-  pin: {
-    required: boolean;
-    pattern?: string;
-  };
-  credentialsRequired: boolean;
-}
-
-export interface Link {
-  href: string;
-  rel: string;
-  mediaType?: string;
-}
 
 export class Device {
   private adapter: Adapter;
@@ -57,11 +40,11 @@ export class Device {
 
   private properties = new Map<string, Property<unknown>>();
 
-  private actions = new Map<string, ActionDescription>();
+  private actions = new Map<string, ActionSchema>();
 
-  private events = new Map<string, EventDescription>();
+  private events = new Map<string, EventSchema>();
 
-  private links: Link[] = [];
+  private links: DeviceLink[] = [];
 
   private baseHref?: string;
 
@@ -93,7 +76,7 @@ export class Device {
     return dict;
   }
 
-  asDict(): DeviceDescription {
+  asDict(): DeviceSchema {
     return {
       id: this.id,
       title: this.title || this.name,
@@ -116,7 +99,7 @@ export class Device {
   /**
    * @returns this object as a thing
    */
-  asThing(): DeviceDescription {
+  asThing(): DeviceSchema {
     return {
       id: this.id,
       title: this.title || this.name,
@@ -161,7 +144,7 @@ export class Device {
   }
 
   getPropertyDescriptions(): Record<string, unknown> {
-    const propDescs: Record<string, PropertyDescription> = {};
+    const propDescs: Record<string, PropertySchema> = {};
     this.properties.forEach((property, propertyName) => {
       if (property.isVisible()) {
         propDescs[propertyName] = property.asPropertyDescription();
@@ -319,7 +302,7 @@ export class Device {
    * @param {Object} metadata Action metadata, i.e. type, description, etc., as
    *                          an object
    */
-  addAction(name: string, metadata: ActionDescription): void {
+  addAction(name: string, metadata?: ActionSchema): void {
     metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
       const metadataWithHref = <{href?: string}><unknown>metadata;
@@ -336,7 +319,7 @@ export class Device {
    * @param {Object} metadata Event metadata, i.e. type, description, etc., as
    *                          an object
    */
-  addEvent(name: string, metadata: EventDescription): void {
+  addEvent(name: string, metadata?: EventSchema): void {
     metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
       const metadataWithHref = <{href?: string}><unknown>metadata;

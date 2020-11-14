@@ -10,33 +10,19 @@
 
 import {Device} from './device';
 
-import assert from 'assert';
+import {
+  Property as PropertySchema,
+  PropertyLink,
+  PropertyValuesEnum,
+  PropertyValueType,
+} from './schema';
 
-interface Link {
-  href: string;
-  rel: string;
-  mediaType?: string;
-}
+import assert from 'assert';
 
 interface LegacyPropertyDescription {
   min: number;
   max: number;
   label: string;
-}
-
-export interface PropertyDescription {
-  title?: string;
-  type: string;
-  '@type'?: string;
-  unit?: string;
-  description?: string;
-  minimum?: number;
-  maximum?: number;
-  enum?: string[];
-  readOnly?: boolean;
-  multipleOf?: number;
-  links?: Link[];
-  visible: boolean;
 }
 
 export class Property<T> {
@@ -46,7 +32,7 @@ export class Property<T> {
 
   private title?: string;
 
-  private type: string;
+  private type: PropertyValueType;
 
   private '@type'?: string;
 
@@ -58,13 +44,13 @@ export class Property<T> {
 
   private maximum?: number;
 
-  private enum?: string[];
+  private enum?: PropertyValuesEnum[];
 
   private readOnly?: boolean;
 
   private multipleOf?: number;
 
-  private links: Link[];
+  private links: PropertyLink[];
 
   private visible: boolean;
 
@@ -75,7 +61,7 @@ export class Property<T> {
   private prevGetValue?: T;
 
   constructor(device: Device, name: string,
-              propertyDescr: PropertyDescription) {
+              propertyDescr: PropertySchema) {
     this.device = device;
 
     this.name = name;
@@ -105,8 +91,8 @@ export class Property<T> {
    * @returns a dictionary of useful information.
    * This is primarily used for debugging.
    */
-  asDict(): PropertyDescription &
-  { name: string, value?: T, visible: boolean } {
+  asDict(): PropertySchema &
+  { name: string, value?: T } {
     return {
       name: this.name,
       value: this.value,
@@ -129,7 +115,7 @@ export class Property<T> {
    * @returns the dictionary as used to describe a property. Currently
    * this does not include the href field.
    */
-  asPropertyDescription(): PropertyDescription {
+  asPropertyDescription(): PropertySchema {
     return {
       title: this.title,
       type: this.type,
@@ -291,7 +277,7 @@ export class Property<T> {
     return this.type;
   }
 
-  setType(value: string): void {
+  setType(value: PropertyValueType): void {
     this.type = value;
   }
 
@@ -335,7 +321,7 @@ export class Property<T> {
     this.maximum = value;
   }
 
-  getEnum(): string[] | undefined {
+  getEnum(): PropertyValuesEnum[] | undefined {
     return this.enum;
   }
 
@@ -359,11 +345,11 @@ export class Property<T> {
     this.multipleOf = value;
   }
 
-  getLinks(): Link[] {
+  getLinks(): PropertyLink[] {
     return this.links;
   }
 
-  setLinks(value: Link[]): void {
+  setLinks(value: PropertyLink[]): void {
     this.links = value;
   }
 }
