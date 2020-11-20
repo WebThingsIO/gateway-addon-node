@@ -197,7 +197,7 @@ export class Property<T> {
       if (this.value != this.prevGetValue) {
         this.prevGetValue = this.value;
       }
-      resolve(this.value);
+      resolve(<T> this.value);
     });
   }
 
@@ -249,7 +249,7 @@ export class Property<T> {
       }
 
       this.setCachedValueAndNotify(value);
-      resolve(this.value);
+      resolve(<T> this.value);
     });
   }
 

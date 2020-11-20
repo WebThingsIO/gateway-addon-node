@@ -59,9 +59,10 @@ export class IpcSocket {
         });
       });
     } else {
-      this.ws = new WebSocket(`ws://127.0.0.1:${this.port}/`);
+      const ws = new WebSocket(`ws://127.0.0.1:${this.port}/`);
+      this.ws = ws;
       this.connectPromise = new Promise((resolve) => {
-        this?.ws?.on('open', () => resolve(this.ws));
+        ws.on('open', () => resolve(ws));
       });
       this.ws.on('message', this.onData.bind(this));
     }
