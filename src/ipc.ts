@@ -111,7 +111,7 @@ export class IpcSocket {
 
     // validate the message before forwarding to handler
     if (this.validate && !this.validate({message: data})) {
-      console.error('Invalid message received:', data);
+      console.error('Invalid message received:', JSON.stringify(data, null, 2));
     }
 
     this.onMsg(data, ws);
