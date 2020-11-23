@@ -16,7 +16,7 @@ export class IpcSocket {
 
   private verbose: boolean;
 
-  private validate?: ValidateFunction;
+  private validators: Record<number, ValidateFunction> = {};
 
   private wss?: WebSocket.Server;
 
@@ -48,8 +48,16 @@ export class IpcSocket {
       schemas.push(JSON.parse(fs.readFileSync(filePath).toString()));
     }
 
-    // now, build the validator using all the schemas
-    this.validate = new Ajv({schemas}).getSchema(schemas[0].$id);
+    for (const schema of schemas) {
+      if (schema?.properties?.messageType) {
+        const validate = new Ajv({schemas}).getSchema(schema.$id);
+        if (validate) {
+          this.validators[schema.properties.messageType.const] = validate;
+        }
+      } else {
+        console.log(`Ignoring ${schema.$id} because it has no messageType`);
+      }
+    }
 
     if (this.isServer) {
       this.wss = new WebSocket.Server({host: '127.0.0.1', port: this.port});
@@ -110,8 +118,23 @@ export class IpcSocket {
     this.verbose && this.log('Rcvd:', data);
 
     // validate the message before forwarding to handler
-    if (this.validate && !this.validate({message: data})) {
-      console.error('Invalid message received:', data);
+    const messageType = data.messageType;
+
+    if (messageType) {
+      if (messageType in this.validators) {
+        const validator = this.validators[messageType];
+
+        if (!validator(data)) {
+          const dataJson = JSON.stringify(data, null, 2);
+          const errorJson = JSON.stringify(validator.errors, null, 2);
+          console.error(`Invalid message received: ${dataJson}`);
+          console.error(`Validation error: ${errorJson}`);
+        }
+      } else {
+        console.error(`Unknown messageType ${messageType}`);
+      }
+    } else {
+      console.error(`Message has no messageType`);
     }
 
     this.onMsg(data, ws);
