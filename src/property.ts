@@ -11,8 +11,8 @@
 import {Device} from './device';
 
 import {
+  Link,
   Property as PropertySchema,
-  PropertyLink,
   PropertyValuesEnum,
   PropertyValueType,
 } from './schema';
@@ -50,7 +50,7 @@ export class Property<T> {
 
   private multipleOf?: number;
 
-  private links: PropertyLink[];
+  private links: Link[];
 
   private visible: boolean;
 
@@ -345,11 +345,11 @@ export class Property<T> {
     this.multipleOf = value;
   }
 
-  getLinks(): PropertyLink[] {
+  getLinks(): Link[] {
     return this.links;
   }
 
-  setLinks(value: PropertyLink[]): void {
+  setLinks(value: Link[]): void {
     this.links = value;
   }
 }
