@@ -7,6 +7,7 @@
  */
 
 import {Device} from './device';
+import {Input} from './schema';
 import {timestamp} from './utils';
 
 export interface ActionDescription {
@@ -33,7 +34,7 @@ export class Action {
 
   private name: string;
 
-  private input: unknown;
+  private input: Input;
 
   /**
   * Initialize the object.
@@ -43,7 +44,7 @@ export class Action {
   * @param {String} name Name of the action
   * @param {unknown} input Any action inputs
   */
-  constructor(id: string, device: Device, name: string, input: unknown) {
+  constructor(id: string, device: Device, name: string, input: Input) {
     this.id = id;
     this.device = device;
     this.name = name;

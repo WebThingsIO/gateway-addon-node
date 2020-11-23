@@ -17,8 +17,9 @@ import {
   Action1 as ActionSchema,
   Event as EventSchema,
   Device as DeviceSchema,
-  DeviceLink,
   Property as PropertySchema,
+  Link,
+  Input,
 } from './schema';
 
 const ajv = new Ajv();
@@ -44,7 +45,7 @@ export class Device {
 
   private events = new Map<string, EventSchema>();
 
-  private links: DeviceLink[] = [];
+  private links: Link[] = [];
 
   private baseHref?: string;
 
@@ -235,7 +236,7 @@ export class Device {
    * @method requestAction
    * @returns a promise which resolves when the action has been requested.
    */
-  requestAction(actionId: string, actionName: string, input: unknown)
+  requestAction(actionId: string, actionName: string, input: Input)
   : Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.actions.has(actionName)) {

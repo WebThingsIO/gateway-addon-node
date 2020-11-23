@@ -12,7 +12,9 @@
 import {Action} from './action';
 import {AddonManagerProxy} from './addon-manager-proxy';
 import {Device} from './device';
-import {Device as DeviceSchema, Preferences, UserProfile} from './schema';
+import {DeviceWithoutId as DeviceWithoutIdSchema,
+  Preferences,
+  UserProfile} from './schema';
 
 
 export interface AdapterDescription {
@@ -167,7 +169,7 @@ export class Adapter {
    * @param {object} device - the saved device description
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  handleDeviceSaved(_deviceId: string, _device: DeviceSchema) : void {
+  handleDeviceSaved(_deviceId: string, _device: DeviceWithoutIdSchema) : void {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
   }
 
