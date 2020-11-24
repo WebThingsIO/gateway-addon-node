@@ -55,7 +55,7 @@ export class IpcSocket {
           this.validators[schema.properties.messageType.const] = validate;
         }
       } else {
-        console.log(`Ignoring ${schema.$id} because it has no messageType`);
+        console.debug(`Ignoring ${schema.$id} because it has no messageType`);
       }
     }
 
@@ -120,7 +120,7 @@ export class IpcSocket {
     // validate the message before forwarding to handler
     const messageType = data.messageType;
 
-    if (messageType) {
+    if (typeof messageType !== 'undefined') {
       if (messageType in this.validators) {
         const validator = this.validators[messageType];
 
