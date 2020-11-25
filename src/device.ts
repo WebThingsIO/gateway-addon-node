@@ -14,12 +14,13 @@ import {Adapter} from './adapter';
 import {Property} from './property';
 import {Event} from './event';
 import {
-  Action1 as ActionSchema,
+  Action as ActionSchema,
   Event as EventSchema,
   Device as DeviceSchema,
   Property as PropertySchema,
   Link,
   Input,
+  PropertyValue,
 } from './schema';
 
 const ajv = new Ajv();
@@ -39,7 +40,7 @@ export class Device {
 
   private description = '';
 
-  private properties = new Map<string, Property<unknown>>();
+  private properties = new Map<string, Property<PropertyValue>>();
 
   private actions = new Map<string, ActionSchema>();
 
@@ -129,8 +130,8 @@ export class Device {
   }
 
   /**
- * @deprecated Please use getTitle()
- */
+   * @deprecated Please use getTitle()
+   */
   getName(): string {
     console.log('getName() is deprecated. Please use getTitle().');
     return this.getTitle();
@@ -154,11 +155,11 @@ export class Device {
     return propDescs;
   }
 
-  findProperty(propertyName: string): Property<unknown> | undefined {
+  findProperty(propertyName: string): Property<PropertyValue> | undefined {
     return this.properties.get(propertyName);
   }
 
-  addProperty(property: Property<unknown>): void {
+  addProperty(property: Property<PropertyValue>): void {
     this.properties.set(property.getName(), property);
   }
 
@@ -183,7 +184,7 @@ export class Device {
     return this.properties.has(propertyName);
   }
 
-  notifyPropertyChanged(property: Property<unknown>): void {
+  notifyPropertyChanged(property: Property<PropertyValue>): void {
     this.adapter.getManager().sendPropertyChangedNotification(property);
   }
 
@@ -203,6 +204,9 @@ export class Device {
     this.description = description;
   }
 
+  /**
+   * @deprecated Please use setName()
+   */
   setName(name: string): void {
     console.log('setName() is deprecated. Please use setTitle().');
     this.setTitle(name);
@@ -219,7 +223,8 @@ export class Device {
    * @note it is possible that the updated value doesn't match
    * the value passed in.
    */
-  setProperty(propertyName: string, value: unknown): Promise<unknown> {
+  setProperty(propertyName: string, value: PropertyValue)
+  : Promise<PropertyValue> {
     const property = this.findProperty(propertyName);
     if (property) {
       return property.setValue(value);

@@ -7,14 +7,9 @@
  */
 
 import {Device} from './device';
+import {Any, EventDescription1} from './schema';
 
 import {timestamp} from './utils';
-
-export interface EventDescription {
-  name: string;
-  data?: unknown;
-  timestamp: string;
-}
 
 /**
  * An Event represents an individual event from a device.
@@ -24,7 +19,7 @@ export class Event {
 
   private name: string;
 
-  private data?: unknown;
+  private data?: Any;
 
   private timestamp = timestamp();
 
@@ -35,7 +30,7 @@ export class Event {
    * @param {String} name Name of the event
    * @param {*} data (Optional) Data associated with the event
    */
-  constructor(device: Device, name: string, data?: unknown) {
+  constructor(device: Device, name: string, data?: Any) {
     this.device = device;
     this.name = name;
     this.data = data;
@@ -50,8 +45,8 @@ export class Event {
    *
    * @returns {Object} Description of the event as an object.
    */
-  asEventDescription(): EventDescription {
-    const description: EventDescription = {
+  asEventDescription(): EventDescription1 {
+    const description: EventDescription1 = {
       name: this.name,
       timestamp: this.timestamp,
     };
@@ -68,7 +63,7 @@ export class Event {
    *
    * @returns {Object} Description of the event as an object.
    */
-  asDict(): EventDescription {
+  asDict(): EventDescription1 {
     return {
       name: this.name,
       data: this.data,

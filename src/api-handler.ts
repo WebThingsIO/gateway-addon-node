@@ -11,14 +11,7 @@
  */
 
 import {AddonManagerProxy} from './addon-manager-proxy';
-import {Preferences, UserProfile} from './schema';
-
-export interface APIRequestOptions {
-  method: string;
-  path: string;
-  query: Record<string, unknown>;
-  body: Record<string, unknown>;
-}
+import {Preferences, Request, UserProfile} from './schema';
 
 /**
  * Class which holds an API request.
@@ -46,7 +39,7 @@ export class APIRequest {
    *                     application/x-www-form-urlencoded data in order for it
    *                     to be parsed properly.
    */
-  constructor({method, path, query, body}: APIRequestOptions) {
+  constructor({method, path, query, body}: Request) {
     this.method = method;
     this.path = path;
     this.query = query ?? {};

@@ -13,6 +13,7 @@ import {Device} from './device';
 import {
   Link,
   Property as PropertySchema,
+  PropertyValue,
   PropertyValuesEnum,
   PropertyValueType,
 } from './schema';
@@ -25,7 +26,7 @@ interface LegacyPropertyDescription {
   label: string;
 }
 
-export class Property<T> {
+export class Property<T extends PropertyValue> {
   private device: Device;
 
   private name: string;
@@ -91,8 +92,7 @@ export class Property<T> {
    * @returns a dictionary of useful information.
    * This is primarily used for debugging.
    */
-  asDict(): PropertySchema &
-  { name: string, value?: T } {
+  asDict(): PropertySchema {
     return {
       name: this.name,
       value: this.value,
@@ -175,7 +175,7 @@ export class Property<T> {
    * Sets this.value and makes adjustments to ensure that the value
    * is consistent with the type.
    */
-  setCachedValue(value: T): unknown {
+  setCachedValue(value: T): T {
     if (this.type === 'boolean') {
       // Make sure that the value is actually a boolean.
       this.value = <T><unknown>!!value;

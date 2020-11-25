@@ -92,8 +92,16 @@ export class Notifier {
     return this.name;
   }
 
+  setName(name: string): void {
+    this.name = name;
+  }
+
   isReady(): boolean {
     return this.ready;
+  }
+
+  setReady(ready: boolean): void {
+    this.ready = ready;
   }
 
   isVerbose(): boolean {

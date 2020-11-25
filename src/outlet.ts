@@ -9,11 +9,7 @@
  */
 
 import {Notifier} from './notifier';
-
-export interface OutletDescription {
-  id: string;
-  name: string;
-}
+import {Level, OutletDescription} from './schema';
 
 export class Outlet {
   private notifier: Notifier;
@@ -42,6 +38,10 @@ export class Outlet {
     return this.name;
   }
 
+  setName(name: string): void {
+    this.name = name;
+  }
+
   getNotifier(): Notifier {
     return this.notifier;
   }
@@ -54,7 +54,7 @@ export class Outlet {
    * @param {number} level Alert level.
    * @returns {Promise} Promise which resolves when the user has been notified.
    */
-  notify(title: string, message: string, level: number): Promise<void> {
+  notify(title: string, message: string, level: Level): Promise<void> {
     if (this.notifier.isVerbose()) {
       console.log(
         `Outlet: ${this.name} notify("${title}", "${message}", ${level})`
