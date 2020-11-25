@@ -7,16 +7,8 @@
  */
 
 import {Device} from './device';
-import {Input} from './schema';
+import {ActionDescription, Input} from './schema';
 import {timestamp} from './utils';
-
-export interface ActionDescription {
-  name: string;
-  input?: unknown;
-  status?: string;
-  timeRequested?: string;
-  timeCompleted?: string;
-}
 
 /**
  * An Action represents an individual action on a device.
@@ -34,7 +26,7 @@ export class Action {
 
   private name: string;
 
-  private input: Input;
+  private input?: Input;
 
   /**
   * Initialize the object.
@@ -44,7 +36,7 @@ export class Action {
   * @param {String} name Name of the action
   * @param {unknown} input Any action inputs
   */
-  constructor(id: string, device: Device, name: string, input: Input) {
+  constructor(id: string, device: Device, name: string, input?: Input) {
     this.id = id;
     this.device = device;
     this.name = name;
@@ -58,6 +50,7 @@ export class Action {
    */
   asActionDescription(): ActionDescription {
     const description: ActionDescription = {
+      id: this.id,
       name: this.name,
       timeRequested: this.timeRequested,
       status: this.status,
@@ -79,7 +72,7 @@ export class Action {
    *
    * @returns {Object} Description of the action as an object.
    */
-  asDict(): ActionDescription & {id: string} {
+  asDict(): ActionDescription {
     return {
       id: this.id,
       name: this.name,

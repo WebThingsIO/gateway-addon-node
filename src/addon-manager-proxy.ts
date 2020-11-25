@@ -40,6 +40,7 @@ import {AdapterPairingPromptNotificationMessageData, AdapterRemoveDeviceRequest,
   NotifierAddedNotification,
   OutletNotifyRequest,
   Preferences,
+  PropertyValue,
   UserProfile} from './schema';
 
 interface MockAdapter {
@@ -749,7 +750,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method sendPropertyChangedNotification
    * Sends a propertyChanged notification to the gateway.
    */
-  sendPropertyChangedNotification(property: Property<unknown>): void {
+  sendPropertyChangedNotification(property: Property<PropertyValue>): void {
     this.pluginClient.sendNotification(
       MessageType.DEVICE_PROPERTY_CHANGED_NOTIFICATION,
       {

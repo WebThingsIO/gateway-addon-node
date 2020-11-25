@@ -134,7 +134,7 @@ export class IpcSocket {
         console.error(`Unknown messageType ${messageType}`);
       }
     } else {
-      console.error(`Message has no messageType`);
+      console.error(`Message ${bufStr} has no messageType`);
     }
 
     this.onMsg(data, ws);
