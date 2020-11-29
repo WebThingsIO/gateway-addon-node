@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "Bindings for WebThings Gateway add-ons",
   "scripts": {
-    "prepare": "if [ ! -d schema/messages ]; then git submodule init; git submodule update; fi; npm run build",
-    "lint": "eslint src --ext .ts",
-    "build": "node generate-types.js && tsc -p ."
+    "build": "if [ ! -d schema/messages ]; then git submodule init; fi; git submodule update && node generate-types.js && tsc -p .",
+    "lint": "eslint src --ext .ts"
   },
   "main": "lib/index.js",
   "keywords": [
