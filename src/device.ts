@@ -129,14 +129,6 @@ export class Device {
     return this.id;
   }
 
-  /**
-   * @deprecated Please use getTitle()
-   */
-  getName(): string {
-    console.log('getName() is deprecated. Please use getTitle().');
-    return this.getTitle();
-  }
-
   getTitle(): string {
     if (this.name && !this.title) {
       this.title = this.name;
@@ -202,14 +194,6 @@ export class Device {
 
   setDescription(description: string): void {
     this.description = description;
-  }
-
-  /**
-   * @deprecated Please use setName()
-   */
-  setName(name: string): void {
-    console.log('setName() is deprecated. Please use setTitle().');
-    this.setTitle(name);
   }
 
   setTitle(title: string): void {
