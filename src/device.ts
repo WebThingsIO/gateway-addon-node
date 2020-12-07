@@ -140,9 +140,7 @@ export class Device {
   getPropertyDescriptions(): Record<string, unknown> {
     const propDescs: Record<string, PropertySchema> = {};
     this.properties.forEach((property, propertyName) => {
-      if (property.isVisible()) {
-        propDescs[propertyName] = property.asPropertyDescription();
-      }
+      propDescs[propertyName] = property.asPropertyDescription();
     });
     return propDescs;
   }

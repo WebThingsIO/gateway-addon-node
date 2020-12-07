@@ -53,8 +53,6 @@ export class Property<T extends PropertyValue> {
 
   private links: Link[];
 
-  private visible: boolean;
-
   private fireAndForget = false;
 
   private value?: T;
@@ -85,7 +83,6 @@ export class Property<T extends PropertyValue> {
     this.readOnly = propertyDescr.readOnly;
     this.multipleOf = propertyDescr.multipleOf;
     this.links = propertyDescr.links ?? [];
-    this.visible = propertyDescr.visible ?? true;
   }
 
   /**
@@ -96,7 +93,6 @@ export class Property<T extends PropertyValue> {
     return {
       name: this.name,
       value: this.value,
-      visible: this.visible,
       title: this.title,
       type: this.type,
       '@type': this['@type'],
@@ -128,24 +124,7 @@ export class Property<T extends PropertyValue> {
       readOnly: this.readOnly,
       multipleOf: this.multipleOf,
       links: this.links,
-      visible: this.visible,
     };
-  }
-
-  /**
-   * @method isVisible
-   * @returns true if this is a visible property, which is a property
-   *          that is reported in the property description.
-   */
-  isVisible(): boolean {
-    return this.visible;
-  }
-
-  /**
-   * Make the property visible or invisible
-   */
-  setVisible(visible: boolean): void {
-    this.visible = visible;
   }
 
   isFireAndForget(): boolean {
