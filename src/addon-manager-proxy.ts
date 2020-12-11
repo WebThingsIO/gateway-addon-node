@@ -276,7 +276,7 @@ export class AddonManagerProxy extends EventEmitter {
               {
                 packageName: packageName,
                 messageId: msg.data.messageId,
-                response,
+                response: response.asDict(),
               }
             );
           }).catch((err) => {

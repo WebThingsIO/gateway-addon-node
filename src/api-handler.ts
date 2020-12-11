@@ -11,7 +11,7 @@
  */
 
 import {AddonManagerProxy} from './addon-manager-proxy';
-import {Preferences, Request, UserProfile} from './schema';
+import {Preferences, Response, Request, UserProfile} from './schema';
 
 /**
  * Class which holds an API request.
@@ -63,13 +63,6 @@ export class APIRequest {
   }
 }
 
-export interface APIResponseOptions {
-  status: number;
-  contentType?: string;
-  content?: string;
-}
-
-
 /**
  * Convenience class to build an API response.
  */
@@ -88,7 +81,7 @@ export class APIResponse {
    *                   .contentType {string} Content-Type of response content
    *                   .content {string} Response content
    */
-  constructor({status, contentType, content}: APIResponseOptions =
+  constructor({status, contentType, content}: Response =
   {status: 500}) {
     this.status = Number(status);
 
@@ -111,6 +104,14 @@ export class APIResponse {
 
   getContent(): string | undefined {
     return this.content;
+  }
+
+  asDict(): Response {
+    return {
+      status: this.status,
+      contentType: this.contentType,
+      content: this.content,
+    };
   }
 }
 
