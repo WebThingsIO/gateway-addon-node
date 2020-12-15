@@ -14,6 +14,7 @@ import {Deferred} from './deferred';
 import {Device} from './device';
 import {Event} from './event';
 import {IpcSocket} from './ipc';
+import {Manifest, Moziot} from './manifest';
 import {Notifier} from './notifier';
 import {Outlet} from './outlet';
 import {PluginClient} from './plugin-client';
@@ -33,6 +34,8 @@ export {
   Device,
   Event,
   IpcSocket,
+  Manifest,
+  Moziot,
   Notifier,
   Outlet,
   PluginClient,
