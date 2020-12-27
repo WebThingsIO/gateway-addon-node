@@ -32,7 +32,7 @@ if (process.env.WEBTHINGS_DATABASE) {
 export class Database {
   private packageName: string;
 
-  private path: string;
+  private path?: string;
 
   private conn?: SQLiteDatabase | null;
 
@@ -42,7 +42,7 @@ export class Database {
    * @param {String} packageName The adapter's package name
    * @param {String?} path Optional database path
    */
-  constructor(packageName: string, path: string) {
+  constructor(packageName: string, path?: string) {
     this.packageName = packageName;
     this.path = path;
 
@@ -66,13 +66,15 @@ export class Database {
       return Promise.resolve();
     }
 
-    if (!this.path) {
+    const path = this.path;
+
+    if (!path) {
       return Promise.reject(new Error('Database path unknown'));
     }
 
     return new Promise((resolve, reject) => {
       this.conn = new sqlite3.Database(
-        this.path,
+        path,
         (err) => {
           if (err) {
             reject(err);
