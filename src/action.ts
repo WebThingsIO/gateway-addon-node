@@ -43,6 +43,18 @@ export class Action {
     this.input = input;
   }
 
+  getId(): string {
+    return this.id;
+  }
+
+  getName(): string {
+    return this.name;
+  }
+
+  getInput(): Input | undefined {
+    return this.input;
+  }
+
   /**
    * Get the action description.
    *
