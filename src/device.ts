@@ -61,6 +61,94 @@ export class Device {
     this.id = `${id}`;
   }
 
+  getId(): string {
+    return this.id;
+  }
+
+  getContext(): string {
+    return this['@context'];
+  }
+
+  setContext(context: string): void {
+    this['@context'] = context;
+  }
+
+  getTypes(): string[] {
+    return this['@type'];
+  }
+
+  setTypes(type: string[]): void {
+    this['@type'] = type;
+  }
+
+  addType(type: string): void {
+    this['@type'].push(type);
+  }
+
+  getTitle(): string {
+    if (this.name && !this.title) {
+      this.title = this.name;
+    }
+
+    return this.title;
+  }
+
+  setTitle(title: string): void {
+    this.title = title;
+  }
+
+  getDescription(): string {
+    return this.description;
+  }
+
+  setDescription(description: string): void {
+    this.description = description;
+  }
+
+  getLinks(): Link[] {
+    return this.links;
+  }
+
+  setLinks(value: Link[]): void {
+    this.links = value;
+  }
+
+  addLink(link: Link): void {
+    this.links.push(link);
+  }
+
+  getBaseHref(): string | undefined {
+    return this.baseHref;
+  }
+
+  setBaseHref(baseHref: string): void {
+    this.baseHref = baseHref;
+  }
+
+  getPinRequired(): boolean {
+    return this.pinRequired;
+  }
+
+  setPinRequired(pinRequired: boolean): void {
+    this.pinRequired = pinRequired;
+  }
+
+  getPinPattern(): string | undefined {
+    return this.pinPattern;
+  }
+
+  setpinPattern(pinPattern: string): void {
+    this.pinPattern = pinPattern;
+  }
+
+  getCredentialsRequired(): boolean {
+    return this.credentialsRequired;
+  }
+
+  setCredentialsRequired(credentialsRequired: boolean): void {
+    this.credentialsRequired = credentialsRequired;
+  }
+
   mapToDict<V>(map: Map<string, V>): Record<string, V> {
     const dict: Record<string, V> = {};
     map.forEach((property, propertyName) => {
@@ -125,18 +213,6 @@ export class Device {
     console.log('Device:', this.name, 'got debugCmd:', cmd, 'params:', params);
   }
 
-  getId(): string {
-    return this.id;
-  }
-
-  getTitle(): string {
-    if (this.name && !this.title) {
-      this.title = this.name;
-    }
-
-    return this.title;
-  }
-
   getPropertyDescriptions(): Record<string, unknown> {
     const propDescs: Record<string, PropertySchema> = {};
     this.properties.forEach((property, propertyName) => {
@@ -188,14 +264,6 @@ export class Device {
 
   connectedNotify(connected: boolean): void {
     this.adapter.getManager().sendConnectedNotification(this, connected);
-  }
-
-  setDescription(description: string): void {
-    this.description = description;
-  }
-
-  setTitle(title: string): void {
-    this.title = title;
   }
 
   /**
