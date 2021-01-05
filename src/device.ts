@@ -139,7 +139,7 @@ export class Device {
     return this.pinPattern;
   }
 
-  setpinPattern(pinPattern: string): void {
+  setPinPattern(pinPattern: string): void {
     this.pinPattern = pinPattern;
   }
 
