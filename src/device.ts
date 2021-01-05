@@ -82,7 +82,9 @@ export class Device {
   }
 
   addType(type: string): void {
-    this['@type'].push(type);
+    if (!(type in this['@type'])) {
+      this['@type'].push(type);
+    }
   }
 
   getTitle(): string {
