@@ -1,7 +1,9 @@
+**/node_modules
 *.swp
 *.tgz
-node_modules/
-lib
-src/plugin-register-response.d.ts
+*~
+lib/
+npm-debug.log
 src/message-type.ts
+src/plugin-register-response.d.ts
 src/schema.ts
