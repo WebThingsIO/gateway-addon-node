@@ -67,11 +67,11 @@ export class APIRequest {
  * Convenience class to build an API response.
  */
 export class APIResponse {
-  private status: number
+  private status: number;
 
-  private contentType?: string
+  private contentType?: string;
 
-  private content?: string
+  private content?: string;
 
   /**
    * Build the response.
@@ -120,7 +120,7 @@ export class APIResponse {
  * @class Notifier
  */
 export class APIHandler {
-  private packageName: string
+  private packageName: string;
 
   private verbose: boolean;
 

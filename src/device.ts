@@ -159,8 +159,7 @@ export class Device {
     return dict;
   }
 
-  mapToDictFromFunction<V>(map: Map<string, { asDict: () => V }>)
-  : Record<string, V> {
+  mapToDictFromFunction<V>(map: Map<string, { asDict: () => V }>): Record<string, V> {
     const dict: Record<string, V> = {};
     map.forEach((property, propertyName) => {
       dict[propertyName] = property.asDict();
@@ -275,8 +274,7 @@ export class Device {
    * @note it is possible that the updated value doesn't match
    * the value passed in.
    */
-  setProperty(propertyName: string, value: PropertyValue)
-  : Promise<PropertyValue> {
+  setProperty(propertyName: string, value: PropertyValue): Promise<PropertyValue> {
     const property = this.findProperty(propertyName);
     if (property) {
       return property.setValue(value);
@@ -293,8 +291,7 @@ export class Device {
    * @method requestAction
    * @returns a promise which resolves when the action has been requested.
    */
-  requestAction(actionId: string, actionName: string, input: Input)
-  : Promise<void> {
+  requestAction(actionId: string, actionName: string, input: Input): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.actions.has(actionName)) {
         reject(`Action "${actionName}" not found`);

@@ -33,7 +33,7 @@ export class Adapter {
 
   private id: string;
 
-  private packageName: string
+  private packageName: string;
 
   private verbose: boolean;
 
@@ -169,7 +169,7 @@ export class Adapter {
    * @param {object} device - the saved device description
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  handleDeviceSaved(_deviceId: string, _device: DeviceWithoutIdSchema) : void {
+  handleDeviceSaved(_deviceId: string, _device: DeviceWithoutIdSchema): void {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
   }
 
@@ -270,8 +270,7 @@ export class Adapter {
    *
    * @returns a promise which resolves when the credentials have been set.
    */
-  setCredentials(deviceId: string, username: string, password: string)
-  : Promise<void> {
+  setCredentials(deviceId: string, username: string, password: string): Promise<void> {
     const device = this.getDevice(deviceId);
     if (device) {
       if (this.verbose) {

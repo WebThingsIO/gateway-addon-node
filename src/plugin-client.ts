@@ -111,8 +111,7 @@ export class PluginClient extends EventEmitter {
     return this.deferredReply.getPromise();
   }
 
-  sendNotification(messageType: number, data: Record<string, unknown> = {})
-  : void {
+  sendNotification(messageType: number, data: Record<string, unknown> = {}): void {
     data.pluginId = this.pluginId;
 
     const jsonObj = JSON.stringify({messageType, data});
