@@ -25,7 +25,6 @@ import {AdapterPairingPromptNotificationMessageData, AdapterRemoveDeviceRequest,
   AdapterUnpairingPromptNotificationMessageData,
   APIHandlerAPIRequest,
   APIHandlerUnloadRequest,
-  DeviceDebugCommand,
   DeviceRemoveActionRequest,
   DeviceRequestActionRequest,
   DeviceSavedNotification,
@@ -679,11 +678,6 @@ export class AddonManagerProxy extends EventEmitter {
               }
             );
           });
-        break;
-      }
-      case MessageType.DEVICE_DEBUG_COMMAND: {
-        const msg = <DeviceDebugCommand>genericMsg;
-        device.debugCmd(msg.data.cmd, msg.data.params);
         break;
       }
       default:
