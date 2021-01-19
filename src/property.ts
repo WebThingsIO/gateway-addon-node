@@ -304,7 +304,7 @@ export class Property<T extends PropertyValue> {
     return this.enum;
   }
 
-  setEnum(value: string[]): void {
+  setEnum(value: PropertyValuesEnum[]): void {
     this.enum = value;
   }
 
