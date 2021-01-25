@@ -40,6 +40,18 @@ export class Event {
     return this.device;
   }
 
+  getName(): string {
+    return this.name;
+  }
+
+  getData(): Any | undefined {
+    return this.data;
+  }
+
+  getTimestamp(): string {
+    return this.timestamp;
+  }
+
   /**
    * Get the event description.
    *
