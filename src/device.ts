@@ -230,7 +230,7 @@ export class Device {
    * @method getProperty
    * @returns a promise which resolves to the retrieved value.
    */
-  getProperty(propertyName: string): Promise<unknown> {
+  getProperty(propertyName: string): Promise<PropertyValue> {
     return new Promise((resolve, reject) => {
       const property = this.findProperty(propertyName);
       if (property) {
