@@ -7,7 +7,7 @@
  */
 
 import {Device} from './device';
-import {ActionDescription, Input} from './schema';
+import {ActionDescription, Any} from './schema';
 import {timestamp} from './utils';
 
 /**
@@ -26,7 +26,7 @@ export class Action {
 
   private name: string;
 
-  private input?: Input;
+  private input?: Any;
 
   /**
   * Initialize the object.
@@ -36,7 +36,7 @@ export class Action {
   * @param {String} name Name of the action
   * @param {unknown} input Any action inputs
   */
-  constructor(id: string, device: Device, name: string, input?: Input) {
+  constructor(id: string, device: Device, name: string, input?: Any) {
     this.id = id;
     this.device = device;
     this.name = name;
@@ -51,7 +51,7 @@ export class Action {
     return this.name;
   }
 
-  getInput(): Input | undefined {
+  getInput(): Any | undefined {
     return this.input;
   }
 

@@ -11,10 +11,9 @@
 import {Device} from './device';
 
 import {
+  Any,
   Link,
   Property as PropertySchema,
-  PropertyValue,
-  PropertyValuesEnum,
   PropertyValueType,
 } from './schema';
 
@@ -26,7 +25,7 @@ interface LegacyPropertyDescription {
   label: string;
 }
 
-export class Property<T extends PropertyValue> {
+export class Property<T extends Any> {
   private device: Device;
 
   private name: string;
@@ -45,7 +44,7 @@ export class Property<T extends PropertyValue> {
 
   private maximum?: number;
 
-  private enum?: PropertyValuesEnum[];
+  private enum?: Any[];
 
   private readOnly?: boolean;
 
@@ -59,8 +58,7 @@ export class Property<T extends PropertyValue> {
 
   private prevGetValue?: T;
 
-  constructor(device: Device, name: string,
-              propertyDescr: PropertySchema) {
+  constructor(device: Device, name: string, propertyDescr: PropertySchema) {
     this.device = device;
 
     this.name = name;
@@ -300,11 +298,11 @@ export class Property<T extends PropertyValue> {
     this.maximum = value;
   }
 
-  getEnum(): PropertyValuesEnum[] | undefined {
+  getEnum(): Any[] | undefined {
     return this.enum;
   }
 
-  setEnum(value: PropertyValuesEnum[]): void {
+  setEnum(value: Any[]): void {
     this.enum = value;
   }
 
