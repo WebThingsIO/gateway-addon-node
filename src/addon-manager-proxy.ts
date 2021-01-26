@@ -20,9 +20,12 @@ import {PluginClient} from './plugin-client';
 import {Property} from './property';
 import {MessageType} from './message-type';
 import {EventEmitter} from 'events';
-import {AdapterPairingPromptNotificationMessageData, AdapterRemoveDeviceRequest,
+import {
+  AdapterPairingPromptNotificationMessageData,
+  AdapterRemoveDeviceRequest,
   AdapterStartPairingCommand,
   AdapterUnpairingPromptNotificationMessageData,
+  Any,
   APIHandlerAPIRequest,
   APIHandlerUnloadRequest,
   DeviceRemoveActionRequest,
@@ -39,8 +42,8 @@ import {AdapterPairingPromptNotificationMessageData, AdapterRemoveDeviceRequest,
   NotifierAddedNotification,
   OutletNotifyRequest,
   Preferences,
-  PropertyValue,
-  UserProfile} from './schema';
+  UserProfile,
+} from './schema';
 
 interface MockAdapter {
   clearState(): Promise<void>;
@@ -744,7 +747,7 @@ export class AddonManagerProxy extends EventEmitter {
    * @method sendPropertyChangedNotification
    * Sends a propertyChanged notification to the gateway.
    */
-  sendPropertyChangedNotification(property: Property<PropertyValue>): void {
+  sendPropertyChangedNotification(property: Property<Any>): void {
     this.pluginClient.sendNotification(
       MessageType.DEVICE_PROPERTY_CHANGED_NOTIFICATION,
       {

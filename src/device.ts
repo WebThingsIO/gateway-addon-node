@@ -15,12 +15,11 @@ import {Property} from './property';
 import {Event} from './event';
 import {
   Action as ActionSchema,
+  Any,
   Event as EventSchema,
   Device as DeviceSchema,
   Property as PropertySchema,
   Link,
-  Input,
-  PropertyValue,
 } from './schema';
 
 const ajv = new Ajv();
@@ -40,7 +39,7 @@ export class Device {
 
   private description = '';
 
-  private properties = new Map<string, Property<PropertyValue>>();
+  private properties = new Map<string, Property<Any>>();
 
   private actions = new Map<string, ActionSchema>();
 
@@ -218,11 +217,11 @@ export class Device {
     return propDescs;
   }
 
-  findProperty(propertyName: string): Property<PropertyValue> | undefined {
+  findProperty(propertyName: string): Property<Any> | undefined {
     return this.properties.get(propertyName);
   }
 
-  addProperty(property: Property<PropertyValue>): void {
+  addProperty(property: Property<Any>): void {
     this.properties.set(property.getName(), property);
   }
 
@@ -230,7 +229,7 @@ export class Device {
    * @method getProperty
    * @returns a promise which resolves to the retrieved value.
    */
-  getProperty(propertyName: string): Promise<PropertyValue> {
+  getProperty(propertyName: string): Promise<Any> {
     return new Promise((resolve, reject) => {
       const property = this.findProperty(propertyName);
       if (property) {
@@ -247,7 +246,7 @@ export class Device {
     return this.properties.has(propertyName);
   }
 
-  notifyPropertyChanged(property: Property<PropertyValue>): void {
+  notifyPropertyChanged(property: Property<Any>): void {
     this.adapter.getManager().sendPropertyChangedNotification(property);
   }
 
@@ -270,7 +269,7 @@ export class Device {
    * @note it is possible that the updated value doesn't match
    * the value passed in.
    */
-  setProperty(propertyName: string, value: PropertyValue): Promise<PropertyValue> {
+  setProperty(propertyName: string, value: Any): Promise<Any> {
     const property = this.findProperty(propertyName);
     if (property) {
       return property.setValue(value);
@@ -287,7 +286,7 @@ export class Device {
    * @method requestAction
    * @returns a promise which resolves when the action has been requested.
    */
-  requestAction(actionId: string, actionName: string, input: Input): Promise<void> {
+  requestAction(actionId: string, actionName: string, input: Any): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.actions.has(actionName)) {
         reject(`Action "${actionName}" not found`);
