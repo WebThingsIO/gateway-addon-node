@@ -20,6 +20,7 @@ import {Outlet} from './outlet';
 import {PluginClient} from './plugin-client';
 import {Property} from './property';
 import * as Utils from './utils';
+import pkg from './package.json';
 
 export {
   Action,
@@ -43,7 +44,6 @@ export {
   Utils,
 };
 
-export function getVersion(): number {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  return require('./package.json').version;
+export function getVersion(): string {
+  return pkg.version;
 }
