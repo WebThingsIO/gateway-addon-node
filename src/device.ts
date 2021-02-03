@@ -8,11 +8,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Action} from './action';
+import { Action } from './action';
 import Ajv from 'ajv';
-import {Adapter} from './adapter';
-import {Property} from './property';
-import {Event} from './event';
+import { Adapter } from './adapter';
+import { Property } from './property';
+import { Event } from './event';
 import {
   Action as ActionSchema,
   Any,
@@ -332,7 +332,6 @@ export class Device {
   /**
    * @method performAction
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   performAction(_action: Action): Promise<void> {
     return Promise.resolve();
   }
@@ -340,7 +339,6 @@ export class Device {
   /**
    * @method cancelAction
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   cancelAction(_actionId: string, _actionName: string): Promise<void> {
     return Promise.resolve();
   }
@@ -355,7 +353,7 @@ export class Device {
   addAction(name: string, metadata?: ActionSchema): void {
     metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
-      const metadataWithHref = <{href?: string}><unknown>metadata;
+      const metadataWithHref = <{ href?: string }>(<unknown>metadata);
       delete metadataWithHref.href;
     }
 
@@ -372,7 +370,7 @@ export class Device {
   addEvent(name: string, metadata?: EventSchema): void {
     metadata = metadata ?? {};
     if (metadata.hasOwnProperty('href')) {
-      const metadataWithHref = <{href?: string}><unknown>metadata;
+      const metadataWithHref = <{ href?: string }>(<unknown>metadata);
       delete metadataWithHref.href;
     }
 

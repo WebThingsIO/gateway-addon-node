@@ -9,13 +9,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.*
  */
 
-import {Action} from './action';
-import {AddonManagerProxy} from './addon-manager-proxy';
-import {Device} from './device';
-import {DeviceWithoutId as DeviceWithoutIdSchema,
-  Preferences,
-  UserProfile} from './schema';
-
+import { Action } from './action';
+import { AddonManagerProxy } from './addon-manager-proxy';
+import { Device } from './device';
+import { DeviceWithoutId as DeviceWithoutIdSchema, Preferences, UserProfile } from './schema';
 
 export interface AdapterDescription {
   id: string;
@@ -51,8 +48,12 @@ export class Adapter {
 
   private preferences?: Preferences;
 
-  constructor(manager: AddonManagerProxy, id: string, packageName: string,
-              {verbose}: Record<string, unknown> = {}) {
+  constructor(
+    manager: AddonManagerProxy,
+    id: string,
+    packageName: string,
+    { verbose }: Record<string, unknown> = {}
+  ) {
     this.manager = manager;
     this.id = id;
     this.packageName = packageName;
@@ -176,12 +177,10 @@ export class Adapter {
    * @param {string} deviceId - ID of the device
    * @param {object} device - the saved device description
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleDeviceSaved(_deviceId: string, _device: DeviceWithoutIdSchema): void {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    // pass
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   startPairing(_timeoutSeconds: number): void {
     if (this.verbose) {
       console.log('Adapter:', this.name, 'id', this.id, 'pairing started');
@@ -220,8 +219,15 @@ export class Adapter {
 
   removeThing(device: Device): void {
     if (this.verbose) {
-      console.log('Adapter:', this.name, 'id', this.id,
-                  'removeThing(', device.getId(), ') started');
+      console.log(
+        'Adapter:',
+        this.name,
+        'id',
+        this.id,
+        'removeThing(',
+        device.getId(),
+        ') started'
+      );
     }
 
     this.handleDeviceRemoved(device);
@@ -229,8 +235,7 @@ export class Adapter {
 
   cancelRemoveThing(device: Device): void {
     if (this.verbose) {
-      console.log('Adapter:', this.name, 'id', this.id,
-                  'cancelRemoveThing(', device.getId(), ')');
+      console.log('Adapter:', this.name, 'id', this.id, 'cancelRemoveThing(', device.getId(), ')');
     }
   }
 
@@ -259,8 +264,7 @@ export class Adapter {
     const device = this.getDevice(deviceId);
     if (device) {
       if (this.verbose) {
-        console.log('Adapter:', this.name, 'id', this.id,
-                    'setPin(', deviceId, ',', pin, ')');
+        console.log('Adapter:', this.name, 'id', this.id, 'setPin(', deviceId, ',', pin, ')');
       }
 
       return Promise.resolve();
@@ -282,9 +286,19 @@ export class Adapter {
     const device = this.getDevice(deviceId);
     if (device) {
       if (this.verbose) {
-        console.log('Adapter:', this.name, 'id', this.id,
-                    'setCredentials(', deviceId, ',', username, ',', password,
-                    ')');
+        console.log(
+          'Adapter:',
+          this.name,
+          'id',
+          this.id,
+          'setCredentials(',
+          deviceId,
+          ',',
+          username,
+          ',',
+          password,
+          ')'
+        );
       }
 
       return Promise.resolve();

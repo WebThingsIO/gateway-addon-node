@@ -1,11 +1,10 @@
-import Ajv, {ValidateFunction} from 'ajv';
+import Ajv, { ValidateFunction } from 'ajv';
 import fs from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
-import {Message} from './schema';
+import { Message } from './schema';
 
 export class IpcSocket {
-
   private isServer: boolean;
 
   private port: number;
@@ -24,9 +23,13 @@ export class IpcSocket {
 
   private connectPromise?: Promise<WebSocket>;
 
-  constructor(isServer: boolean, port: number,
-              onMsg: (_data: Message, _ws: WebSocket) => void,
-              logPrefix: string, {verbose}: Record<string, unknown> = {}) {
+  constructor(
+    isServer: boolean,
+    port: number,
+    onMsg: (_data: Message, _ws: WebSocket) => void,
+    logPrefix: string,
+    { verbose }: Record<string, unknown> = {}
+  ) {
     this.isServer = isServer;
     this.port = port;
     this.onMsg = onMsg;
@@ -38,9 +41,7 @@ export class IpcSocket {
     const schemas = [];
 
     // top-level schema
-    schemas.push(
-      JSON.parse(fs.readFileSync(path.join(baseDir, 'schema.json')).toString())
-    );
+    schemas.push(JSON.parse(fs.readFileSync(path.join(baseDir, 'schema.json')).toString()));
 
     // individual message schemas
     for (const fname of fs.readdirSync(path.join(baseDir, 'messages'))) {
@@ -50,7 +51,7 @@ export class IpcSocket {
 
     for (const schema of schemas) {
       if (schema?.properties?.messageType) {
-        const validate = new Ajv({schemas}).getSchema(schema.$id);
+        const validate = new Ajv({ schemas }).getSchema(schema.$id);
         if (validate) {
           this.validators[schema.properties.messageType.const] = validate;
         }
@@ -60,7 +61,7 @@ export class IpcSocket {
     }
 
     if (this.isServer) {
-      this.wss = new WebSocket.Server({host: '127.0.0.1', port: this.port});
+      this.wss = new WebSocket.Server({ host: '127.0.0.1', port: this.port });
       this.wss.on('connection', (ws) => {
         ws.on('message', (data) => {
           this.onData(data, ws);

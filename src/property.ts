@@ -8,14 +8,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Device} from './device';
+import { Device } from './device';
 
-import {
-  Any,
-  Link,
-  Property as PropertySchema,
-  PropertyValueType,
-} from './schema';
+import { Any, Link, Property as PropertySchema, PropertyValueType } from './schema';
 
 import assert from 'assert';
 
@@ -65,10 +60,13 @@ export class Property<T extends Any> {
 
     // The propertyDescr argument used to be the 'type' string, so we add an
     // assertion here to notify anybody who has an older plugin.
-    assert.equal(typeof propertyDescr, 'object',
-                 'Please update plugin to use property description.');
+    assert.equal(
+      typeof propertyDescr,
+      'object',
+      'Please update plugin to use property description.'
+    );
 
-    const legacyDescription = <LegacyPropertyDescription><unknown>propertyDescr;
+    const legacyDescription = <LegacyPropertyDescription>(<unknown>propertyDescr);
 
     this.title = propertyDescr.title || legacyDescription.label;
     this.type = propertyDescr.type;
@@ -155,7 +153,7 @@ export class Property<T extends Any> {
   setCachedValue(value: T): T {
     if (this.type === 'boolean') {
       // Make sure that the value is actually a boolean.
-      this.value = <T><unknown>!!value;
+      this.value = <T>(<unknown>!!value);
     } else {
       this.value = value;
     }
@@ -174,7 +172,7 @@ export class Property<T extends Any> {
       if (this.value != this.prevGetValue) {
         this.prevGetValue = this.value;
       }
-      resolve(<T> this.value);
+      resolve(<T>this.value);
     });
   }
 
@@ -195,38 +193,35 @@ export class Property<T extends Any> {
         return;
       }
 
-      const numberValue = (<number> <unknown>value);
+      const numberValue = <number>(<unknown>value);
 
-      // eslint-disable-next-line no-undefined
       if (typeof this.minimum !== 'undefined' && numberValue < this.minimum) {
         reject(`Value less than minimum: ${this.minimum}`);
         return;
       }
 
-      // eslint-disable-next-line no-undefined
       if (typeof this.maximum !== 'undefined' && numberValue > this.maximum) {
         reject(`Value greater than maximum: ${this.maximum}`);
         return;
       }
 
-      // eslint-disable-next-line no-undefined
-      if (typeof this.multipleOf !== 'undefined' &&
-          numberValue / this.multipleOf -
-          Math.round(numberValue / this.multipleOf) !== 0) {
+      if (
+        typeof this.multipleOf !== 'undefined' &&
+        numberValue / this.multipleOf - Math.round(numberValue / this.multipleOf) !== 0
+      ) {
         // note that we don't use the modulus operator here because it's
         // unreliable for floating point numbers
         reject(`Value is not a multiple of: ${this.multipleOf}`);
         return;
       }
 
-      if (this.enum && this.enum.length > 0 &&
-          !this.enum.includes(`${value}`)) {
+      if (this.enum && this.enum.length > 0 && !this.enum.includes(`${value}`)) {
         reject('Invalid enum value');
         return;
       }
 
       this.setCachedValueAndNotify(value);
-      resolve(<T> this.value);
+      resolve(<T>this.value);
     });
   }
 
