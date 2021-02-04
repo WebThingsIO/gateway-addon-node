@@ -1,13 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const fs = require('fs');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const {compileFromFile} = require('json-schema-to-typescript');
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { compileFromFile } = require('json-schema-to-typescript');
 const path = require('path');
 
-compileFromFile('schema/schema.json', {cwd: 'schema'})
-  .then((ts) => fs.writeFileSync('src/schema.ts', ts));
+compileFromFile('schema/schema.json', { cwd: 'schema' }).then((ts) =>
+  fs.writeFileSync('src/schema.ts', ts)
+);
 
 const dname = path.resolve(path.join(__dirname, 'schema', 'messages'));
 
@@ -17,8 +14,7 @@ for (const fname of fs.readdirSync(dname)) {
   const schemaPath = path.join(dname, fname);
   const schema = JSON.parse(fs.readFileSync(schemaPath).toString());
 
-  if (!schema.hasOwnProperty('properties') ||
-      !schema.properties.hasOwnProperty('messageType')) {
+  if (!schema.hasOwnProperty('properties') || !schema.properties.hasOwnProperty('messageType')) {
     continue;
   }
 

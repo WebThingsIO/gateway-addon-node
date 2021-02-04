@@ -9,16 +9,13 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import {verbose, Database as SQLiteDatabase} from 'sqlite3';
+import { verbose, Database as SQLiteDatabase } from 'sqlite3';
 
 const sqlite3 = verbose();
 
-const DB_PATHS = [
-  path.join(os.homedir(), '.webthings', 'config', 'db.sqlite3'),
-];
+const DB_PATHS = [path.join(os.homedir(), '.webthings', 'config', 'db.sqlite3')];
 
 if (process.env.WEBTHINGS_HOME) {
-  // eslint-disable-next-line max-len
   DB_PATHS.unshift(path.join(process.env.WEBTHINGS_HOME, 'config', 'db.sqlite3'));
 }
 
@@ -73,16 +70,14 @@ export class Database {
     }
 
     return new Promise((resolve, reject) => {
-      this.conn = new sqlite3.Database(
-        path,
-        (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            this?.conn?.configure('busyTimeout', 10000);
-            resolve();
-          }
-        });
+      this.conn = new sqlite3.Database(path, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          this?.conn?.configure('busyTimeout', 10000);
+          resolve();
+        }
+      });
     });
   }
 
@@ -109,18 +104,15 @@ export class Database {
     const key = `addons.config.${this.packageName}`;
 
     return new Promise((resolve, reject) => {
-      this?.conn?.get(
-        'SELECT value FROM settings WHERE key = ?',
-        [key],
-        (error, row) => {
-          if (error) {
-            reject(error);
-          } else if (!row) {
-            resolve({});
-          } else {
-            resolve(JSON.parse(row.value));
-          }
-        });
+      this?.conn?.get('SELECT value FROM settings WHERE key = ?', [key], (error, row) => {
+        if (error) {
+          reject(error);
+        } else if (!row) {
+          resolve({});
+        } else {
+          resolve(JSON.parse(row.value));
+        }
+      });
     });
   }
 
@@ -144,7 +136,8 @@ export class Database {
           } else {
             resolve();
           }
-        });
+        }
+      );
     });
   }
 }

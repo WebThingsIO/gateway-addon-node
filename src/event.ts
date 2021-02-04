@@ -6,10 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Device} from './device';
-import {Any, EventDescription1} from './schema';
+import { Device } from './device';
+import { Any, EventDescription1 } from './schema';
 
-import {timestamp} from './utils';
+import { timestamp } from './utils';
 
 /**
  * An Event represents an individual event from a device.

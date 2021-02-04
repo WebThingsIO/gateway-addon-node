@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Notifier} from './notifier';
-import {Level, OutletDescription} from './schema';
+import { Notifier } from './notifier';
+import { Level, OutletDescription } from './schema';
 
 export class Outlet {
   private notifier: Notifier;
@@ -56,9 +56,7 @@ export class Outlet {
    */
   notify(title: string, message: string, level: Level): Promise<void> {
     if (this.notifier.isVerbose()) {
-      console.log(
-        `Outlet: ${this.name} notify("${title}", "${message}", ${level})`
-      );
+      console.log(`Outlet: ${this.name} notify("${title}", "${message}", ${level})`);
     }
 
     return Promise.resolve();

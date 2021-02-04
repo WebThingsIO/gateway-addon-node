@@ -6,9 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Device} from './device';
-import {ActionDescription, Any} from './schema';
-import {timestamp} from './utils';
+import { Device } from './device';
+import { ActionDescription, Any } from './schema';
+import { timestamp } from './utils';
 
 /**
  * An Action represents an individual action on a device.
@@ -29,13 +29,13 @@ export class Action {
   private input?: Any;
 
   /**
-  * Initialize the object.
-  *
-  * @param {String} id ID of this action
-  * @param {Object} device Device this action belongs to
-  * @param {String} name Name of the action
-  * @param {unknown} input Any action inputs
-  */
+   * Initialize the object.
+   *
+   * @param {String} id ID of this action
+   * @param {Object} device Device this action belongs to
+   * @param {String} name Name of the action
+   * @param {unknown} input Any action inputs
+   */
   constructor(id: string, device: Device, name: string, input?: Any) {
     this.id = id;
     this.device = device;

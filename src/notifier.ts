@@ -9,9 +9,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.*
  */
 
-import {AddonManagerProxy} from './addon-manager-proxy';
-import {Outlet} from './outlet';
-import {Preferences, UserProfile} from './schema';
+import { AddonManagerProxy } from './addon-manager-proxy';
+import { Outlet } from './outlet';
+import { Preferences, UserProfile } from './schema';
 
 export interface NotifierDescription {
   id: string;
@@ -44,8 +44,12 @@ export class Notifier {
 
   private preferences?: Preferences;
 
-  constructor(manager: AddonManagerProxy, id: string, packageName: string,
-              {verbose}: Record<string, unknown> = {}) {
+  constructor(
+    manager: AddonManagerProxy,
+    id: string,
+    packageName: string,
+    { verbose }: Record<string, unknown> = {}
+  ) {
     this.manager = manager;
     this.id = id;
     this.packageName = packageName;

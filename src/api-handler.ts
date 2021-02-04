@@ -10,8 +10,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.*
  */
 
-import {AddonManagerProxy} from './addon-manager-proxy';
-import {Preferences, Response, Request, UserProfile} from './schema';
+import { AddonManagerProxy } from './addon-manager-proxy';
+import { Preferences, Response, Request, UserProfile } from './schema';
 
 /**
  * Class which holds an API request.
@@ -39,7 +39,7 @@ export class APIRequest {
    *                     application/x-www-form-urlencoded data in order for it
    *                     to be parsed properly.
    */
-  constructor({method, path, query, body}: Request) {
+  constructor({ method, path, query, body }: Request) {
     this.method = method;
     this.path = path;
     this.query = query ?? {};
@@ -81,8 +81,7 @@ export class APIResponse {
    *                   .contentType {string} Content-Type of response content
    *                   .content {string} Response content
    */
-  constructor({status, contentType, content}: Response =
-  {status: 500}) {
+  constructor({ status, contentType, content }: Response = { status: 500 }) {
     this.status = Number(status);
 
     if (contentType) {
@@ -130,8 +129,11 @@ export class APIHandler {
 
   private preferences?: Preferences;
 
-  constructor(manager: AddonManagerProxy, packageName: string,
-              {verbose}: Record<string, unknown> = {}) {
+  constructor(
+    manager: AddonManagerProxy,
+    packageName: string,
+    { verbose }: Record<string, unknown> = {}
+  ) {
     this.packageName = packageName;
     this.verbose = !!verbose;
     this.gatewayVersion = manager.getGatewayVersion();
@@ -159,7 +161,6 @@ export class APIHandler {
     return this.preferences;
   }
 
-
   /**
    * @method handleRequest
    *
@@ -174,7 +175,7 @@ export class APIHandler {
       console.log(`New API request for ${this.packageName}:`, request);
     }
 
-    return new APIResponse({status: 404});
+    return new APIResponse({ status: 404 });
   }
 
   /**

@@ -6,9 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {MessageType} from './message-type';
+import { MessageType } from './message-type';
 
-export {MessageType};
+export { MessageType };
 
 export enum NotificationLevel {
   LOW = 0,
