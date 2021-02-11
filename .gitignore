@@ -7,3 +7,4 @@ npm-debug.log
 src/message-type.ts
 src/plugin-register-response.d.ts
 src/schema.ts
+src/version.ts

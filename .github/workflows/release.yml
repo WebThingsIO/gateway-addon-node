@@ -34,10 +34,9 @@ jobs:
       - name: Build project
         run: |
           npm ci
-          npm run lint
           npm run build
         env:
-          CI: true
+          CI: 'true'
 
       - name: Publish to npm
         run: npm publish

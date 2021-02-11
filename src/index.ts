@@ -20,7 +20,7 @@ import { Outlet } from './outlet';
 import { PluginClient } from './plugin-client';
 import { Property } from './property';
 import * as Utils from './utils';
-import pkg from './package.json';
+import version from './version';
 
 export {
   Action,
@@ -45,5 +45,5 @@ export {
 };
 
 export function getVersion(): string {
-  return pkg.version;
+  return version;
 }
