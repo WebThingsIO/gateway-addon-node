@@ -146,6 +146,10 @@ export class Property<T extends Any> {
     return hasChanged;
   }
 
+  getCachedValue(): T | undefined {
+    return this.value;
+  }
+
   /**
    * Sets this.value and makes adjustments to ensure that the value
    * is consistent with the type.
