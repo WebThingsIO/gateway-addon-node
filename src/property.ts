@@ -10,7 +10,7 @@
 
 import { Device } from './device';
 
-import { Any, PropertyForm , Property as PropertySchema, PropertyValueType } from './schema';
+import { Any, PropertyForm, Property as PropertySchema, PropertyValueType } from './schema';
 
 import assert from 'assert';
 
