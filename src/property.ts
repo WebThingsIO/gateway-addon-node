@@ -10,7 +10,7 @@
 
 import { Device } from './device';
 
-import { Any, Link, Property as PropertySchema, PropertyValueType } from './schema';
+import { Any, PropertyForm, Property as PropertySchema, PropertyValueType } from './schema';
 
 import assert from 'assert';
 
@@ -45,7 +45,7 @@ export class Property<T extends Any> {
 
   private multipleOf?: number;
 
-  private links: Link[];
+  private forms: PropertyForm[];
 
   private fireAndForget = false;
 
@@ -78,7 +78,7 @@ export class Property<T extends Any> {
     this.enum = propertyDescr.enum;
     this.readOnly = propertyDescr.readOnly;
     this.multipleOf = propertyDescr.multipleOf;
-    this.links = propertyDescr.links ?? [];
+    this.forms = propertyDescr.forms ?? [];
   }
 
   /**
@@ -99,7 +99,7 @@ export class Property<T extends Any> {
       enum: this.enum,
       readOnly: this.readOnly,
       multipleOf: this.multipleOf,
-      links: this.links,
+      forms: this.forms,
     };
   }
 
@@ -119,7 +119,7 @@ export class Property<T extends Any> {
       enum: this.enum,
       readOnly: this.readOnly,
       multipleOf: this.multipleOf,
-      links: this.links,
+      forms: this.forms,
     };
   }
 
@@ -321,11 +321,11 @@ export class Property<T extends Any> {
     this.multipleOf = value;
   }
 
-  getLinks(): Link[] {
-    return this.links;
+  getForms(): PropertyForm[] {
+    return this.forms;
   }
 
-  setLinks(value: Link[]): void {
-    this.links = value;
+  setForms(value: PropertyForm[]): void {
+    this.forms = value;
   }
 }
