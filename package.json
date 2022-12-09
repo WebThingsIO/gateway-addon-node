@@ -1,6 +1,6 @@
 {
   "name": "gateway-addon",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.2",
   "description": "Bindings for WebThings Gateway add-ons",
   "scripts": {
     "build": "if [ ! -d schema/messages ]; then git submodule init; fi; git submodule update && node generate-version.js && node generate-types.js && tsc -p .",
