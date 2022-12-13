@@ -51,6 +51,8 @@ export class Property<T extends Any> {
 
   private value?: T;
 
+  private visible: boolean;
+
   private prevGetValue?: T;
 
   constructor(device: Device, name: string, propertyDescr: PropertySchema) {
@@ -63,9 +65,15 @@ export class Property<T extends Any> {
     assert.equal(
       typeof propertyDescr,
       'object',
-      'Please update plugin to use property description.'
+      'Please update add-on to use property description.'
     );
 
+    if (typeof propertyDescr.visible !== 'undefined') {
+      console.warn(
+        'The "visible" member of property descriptions is ' +
+          'deprecated, please update your add-on.'
+      );
+    }
     const legacyDescription = <LegacyPropertyDescription>(<unknown>propertyDescr);
 
     this.title = propertyDescr.title || legacyDescription.label;
@@ -79,6 +87,7 @@ export class Property<T extends Any> {
     this.readOnly = propertyDescr.readOnly;
     this.multipleOf = propertyDescr.multipleOf;
     this.links = propertyDescr.links ?? [];
+    this.visible = propertyDescr.visible ?? true; // For backwards compat
   }
 
   /**
@@ -89,6 +98,7 @@ export class Property<T extends Any> {
     return {
       name: this.name,
       value: this.value,
+      visible: this.visible,
       title: this.title,
       type: this.type,
       '@type': this['@type'],
